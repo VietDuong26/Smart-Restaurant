@@ -1,0 +1,37 @@
+package com.example.SmartRestaurant.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigInteger;
+import java.util.List;
+
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Table(name="tbl_user")
+@Builder
+public class UserEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String phoneNumber;
+    private String password;
+    private int status;
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<ShopEntity> shops;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<OrderEntity> orders;
+
+    @ManyToMany
+    @JoinTable(name="user_role",
+    joinColumns = @JoinColumn(name="user_id"),
+    inverseJoinColumns = @JoinColumn(name="role_id"))
+    private List<RoleEntity> roles;
+}
