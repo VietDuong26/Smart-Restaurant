@@ -1,0 +1,35 @@
+package com.example.SmartRestaurant.mapper;
+
+import com.example.SmartRestaurant.dto.request.RoleRequest;
+import com.example.SmartRestaurant.dto.response.RoleResponse;
+import com.example.SmartRestaurant.entity.RoleEntity;
+import org.springframework.stereotype.Component;
+
+@Component
+public class RoleMapper {
+    public static RoleEntity toEntity(RoleRequest request) {
+        if (request == null) return null;
+
+        return RoleEntity.builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .build();
+    }
+
+    // Entity → Response
+    public static RoleResponse toResponse(RoleEntity entity) {
+        if (entity == null) return null;
+
+        return RoleResponse.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .description(entity.getDescription())
+                .permissions(
+                        entity.getPermissions() == null ? null :
+                                entity.getPermissions().stream()
+                                        .map(p -> p.getName())
+                                        .toList()
+                )
+                .build();
+    }
+}
