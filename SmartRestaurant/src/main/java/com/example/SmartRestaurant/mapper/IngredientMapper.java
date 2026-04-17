@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class IngredientMapper {
-    public static IngredientEntity toEntity(IngredientRequest request) {
+    public IngredientEntity toEntity(IngredientRequest request) {
         if (request == null) return null;
 
         return IngredientEntity.builder()
@@ -20,7 +20,7 @@ public class IngredientMapper {
                 .build();
     }
 
-    public static IngredientResponse toResponse(IngredientEntity ingredient) {
+    public IngredientResponse toResponse(IngredientEntity ingredient) {
         if (ingredient == null) return null;
 
         return IngredientResponse.builder()

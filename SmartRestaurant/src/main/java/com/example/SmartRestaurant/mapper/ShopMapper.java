@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ShopMapper {
-    public static ShopEntity toEntity(ShopRequest request) {
+    public ShopEntity toEntity(ShopRequest request) {
         if (request == null) return null;
 
         return ShopEntity.builder()
@@ -19,7 +19,7 @@ public class ShopMapper {
                 .build();
     }
 
-    public static ShopResponse toResponse(ShopEntity shop) {
+    public ShopResponse toResponse(ShopEntity shop) {
         if (shop == null) return null;
 
         return ShopResponse.builder()

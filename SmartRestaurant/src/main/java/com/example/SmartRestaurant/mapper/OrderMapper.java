@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class OrderMapper {
 
     // Request → Entity
-    public static OrderEntity toEntity(OrderRequest request) {
+    public OrderEntity toEntity(OrderRequest request) {
         if (request == null) return null;
 
         return OrderEntity.builder()
@@ -17,7 +17,7 @@ public class OrderMapper {
                 .build();
     }
 
-    public static OrderResponse toResponse(OrderEntity entity) {
+    public OrderResponse toResponse(OrderEntity entity) {
         if (entity == null) return null;
 
         return OrderResponse.builder()

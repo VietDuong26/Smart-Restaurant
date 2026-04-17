@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Component
 public class PurchaseOrderMapper {
-    public static PurchaseOrderEntity toEntity(PurchaseOrderRequest request) {
+    public PurchaseOrderEntity toEntity(PurchaseOrderRequest request) {
         if (request == null) return null;
 
         return PurchaseOrderEntity.builder()
@@ -19,7 +19,7 @@ public class PurchaseOrderMapper {
     }
 
     // Entity → Response
-    public static PurchaseOrderResponse toResponse(PurchaseOrderEntity entity) {
+    public PurchaseOrderResponse toResponse(PurchaseOrderEntity entity) {
         if (entity == null) return null;
 
         return PurchaseOrderResponse.builder()

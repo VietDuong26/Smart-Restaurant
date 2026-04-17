@@ -6,9 +6,10 @@ import com.example.SmartRestaurant.entity.UserEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
+
 @Component
 public class UserMapper {
-    public static UserEntity toEntity(UserRequest request) {
+    public UserEntity toEntity(UserRequest request) {
         if (request == null) return null;
 
         return UserEntity.builder()
@@ -19,7 +20,7 @@ public class UserMapper {
                 .build();
     }
 
-    public static UserResponse toResponse(UserEntity user) {
+    public UserResponse toResponse(UserEntity user) {
         if (user == null) return null;
 
         return UserResponse.builder()

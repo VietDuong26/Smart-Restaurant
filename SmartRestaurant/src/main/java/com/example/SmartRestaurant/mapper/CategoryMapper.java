@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CategoryMapper {
-    public static CategoryEntity toEntity(CategoryRequest request) {
+    public CategoryEntity toEntity(CategoryRequest request) {
         if (request == null) return null;
 
         return CategoryEntity.builder()
@@ -16,7 +16,7 @@ public class CategoryMapper {
                 .build();
     }
 
-    public static CategoryResponse toResponse(CategoryEntity category) {
+    public CategoryResponse toResponse(CategoryEntity category) {
         if (category == null) return null;
 
         return CategoryResponse.builder()

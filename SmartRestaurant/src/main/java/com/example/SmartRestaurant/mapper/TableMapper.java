@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TableMapper {
-    public static TableEntity toEntity(TableRequest request) {
+    public TableEntity toEntity(TableRequest request) {
         if (request == null) return null;
 
         return TableEntity.builder()
@@ -18,7 +18,7 @@ public class TableMapper {
     }
 
     // Entity → Response
-    public static TableResponse toResponse(TableEntity entity) {
+    public TableResponse toResponse(TableEntity entity) {
         if (entity == null) return null;
 
         return TableResponse.builder()

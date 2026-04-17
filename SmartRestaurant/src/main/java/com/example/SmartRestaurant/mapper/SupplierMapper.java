@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SupplierMapper {
-    public static SupplierEntity toEntity(SupplierRequest request) {
+    public SupplierEntity toEntity(SupplierRequest request) {
         if (request == null) return null;
 
         return SupplierEntity.builder()
@@ -19,7 +19,7 @@ public class SupplierMapper {
     }
 
     // Entity → Response
-    public static SupplierResponse toResponse(SupplierEntity entity) {
+    public SupplierResponse toResponse(SupplierEntity entity) {
         if (entity == null) return null;
 
         return SupplierResponse.builder()

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PermissionMapper {
-    public static PermissionEntity toEntity(PermissionRequest request) {
+    public PermissionEntity toEntity(PermissionRequest request) {
         if (request == null) return null;
 
         return PermissionEntity.builder()
@@ -15,7 +15,7 @@ public class PermissionMapper {
                 .build();
     }
 
-    public static PermissionResponse toResponse(PermissionEntity entity) {
+    public PermissionResponse toResponse(PermissionEntity entity) {
         if (entity == null) return null;
 
         return PermissionResponse.builder()

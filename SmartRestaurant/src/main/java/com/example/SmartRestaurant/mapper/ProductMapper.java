@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProductMapper {
-    public static ProductEntity toEntity(ProductRequest request) {
+    public ProductEntity toEntity(ProductRequest request) {
         if (request == null) return null;
 
         return ProductEntity.builder()
@@ -19,7 +19,7 @@ public class ProductMapper {
                 .build();
     }
 
-    public static ProductResponse toResponse(ProductEntity product) {
+    public ProductResponse toResponse(ProductEntity product) {
         if (product == null) return null;
 
         return ProductResponse.builder()
