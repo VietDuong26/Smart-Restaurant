@@ -3,19 +3,22 @@ package com.example.SmartRestaurant.mapper;
 import com.example.SmartRestaurant.dto.request.PurchaseOrderRequest;
 import com.example.SmartRestaurant.dto.response.PurchaseOrderResponse;
 import com.example.SmartRestaurant.entity.PurchaseOrderEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
+@RequiredArgsConstructor
 public class PurchaseOrderMapper {
+    PurchaseOrderItemMapper purchaseOrderItemMapper;
+
     public PurchaseOrderEntity toEntity(PurchaseOrderRequest request) {
         if (request == null) return null;
 
         return PurchaseOrderEntity.builder()
                 .createdAt(LocalDateTime.now())
                 .build();
-        // ❗ shop + supplier + items → set ở service
     }
 
     // Entity → Response
@@ -35,7 +38,7 @@ public class PurchaseOrderMapper {
                 .items(
                         entity.getItems() == null ? null :
                                 entity.getItems().stream()
-                                        .map(PurchaseOrderItemMapper::toResponse)
+                                        .map(purchaseOrderItemMapper::toResponse)
                                         .toList()
                 )
                 .build();

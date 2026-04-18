@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -16,10 +16,13 @@ import java.util.List;
 @Table(name = "tbl_permission")
 @Builder
 public class PermissionEntity {
+    @ManyToMany(mappedBy = "permissions")
+    List<RoleEntity> roles;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @ManyToMany(mappedBy = "permissions")
-    List<RoleEntity> roles;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 }

@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,11 +21,11 @@ public class OrderEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="table_id",nullable = false)
+    @JoinColumn(name = "table_id", nullable = false)
     private TableEntity table;
 
     @ManyToOne
-    @JoinColumn(name="user_id",nullable = true)
+    @JoinColumn(name = "user_id", nullable = true)
     private UserEntity user;
 
     private int status;
@@ -35,4 +34,7 @@ public class OrderEntity {
 
     @OneToMany(mappedBy = "order")
     private List<OrderItemEntity> items;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 }

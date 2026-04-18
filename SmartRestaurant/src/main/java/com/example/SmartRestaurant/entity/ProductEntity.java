@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -23,7 +23,10 @@ public class ProductEntity {
     private String description;
     private String imageUrl;
     @ManyToOne
-    @JoinColumn(name="category_id",nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
     private int status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 }

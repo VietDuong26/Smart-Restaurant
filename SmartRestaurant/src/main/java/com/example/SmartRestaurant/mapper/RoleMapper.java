@@ -12,18 +12,15 @@ public class RoleMapper {
 
         return RoleEntity.builder()
                 .name(request.getName())
-                .description(request.getDescription())
                 .build();
     }
 
-    // Entity → Response
     public RoleResponse toResponse(RoleEntity entity) {
         if (entity == null) return null;
 
         return RoleResponse.builder()
                 .id(entity.getId())
                 .name(entity.getName())
-                .description(entity.getDescription())
                 .permissions(
                         entity.getPermissions() == null ? null :
                                 entity.getPermissions().stream()

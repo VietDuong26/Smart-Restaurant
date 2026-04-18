@@ -6,4 +6,6 @@ import com.example.SmartRestaurant.service.base.IBaseService;
 
 public interface UserService extends IBaseService<UserRequest, UserResponse, Long> {
     void activateAccount(Long userId, String otp);
+
+    void resendOTP(Long userId);
 }

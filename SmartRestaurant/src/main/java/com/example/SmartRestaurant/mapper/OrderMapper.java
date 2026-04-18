@@ -3,12 +3,14 @@ package com.example.SmartRestaurant.mapper;
 import com.example.SmartRestaurant.dto.request.OrderRequest;
 import com.example.SmartRestaurant.dto.response.OrderResponse;
 import com.example.SmartRestaurant.entity.OrderEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class OrderMapper {
+    OrderItemMapper orderItemMapper;
 
-    // Request → Entity
     public OrderEntity toEntity(OrderRequest request) {
         if (request == null) return null;
 
@@ -36,7 +38,7 @@ public class OrderMapper {
                 .items(
                         entity.getItems() == null ? null :
                                 entity.getItems().stream()
-                                        .map(OrderItemMapper::toResponse)
+                                        .map(orderItemMapper::toResponse)
                                         .toList()
                 )
                 .build();

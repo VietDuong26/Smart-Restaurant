@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -21,7 +21,10 @@ public class TableEntity {
     private String name;
     private String qrCode;
     private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
     @ManyToOne
-    @JoinColumn(name="shop_id",nullable = false)
+    @JoinColumn(name = "shop_id", nullable = false)
     private ShopEntity shop;
 }

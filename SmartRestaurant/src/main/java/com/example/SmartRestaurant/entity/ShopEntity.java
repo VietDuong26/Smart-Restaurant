@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -29,6 +28,9 @@ public class ShopEntity {
     private UserEntity user;
     private LocalTime openTime;
     private LocalTime closeTime;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private List<TableEntity> tables;

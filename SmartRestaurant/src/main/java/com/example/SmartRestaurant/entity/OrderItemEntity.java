@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -20,13 +20,16 @@ public class OrderItemEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="order_id",nullable = false)
+    @JoinColumn(name = "order_id", nullable = false)
     private OrderEntity order;
 
     @ManyToOne
-    @JoinColumn(name="product_id",nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
     private Long quantity;
     private Float price;
     private String note;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 }

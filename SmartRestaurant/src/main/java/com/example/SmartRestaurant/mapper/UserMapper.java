@@ -17,6 +17,7 @@ public class UserMapper {
                 .phoneNumber(request.getPhoneNumber())
                 .password(request.getPassword())
                 .status(request.getStatus())
+                .email(request.getEmail())
                 .build();
     }
 
@@ -28,6 +29,7 @@ public class UserMapper {
                 .name(user.getName())
                 .phoneNumber(user.getPhoneNumber())
                 .status(user.getStatus())
+                .email(user.getEmail())
                 .roles(
                         user.getRoles() == null ? null :
                                 user.getRoles().stream()

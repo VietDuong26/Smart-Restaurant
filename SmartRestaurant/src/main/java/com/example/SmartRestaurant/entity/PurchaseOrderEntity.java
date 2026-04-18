@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,13 +22,15 @@ public class PurchaseOrderEntity {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name="shop_id",nullable = false)
+    @JoinColumn(name = "shop_id", nullable = false)
     private ShopEntity shop;
 
     @ManyToOne
-    @JoinColumn(name="supplier_id",nullable = false)
+    @JoinColumn(name = "supplier_id", nullable = false)
     private SupplierEntity supplier;
 
-    @OneToMany(mappedBy = "purchaseOrder",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
     private List<PurchaseOrderItemEntity> items;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 }

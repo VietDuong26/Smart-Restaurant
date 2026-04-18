@@ -1,13 +1,12 @@
 package com.example.SmartRestaurant.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -26,12 +25,15 @@ public class IngredientEntity {
     private Float minStock;
     private int type;
     private Float yieldRate;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 
     @ManyToOne
-    @JoinColumn(name="shop_id",nullable = false)
+    @JoinColumn(name = "shop_id", nullable = false)
     private ShopEntity shop;
 
-    @OneToMany(mappedBy ="ingredient",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
     private List<PurchaseOrderItemEntity> items;
 
 }
