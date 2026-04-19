@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.mapper;
 
+import com.example.SmartRestaurant.common.UserStatus;
 import com.example.SmartRestaurant.dto.request.UserRequest;
 import com.example.SmartRestaurant.dto.response.UserResponse;
 import com.example.SmartRestaurant.entity.UserEntity;
@@ -16,7 +17,7 @@ public class UserMapper {
                 .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
                 .password(request.getPassword())
-                .status(request.getStatus())
+                .status(UserStatus.fromValue(request.getStatus()))
                 .email(request.getEmail())
                 .build();
     }

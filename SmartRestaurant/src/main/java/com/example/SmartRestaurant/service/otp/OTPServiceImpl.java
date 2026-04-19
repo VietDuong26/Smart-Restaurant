@@ -22,13 +22,15 @@ public class OTPServiceImpl implements OTPService {
     }
 
     @Override
-    public boolean validateOTP(Long userId, String value) {
-        if (repository.findValidOtp(userId, 0) != null) {
-            return true;
-        } else {
-            return false;
+    public OTPEntity findByUserEmailAndStatus(String email, int status) {
+        try {
+            return repository.findByUserEmailAndStatus(email, status);
+        } catch (Exception e) {
+            System.out.println("OTP not found by email:" + email);
+            return null;
         }
     }
+
 
     @Override
     public void create(OTPEntity otpEntity) {

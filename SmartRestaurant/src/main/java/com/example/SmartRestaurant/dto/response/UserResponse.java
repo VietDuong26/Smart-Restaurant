@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.dto.response;
 
+import com.example.SmartRestaurant.common.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +16,7 @@ public class UserResponse {
     private Long id;
     private String name;
     private String phoneNumber;
-    private int status;
+    private UserStatus status;
     private List<String> roles;
     private String email;
 }

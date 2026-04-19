@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.SupplierStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,5 +34,6 @@ public class SupplierEntity {
 
     private String phone;
     private String address;
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private SupplierStatus status;
 }

@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,8 @@ public class UserEntity {
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
     private String password;
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ShopEntity> shops;
 
@@ -36,8 +38,8 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<RoleEntity> roles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<OTPEntity> otps;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private OTPEntity otp;
 
     @Column(unique = true, nullable = false)
     private String email;

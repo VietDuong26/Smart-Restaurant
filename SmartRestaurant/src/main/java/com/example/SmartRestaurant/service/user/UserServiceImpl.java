@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.service.user;
 
+import com.example.SmartRestaurant.common.OTPStatus;
 import com.example.SmartRestaurant.common.UserStatus;
 import com.example.SmartRestaurant.dto.request.UserRequest;
 import com.example.SmartRestaurant.dto.response.UserResponse;
@@ -39,15 +40,15 @@ public class UserServiceImpl implements UserService {
     public UserResponse create(UserRequest userRequest) {
         if (repository.findByPhoneNumber(userRequest.getPhoneNumber()) == null) {
             UserEntity user = mapper.toEntity(userRequest);
-            user.setStatus(UserStatus.PENDING.getValue());
+            user.setStatus(UserStatus.PENDING);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user = repository.save(user);
 
             OTPEntity otp = new OTPEntity();
             otp.setOtpToken(otpService.generateOTP());
             otp.setUser(user);
-            otp.setCreatedAt(LocalDateTime.now());
-            otp.setStatus(0);
+            otp.setUpdatedAt(LocalDateTime.now());
+            otp.setStatus(OTPStatus.PENDING);
             otpService.create(otp);
             emailService.sendOtp(user.getEmail(), user.getName(), otp.getOtpToken());
             return mapper.toResponse(user);
@@ -83,7 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void resendOTP(Long userId) {
+    public void resendOTP(String email) {
 
     }
 }

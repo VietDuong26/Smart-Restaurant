@@ -43,25 +43,4 @@ public class AuthController {
                     );
         }
     }
-
-    @PostMapping("/resend-OTP")
-    ResponseEntity<ApiResponse<UserResponse>> resendOTP(@RequestBody UserRequest userRequest) {
-        try {
-            return ResponseEntity.ok(
-                    new ApiResponse<>(200
-                            , "Success"
-                            , userService.create(userRequest)
-                            , LocalDateTime.now()
-                    )
-            );
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>(400
-                                    , e.getMessage()
-                                    , null
-                                    , LocalDateTime.now()
-                            )
-                    );
-        }
-    }
 }

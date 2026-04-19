@@ -5,7 +5,8 @@ import com.example.SmartRestaurant.entity.OTPEntity;
 public interface OTPService {
     String generateOTP();
 
-    boolean validateOTP(Long userId, String OTPvalue);
+    OTPEntity findByUserEmailAndStatus(String user, int status);
 
     void create(OTPEntity otpEntity);
+
 }

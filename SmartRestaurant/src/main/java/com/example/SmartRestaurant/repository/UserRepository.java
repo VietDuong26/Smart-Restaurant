@@ -13,4 +13,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByPhoneNumber(String username);
 
     List<UserEntity> findByStatusAndCreatedAtBefore(UserStatus pending, LocalDateTime threshold);
+
+    UserEntity findByEmail(String email);
 }

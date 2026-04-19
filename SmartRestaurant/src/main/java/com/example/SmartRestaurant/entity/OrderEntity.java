@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,10 +28,9 @@ public class OrderEntity {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = true)
     private UserEntity user;
-
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
     private Float totalAmount;
-    private LocalDateTime createdTime;
 
     @OneToMany(mappedBy = "order")
     private List<OrderItemEntity> items;

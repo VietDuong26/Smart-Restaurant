@@ -19,7 +19,7 @@ public enum UserStatus {
                     .collect(Collectors.toMap(UserStatus::getValue, e -> e));
     private int value;
 
-    public UserStatus fromValue(int value) {
+    public static UserStatus fromValue(int value) {
         UserStatus status = MAP.get(value);
         if (status == null) {
             throw new IllegalArgumentException("Invalid UserStatus value: " + value);

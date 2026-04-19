@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.OTPStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,15 +12,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "otp_tbl")
+@Table(name = "tbl_otp")
 public class OTPEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
     private String otpToken;
-    private LocalDateTime createdAt;
-    private int status;
+    private LocalDateTime updatedAt;
+    @Enumerated(EnumType.STRING)
+    private OTPStatus status;
 }
