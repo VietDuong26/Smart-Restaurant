@@ -10,6 +10,7 @@ import com.example.SmartRestaurant.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class InitConfig {
     RoleRepository roleRepository;
 
@@ -65,10 +67,10 @@ public class InitConfig {
                 permissionRepository.saveAll(permissionList);
             }
         } catch (Exception e) {
-            System.out.println("Init role data failed: " + e.getMessage());
+            log.error("Init role data failed: " + e.getMessage());
         }
         return args -> {
-            System.out.println("Init data finished");
+            log.info("Init data finished");
         };
     }
 
@@ -81,7 +83,7 @@ public class InitConfig {
                     .findByStatusAndCreatedAtBefore(UserStatus.PENDING, threshold);
             userRepository.deleteAll(users);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.config.userdetail;
 
+import com.example.SmartRestaurant.common.UserStatus;
 import com.example.SmartRestaurant.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -59,6 +60,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return userEntity.getStatus() == 1;
+        return userEntity.getStatus() == UserStatus.ACTIVE;
     }
 }

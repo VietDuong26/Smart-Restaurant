@@ -6,6 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class EmailService {
     JavaMailSender mailSender;
 
@@ -26,11 +28,11 @@ public class EmailService {
             helper.setSubject("OTP Verification");
             helper.setText(Const.HTML_OTP_MAIL.formatted(username, otp), true);
             mailSender.send(message);
-            System.out.println("Thread: " + Thread.currentThread().getName());
+            log.info("Thread: " + Thread.currentThread().getName());
         } catch (MessagingException e) {
-            System.out.println("Failed to send OTP email to {}" + e.getMessage());
+            log.info("Failed to send OTP email to {}" + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Unexpected error when sending OTP to {}" + e.getMessage());
+            log.info("Unexpected error when sending OTP to {}" + e.getMessage());
         }
     }
 }

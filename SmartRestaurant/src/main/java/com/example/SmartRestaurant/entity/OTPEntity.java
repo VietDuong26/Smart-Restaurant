@@ -21,7 +21,9 @@ public class OTPEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
     private String otpToken;
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime expiredAt;
     @Enumerated(EnumType.STRING)
     private OTPStatus status;
 }

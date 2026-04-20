@@ -7,6 +7,8 @@ import com.example.SmartRestaurant.dto.response.UserResponse;
 import com.example.SmartRestaurant.entity.OTPEntity;
 import com.example.SmartRestaurant.entity.UserEntity;
 import com.example.SmartRestaurant.exception.DuplicateDataException;
+import com.example.SmartRestaurant.exception.InvalidOTPException;
+import com.example.SmartRestaurant.exception.UserNotFoundException;
 import com.example.SmartRestaurant.mapper.UserMapper;
 import com.example.SmartRestaurant.repository.UserRepository;
 import com.example.SmartRestaurant.service.otp.OTPService;
@@ -42,12 +44,15 @@ public class UserServiceImpl implements UserService {
             UserEntity user = mapper.toEntity(userRequest);
             user.setStatus(UserStatus.PENDING);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setCreatedAt(LocalDateTime.now());
             user = repository.save(user);
 
             OTPEntity otp = new OTPEntity();
+            LocalDateTime otpTime = LocalDateTime.now();
             otp.setOtpToken(otpService.generateOTP());
             otp.setUser(user);
-            otp.setUpdatedAt(LocalDateTime.now());
+            otp.setCreatedAt(otpTime);
+            otp.setExpiredAt(otpTime.plusMinutes(5));
             otp.setStatus(OTPStatus.PENDING);
             otpService.create(otp);
             emailService.sendOtp(user.getEmail(), user.getName(), otp.getOtpToken());
@@ -79,12 +84,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void activateAccount(Long userId, String otp) {
+    public void activateAccount(String email, String OTPValue) {
+        UserEntity user = repository.findByEmail(email);
+        OTPEntity otp = otpService.validateOTPToken(email, OTPValue);
+        if (user == null) {
+            throw new UserNotFoundException(email);
+        }
+        if (otp == null) {
+            throw new InvalidOTPException();
+        }
 
+        otp.setStatus(OTPStatus.USED);
+        user.setStatus(UserStatus.ACTIVE);
+
+        otpService.create(otp);
+        repository.save(user);
+    }
+
+    @Override
+    public UserResponse getByEmail(String email) {
+        return mapper.toResponse(repository.findByEmail(email));
     }
 
     @Override
     public void resendOTP(String email) {
-
+        UserEntity user = repository.findByEmail(email);
+        if (user == null) {
+            throw new UserNotFoundException(email);
+        }
+        otpService.resendOTP(email);
     }
+
+
 }

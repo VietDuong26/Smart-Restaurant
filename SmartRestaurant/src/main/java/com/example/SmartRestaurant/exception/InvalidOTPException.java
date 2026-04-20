@@ -1,7 +1,7 @@
 package com.example.SmartRestaurant.exception;
 
-public class IvalidOTPException extends AppException {
-    public IvalidOTPException() {
+public class InvalidOTPException extends AppException {
+    public InvalidOTPException() {
         super("Token không hợp lệ");
     }
 }

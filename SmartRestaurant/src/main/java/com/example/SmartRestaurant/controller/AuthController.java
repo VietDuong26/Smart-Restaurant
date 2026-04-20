@@ -1,6 +1,7 @@
 package com.example.SmartRestaurant.controller;
 
 import com.example.SmartRestaurant.common.Const;
+import com.example.SmartRestaurant.dto.request.OTPRequest;
 import com.example.SmartRestaurant.dto.request.UserRequest;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import com.example.SmartRestaurant.dto.response.UserResponse;
@@ -34,6 +35,50 @@ public class AuthController {
                     )
             );
         } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(400
+                                    , e.getMessage()
+                                    , null
+                                    , LocalDateTime.now()
+                            )
+                    );
+        }
+    }
+
+    @PostMapping("/activate-account")
+    ResponseEntity<ApiResponse<UserResponse>> activateAccount(@RequestBody OTPRequest otpRequest) {
+        try {
+            userService.activateAccount(otpRequest.getEmail(), otpRequest.getOtpToken());
+            return ResponseEntity.ok(
+                    new ApiResponse<>(200
+                            , "Success"
+                            , null
+                            , LocalDateTime.now()
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(400
+                                    , e.getMessage()
+                                    , null
+                                    , LocalDateTime.now()
+                            )
+                    );
+        }
+    }
+
+    @PostMapping("/resend-otp")
+    ResponseEntity<ApiResponse<UserResponse>> resendOTP(@RequestBody String email) {
+        try {
+            userService.resendOTP(email);
+            return ResponseEntity.ok(
+                    new ApiResponse<>(200
+                            , "Success"
+                            , null
+                            , LocalDateTime.now()
+                    )
+            );
+        } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse<>(400
                                     , e.getMessage()
