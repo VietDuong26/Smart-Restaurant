@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -36,7 +37,13 @@ public class UserEntity {
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<RoleEntity> roles;
+    private Set<RoleEntity> roles;
+
+    @ManyToMany
+    @JoinTable(name = "user_permission",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<PermissionEntity> permissions;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private OTPEntity otp;

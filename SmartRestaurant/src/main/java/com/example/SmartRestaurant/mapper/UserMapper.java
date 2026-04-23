@@ -2,10 +2,10 @@ package com.example.SmartRestaurant.mapper;
 
 import com.example.SmartRestaurant.dto.request.UserRequest;
 import com.example.SmartRestaurant.dto.response.UserResponse;
+import com.example.SmartRestaurant.dto.response.UserResponseDetail;
 import com.example.SmartRestaurant.entity.UserEntity;
+import com.example.SmartRestaurant.exception.UserNotFoundException;
 import org.springframework.stereotype.Component;
-
-import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
@@ -16,13 +16,14 @@ public class UserMapper {
                 .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
                 .password(request.getPassword())
-                .status(request.getStatus())
                 .email(request.getEmail())
                 .build();
     }
 
     public UserResponse toResponse(UserEntity user) {
-        if (user == null) return null;
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
 
         return UserResponse.builder()
                 .id(user.getId())
@@ -30,12 +31,21 @@ public class UserMapper {
                 .phoneNumber(user.getPhoneNumber())
                 .status(user.getStatus())
                 .email(user.getEmail())
-                .roles(
-                        user.getRoles() == null ? null :
-                                user.getRoles().stream()
-                                        .map(role -> role.getName())
-                                        .collect(Collectors.toList())
-                )
+                .build();
+    }
+
+    public UserResponseDetail toResponseDetail(UserEntity user) {
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+
+        return UserResponseDetail.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .password(user.getPassword())
+                .status(user.getStatus())
+                .email(user.getEmail())
                 .build();
     }
 }

@@ -1,11 +1,11 @@
 package com.example.SmartRestaurant.service.otp;
 
 import com.example.SmartRestaurant.common.OTPStatus;
-import com.example.SmartRestaurant.dto.response.UserResponse;
 import com.example.SmartRestaurant.entity.OTPEntity;
+import com.example.SmartRestaurant.entity.UserEntity;
 import com.example.SmartRestaurant.exception.*;
 import com.example.SmartRestaurant.repository.OTPRepository;
-import com.example.SmartRestaurant.service.user.UserService;
+import com.example.SmartRestaurant.repository.UserRepository;
 import com.example.SmartRestaurant.util.mail.EmailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OTPServiceImpl implements OTPService {
     OTPRepository repository;
-    UserService userService;
+    UserRepository userRepository;
     EmailService emailService;
 
     @Override
@@ -60,14 +60,9 @@ public class OTPServiceImpl implements OTPService {
 
     @Override
     public void resendOTP(String email) {
-
-        OTPEntity otp = repository.findByUser_EmailAndStatus(email, OTPStatus.PENDING);
-        UserResponse user = userService.getByEmail(email);
-        if (otp != null && otp.getCreatedAt().isAfter(LocalDateTime.now().minusSeconds(60))) {
-            throw new TooManyRequestsException(); // chưa đủ 60s
-        }
+        UserEntity user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new UserNotFoundException(email);
+            throw new UserNotFoundException();
         }
         switch (user.getStatus()) {
             case ACTIVE:
@@ -77,9 +72,18 @@ public class OTPServiceImpl implements OTPService {
             case DELETED:
                 throw new AccountDeletedException();
         }
-
+        OTPEntity otp = repository.findByUser_EmailAndStatus(email, OTPStatus.PENDING);
+        LocalDateTime lastTime = otp.getUpdatedAt() != null
+                ? otp.getUpdatedAt()
+                : otp.getCreatedAt();
+        //rate limit
+        if (lastTime.isAfter(LocalDateTime.now().minusSeconds(60)) && otp.getAttempt() > 5) {
+            throw new TooManyRequestsException();
+        }
         String newOtp = generateOTP();
-        otp.setUpdatedAt(LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        otp.setUpdatedAt(now);
+        otp.setExpiredAt(now.plusMinutes(5));
         otp.setOtpToken(newOtp);
         repository.save(otp);
         emailService.sendOtp(user.getEmail(), user.getName(), otp.getOtpToken());

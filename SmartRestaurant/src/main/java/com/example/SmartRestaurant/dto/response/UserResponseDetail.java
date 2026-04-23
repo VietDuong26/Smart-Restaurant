@@ -12,10 +12,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class UserResponseDetail {
     private Long id;
     private String name;
     private String phoneNumber;
+    private String password;
     private UserStatus status;
     private List<String> roles;
     private List<String> permissions;

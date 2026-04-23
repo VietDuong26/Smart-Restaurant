@@ -24,6 +24,7 @@ public class OTPEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime expiredAt;
+    private int attempt;
     @Enumerated(EnumType.STRING)
     private OTPStatus status;
 }

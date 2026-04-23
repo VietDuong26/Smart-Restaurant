@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.ShopStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,8 @@ public class ShopEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+    @Enumerated(EnumType.STRING)
+    private ShopStatus status;
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private List<TableEntity> tables;

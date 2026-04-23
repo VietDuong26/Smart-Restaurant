@@ -1,46 +1,43 @@
 package com.example.SmartRestaurant.config.userdetail;
 
 import com.example.SmartRestaurant.common.UserStatus;
-import com.example.SmartRestaurant.entity.UserEntity;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
 @AllArgsConstructor
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomUserDetails implements UserDetails {
-    private final UserEntity userEntity;
+    Long id;
+    String username;
+    String password;
+    UserStatus status;
+    Collection<? extends GrantedAuthority> authorities;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return userEntity.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .toList();
+        return this.authorities;
     }
 
-    public UserEntity getUser() {
-        return this.userEntity;
+    public Long getId() {
+        return this.id;
     }
 
     @Override
     public String getPassword() {
-        if (userEntity == null)
-            return null;
-        if (userEntity.getPassword() == null)
-            return null;
-        return userEntity.getPassword();
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        if (userEntity == null)
-            return null;
-        if (userEntity.getPhoneNumber() == null)
-            return null;
-        return userEntity.getPhoneNumber();
+        return this.username;
     }
 
     @Override
@@ -60,6 +57,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return userEntity.getStatus() == UserStatus.ACTIVE;
+        return status == UserStatus.ACTIVE;
     }
 }

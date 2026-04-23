@@ -1,18 +1,19 @@
 package com.example.SmartRestaurant.config.jwt;
 
-import com.example.SmartRestaurant.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,19 +22,24 @@ public class JwtService {
     String secretToken;
     @Value("${jwt.expiration}")
     Long expiration;
-    UserRepository userRepository;
 
 
     public String generateToken(UserDetails userDetails) {
-
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(auth -> auth.startsWith("ROLE_"))
+                .toList();
 
+        List<String> permissions = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(auth -> !auth.startsWith("ROLE_"))
+                .toList();
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-                .claim("roles", userDetails.getAuthorities().stream()
-                        .map(a -> a.getAuthority())
-                        .toList())
+                .claim("roles", roles)
+                .claim("permissions", permissions)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)

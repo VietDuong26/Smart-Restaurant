@@ -23,10 +23,4 @@ public class RoleEntity {
     @ManyToMany(mappedBy = "roles")
     private List<UserEntity> users;
 
-    @ManyToMany
-    @JoinTable(name = "role_permission",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private List<PermissionEntity> permissions;
-
 }

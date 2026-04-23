@@ -1,14 +1,13 @@
 package com.example.SmartRestaurant.dto.request;
 
-import com.example.SmartRestaurant.common.UserStatus;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @Builder
@@ -19,15 +18,16 @@ public class UserRequest {
     private String name;
 
     @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^(\\+84|0)[0-9]{9,10}$", message = "Số điện thoại không hợp lệ")
     private String phoneNumber;
 
-    @NotBlank(message = "Phone number is required")
+    @NotBlank(message = "Email is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    @Email
     private String email;
 
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    private UserStatus status;
-    private List<Long> roleIds;
 }
