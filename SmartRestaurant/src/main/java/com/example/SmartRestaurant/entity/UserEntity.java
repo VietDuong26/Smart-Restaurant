@@ -33,6 +33,12 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<OrderEntity> orders;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<RefreshTokenEntity> refreshTokens;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ResetPasswordTokenEntity> resetTokens;
+
     @ManyToMany
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),

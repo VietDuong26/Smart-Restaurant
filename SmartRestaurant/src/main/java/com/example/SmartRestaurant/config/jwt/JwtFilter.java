@@ -1,6 +1,7 @@
 package com.example.SmartRestaurant.config.jwt;
 
 import com.example.SmartRestaurant.config.userdetail.CustomUserDetailService;
+import com.example.SmartRestaurant.exception.ExpiredJwtTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtFilter extends OncePerRequestFilter {
     JwtService jwtService;
+
 
     CustomUserDetailService userDetailService;
 
@@ -43,6 +45,8 @@ public class JwtFilter extends OncePerRequestFilter {
                                         userDetails, null, userDetails.getAuthorities());
 
                         SecurityContextHolder.getContext().setAuthentication(authToken);
+                    } else {
+                        throw new ExpiredJwtTokenException();
                     }
                 }
             }

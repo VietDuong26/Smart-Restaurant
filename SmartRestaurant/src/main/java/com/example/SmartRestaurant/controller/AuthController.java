@@ -2,21 +2,23 @@ package com.example.SmartRestaurant.controller;
 
 import com.example.SmartRestaurant.common.Const;
 import com.example.SmartRestaurant.config.userdetail.CustomUserDetails;
-import com.example.SmartRestaurant.dto.request.LoginRequest;
-import com.example.SmartRestaurant.dto.request.OTPRequest;
-import com.example.SmartRestaurant.dto.request.UserRequest;
+import com.example.SmartRestaurant.dto.request.*;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import com.example.SmartRestaurant.dto.response.LoginResponse;
 import com.example.SmartRestaurant.dto.response.UserResponse;
 import com.example.SmartRestaurant.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -31,14 +33,11 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/roles")
-    @Operation(
-            summary = "Thêm roles cho user",
-            description = "API dùng để thêm vai trò cho người dùng đang đăng nhập"
-    )
+    @Operation(summary = "Thêm roles cho user")
     ResponseEntity<ApiResponse<UserResponse>> addRoles(
-            @Valid @RequestBody List<Long> roleIds
+            @Validated @RequestBody List<Long> roleIds
             , @PathVariable("id") Long userId) {
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ApiResponse<>(201
                         , "Success"
                         , userService.addRoles(userId, roleIds)
@@ -48,15 +47,12 @@ public class AuthController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/{id}/permisisons")
-    @Operation(
-            summary = "Thêm quyền cho user",
-            description = "API dùng để thêm quyền cho người dùng đang đăng nhập"
-    )
+    @PostMapping("/{id}/permissions")
+    @Operation(summary = "Thêm quyền cho user")
     ResponseEntity<ApiResponse<UserResponse>> addPermissions(
-            @Valid @RequestBody List<Long> permissionIds
+            @Validated @RequestBody List<Long> permissionIds
             , @PathVariable("id") Long userId) {
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ApiResponse<>(201
                         , "Success"
                         , userService.addPermissions(userId, permissionIds)
@@ -66,8 +62,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Đăng ký tài khoản")
     ResponseEntity<ApiResponse<UserResponse>> register(@Valid @RequestBody UserRequest userRequest) {
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ApiResponse<>(201
                         , "Success"
                         , userService.create(userRequest)
@@ -77,9 +74,10 @@ public class AuthController {
     }
 
     @PostMapping("/activate-account")
+    @Operation(summary = "Kích hoạt tài khoản qua OTP")
     ResponseEntity<ApiResponse<UserResponse>> activateAccount(@Valid @RequestBody OTPRequest otpRequest) {
         userService.activateAccount(otpRequest.getEmail(), otpRequest.getOtpToken());
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(
                 new ApiResponse<>(204
                         , "Success"
                         , null
@@ -89,9 +87,10 @@ public class AuthController {
     }
 
     @PostMapping("/resend-otp")
+    @Operation(summary = "Gửi lại OTP")
     ResponseEntity<ApiResponse<UserResponse>> resendOTP(@Valid @RequestParam String email) {
         userService.resendOTP(email);
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(200
                         , "Success"
                         , null
@@ -101,83 +100,90 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
-
-        return ResponseEntity.ok(new ApiResponse<>(200
+    @Operation(summary = "Đăng nhập")
+    ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request
+            , HttpServletResponse response) {
+        LoginResponse loginResponse = userService.login(request);
+        Cookie cookie = new Cookie("refreshToken_user" + loginResponse.getUserResponse().getId(), loginResponse.getRefreshToken());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setMaxAge(30 * 24 * 60 * 60);
+        response.addCookie(cookie);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(200
                 , "Success"
-                , userService.login(request)
+                , loginResponse
                 , LocalDateTime.now()
         ));
 
     }
 
+    @PostMapping("/refresh")
+    @Operation(summary = "Làm mới access token")
+    ResponseEntity<ApiResponse<?>> refresh(@RequestBody String refreshToken) {
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(200
+                , "Success"
+                , userService.refreshTokenHandle(refreshToken)
+                , LocalDateTime.now()
+        ));
+
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','MANAGER','CUSTOMER')")
+    @Operation(summary = "Xem thông tin user đang đăng nhập")
     @GetMapping("/me")
     ResponseEntity<ApiResponse<UserResponse>> getMe(Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        return ResponseEntity.ok().body(new ApiResponse<>(200
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(200
                 , "Success"
-                , userService.getById(userDetails.getId())
+                , userService.getById(userDetails.getUser().getId())
                 , LocalDateTime.now()));
     }
 
-//    @PostMapping("/logout")
-//    ResponseEntity<ApiResponse<?>> logout() {
-//        return ResponseEntity.ok(new ApiResponse(200
-//                , "Logout thành công"
-//                , null
-//                , LocalDateTime.now()));
-//    }
-//
-//    @PostMapping("/forgot-password")
-//    ResponseEntity<ApiResponse<UserResponse>> forgotPassword() {
-//        try {
-//            return ResponseEntity.ok(new ApiResponse<>(200
-//                    , "Success"
-//                    , null
-//                    , LocalDateTime.now()
-//            ));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body((new ApiResponse<>(400
-//                    , e.getMessage()
-//                    , null
-//                    , LocalDateTime.now()
-//            )));
-//        }
-//    }
+    @PostMapping("/logout")
+    @Operation(summary = "Đăng xuất")
+    ResponseEntity<ApiResponse<?>> logout(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        userService.logout(userDetails.getUser().getId());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ApiResponse(204
+                , "Logout thành công"
+                , null
+                , LocalDateTime.now()));
+    }
 
-//    @PostMapping("/reset-password")
-//    ResponseEntity<ApiResponse<UserResponse>> resetPassword(@Valid @RequestBody LoginRequest request) {
-//        try {
-//            userService.login(request);
-//            return ResponseEntity.ok(new ApiResponse<>(400
-//                    , "Success"
-//                    , null
-//                    , LocalDateTime.now()
-//            ));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body((new ApiResponse<>(400
-//                    , e.getMessage()
-//                    , null
-//                    , LocalDateTime.now()
-//            )));
-//        }
-//    }
-//
-//    @PostMapping("/change-password")
-//    ResponseEntity<ApiResponse<UserResponse>> changePassword(@Valid @RequestBody LoginRequest request) {
-//        try {
-//            userService.login(request);
-//            return ResponseEntity.ok(new ApiResponse<>(400
-//                    , "Success"
-//                    , null
-//                    , LocalDateTime.now()
-//            ));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body((new ApiResponse<>(400
-//                    , e.getMessage()
-//                    , null
-//                    , LocalDateTime.now()
-//            )));
-//        }
-//    }
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Quên mật khẩu — gửi email reset")
+    ResponseEntity<ApiResponse<?>> forgotPassword(@RequestParam String email) {
+        userService.forgotPassword(email);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ApiResponse<>(204
+                , "Success"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(summary = "Đặt lại mật khẩu")
+    ResponseEntity<ApiResponse<?>> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        userService.resetPassword(resetPasswordRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ApiResponse<>(204
+                , "Success"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','MANAGER','CUSTOMER')")
+    @PostMapping("/change-password")
+    @Operation(summary = "Đổi mật khẩu")
+    ResponseEntity<ApiResponse<?>> changePassword(@Valid @RequestBody ChangePasswordRequest request
+            , Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        request.setUser(userDetails.getUser());
+        userService.changePassword(request);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ApiResponse<>(204
+                , "Success"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
 }

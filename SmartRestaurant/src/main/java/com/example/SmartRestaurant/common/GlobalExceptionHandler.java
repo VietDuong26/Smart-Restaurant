@@ -117,4 +117,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ApiResponse<>(401, e.getMessage(), null, LocalDateTime.now()));
     }
+
+    @ExceptionHandler(ExpiredJwtTokenException.class)
+    public ResponseEntity<ApiResponse<Object>> handleExpiredJwtToken(ExpiredJwtTokenException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiResponse<>(401, e.getMessage(), null, LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(RefreshTokenNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleRefreshTokenNotFound(RefreshTokenNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiResponse<>(404, e.getMessage(), null, LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(ExpiredRefreshTokenException.class)
+    public ResponseEntity<ApiResponse<Object>> handleExpiredRefreshToken(ExpiredRefreshTokenException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiResponse<>(401, e.getMessage(), null, LocalDateTime.now()));
+    }
 }
