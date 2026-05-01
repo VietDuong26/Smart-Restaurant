@@ -89,7 +89,8 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public ShopResponse updateCustom(Long id, ShopRequest request, CustomUserDetails userDetails) {
-        request.setUserId(userDetails.getAuthorities().stream().anyMatch(x -> x.getAuthority().equals("ROLE_ADMIN"))
+        request.setUserId(userDetails.getAuthorities().stream()
+                .anyMatch(x -> x.getAuthority().equals("ROLE_ADMIN"))
                 ? request.getUserId()
                 : userDetails.getUser().getId());
         ShopEntity shop = repository.getById(id);

@@ -33,4 +33,5 @@ public interface UserService extends IBaseService<UserRequest, UserResponse, Lon
     void resetPassword(ResetPasswordRequest resetPasswordRequest);
 
     void changePassword(ChangePasswordRequest request);
+
 }

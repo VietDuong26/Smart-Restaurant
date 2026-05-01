@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.TableStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,8 @@ public class TableEntity {
     private Long id;
     private String name;
     private String qrCode;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private TableStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
