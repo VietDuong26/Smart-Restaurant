@@ -1,4 +1,4 @@
-package com.example.SmartRestaurant.util.mail;
+package com.example.SmartRestaurant.util;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;

@@ -31,10 +31,12 @@ public class ShopController {
     @PostMapping
     @Operation(summary = "Tạo shop mới")
     public ResponseEntity<ApiResponse<ShopResponse>> create(
-            @Valid @RequestBody ShopRequest request) {
+            @Valid @RequestBody ShopRequest request
+            , Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(
                 201, "Yêu cầu đã được chấp",
-                shopService.create(request),
+                shopService.create(request, userDetails),
                 LocalDateTime.now()
         ));
     }
@@ -42,7 +44,8 @@ public class ShopController {
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/my")
     @Operation(summary = "Tìm tất cả các shop theo user")
-    public ResponseEntity<ApiResponse<List<ShopResponse>>> getMyShops(Authentication authentication) {
+    public ResponseEntity<ApiResponse<List<ShopResponse>>> getMyShops(
+            Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(
                 200, "Success",
@@ -54,12 +57,15 @@ public class ShopController {
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     @GetMapping("/{id}")
     @Operation(summary = "Tìm shop theo id")
-    public ResponseEntity<ApiResponse<ShopResponse>> getById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<ShopResponse>> getById(
+            @PathVariable Long id
+            , Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(
-                200, "Success", shopService.getById(id), LocalDateTime.now()));
+                200, "Success", shopService.getById(id, userDetails), LocalDateTime.now()));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{id}")
     @Operation(summary = "Chỉnh sửa thông tin shop theo id")
     public ResponseEntity<ApiResponse<ShopResponse>> update(
@@ -69,7 +75,7 @@ public class ShopController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(
                 200, "Cập nhật thành công",
-                shopService.updateCustom(id, request, userDetails),
+                shopService.update(id, request, userDetails),
                 LocalDateTime.now()
         ));
     }

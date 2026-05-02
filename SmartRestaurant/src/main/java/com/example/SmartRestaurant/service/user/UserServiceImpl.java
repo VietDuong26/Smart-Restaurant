@@ -43,6 +43,7 @@ public class UserServiceImpl implements UserService {
 
     final UserRepository repository;
     final RoleRepository roleRepository;
+
     final PermissionRepository permissionRepository;
     final RefreshTokenRepository refreshTokenRepository;
     final UserMapper mapper;
@@ -50,10 +51,9 @@ public class UserServiceImpl implements UserService {
     final OTPService otpService;
     final EmailService emailService;
     final JwtService jwtService;
+    final ResetPasswordTokenRepository resetPasswordTokenRepository;
     @Value("${refresh-token.expiration}")
     Long refreshExpiration;
-
-    ResetPasswordTokenRepository resetPasswordTokenRepository;
 
     @Override
     public UserResponse create(UserRequest userRequest) {
@@ -167,16 +167,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse addRoles(Long userId, List<Long> roleIds) {
-        UserEntity user = repository.getById(userId);
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+        UserEntity user = repository.findById(userId).orElseThrow(UserNotFoundException::new);
         Set<RoleEntity> roles = user.getRoles();
         for (Long roleId : roleIds) {
-            RoleEntity role = roleRepository.getById(roleId);
-            if (role == null) {
-                throw new InvalidRoleException();
-            }
+            RoleEntity role = roleRepository.findById(roleId).orElseThrow(InvalidRoleException::new);
             if (!roles.contains(role)) {
                 roles.add(role);
             }
@@ -187,16 +181,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse addPermissions(Long userId, List<Long> permissionIds) {
-        UserEntity user = repository.getById(userId);
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+        UserEntity user = repository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
         Set<PermissionEntity> permissions = user.getPermissions();
         for (Long permissionId : permissionIds) {
-            PermissionEntity permission = permissionRepository.getById(permissionId);
-            if (permission == null) {
-                throw new InvalidPermissionException();
-            }
+            PermissionEntity permission = permissionRepository.findById(permissionId)
+                    .orElseThrow(InvalidPermissionException::new);
             if (!permissions.contains(permission)) {
                 permissions.add(permission);
             }
@@ -234,10 +224,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void logout(Long userId) {
-        UserEntity user = repository.getById(userId);
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+        UserEntity user = repository.findById(userId).orElseThrow(UserNotFoundException::new);
         LocalDateTime now = LocalDateTime.now();
         List<RefreshTokenEntity> refreshTokens = refreshTokenRepository.findAllByUser_IdAndDeletedAtIsNull(user.getId());
         refreshTokens.forEach(token -> token.setDeletedAt(now));
@@ -277,11 +264,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePassword(ChangePasswordRequest request) {
         UserEntity user = request.getUser();
-        if (!passwordEncoder.matches(user.getPassword(), request.getOldPassword())) {
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new BadCredentialsException();
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         repository.save(user);
     }
+
 
 }

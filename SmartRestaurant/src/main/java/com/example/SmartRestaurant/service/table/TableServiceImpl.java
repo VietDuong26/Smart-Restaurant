@@ -6,13 +6,13 @@ import com.example.SmartRestaurant.dto.request.TableRequest;
 import com.example.SmartRestaurant.dto.response.TableResponse;
 import com.example.SmartRestaurant.entity.ShopEntity;
 import com.example.SmartRestaurant.entity.TableEntity;
-import com.example.SmartRestaurant.exception.ActionDeniedException;
 import com.example.SmartRestaurant.exception.ShopNotFoundException;
 import com.example.SmartRestaurant.exception.TableNotFoundException;
 import com.example.SmartRestaurant.exception.TableNotFoundInShopException;
 import com.example.SmartRestaurant.mapper.TableMapper;
 import com.example.SmartRestaurant.repository.ShopRepository;
 import com.example.SmartRestaurant.repository.TableRepository;
+import com.example.SmartRestaurant.util.validateownership.OwnerShipValidateService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,31 +28,32 @@ import java.util.stream.Collectors;
 public class TableServiceImpl implements TableService {
     TableRepository repository;
     TableMapper mapper;
+    OwnerShipValidateService ownerShipValidateService;
 
     ShopRepository shopRepository;
 
     @Override
-    public TableResponse create(TableRequest tableRequest) {
-        ShopEntity shop = shopRepository.getById(tableRequest.getShopId());
-        if (shop == null) {
-            throw new ShopNotFoundException();
-        }
+    public TableResponse create(TableRequest tableRequest, CustomUserDetails userDetails) {
+        ShopEntity shop = shopRepository.findById(tableRequest.getShopId())
+                .orElseThrow(ShopNotFoundException::new);//đây là shop trong request, chỉ admin được set thôi
+        boolean isAdmin = ownerShipValidateService.checkAdmin(userDetails);
+        //1.nếu là admin thì tạo bàn cho shop trong request
+        //2. nếu không phải admin thì chỉ tạo trong shop mà thuộc quyền sở hữu của bản thân thôi
         TableEntity table = mapper.toEntity(tableRequest);
         table.setCreatedAt(LocalDateTime.now());
-        table.setShop(shop);
+        table.setShop(isAdmin
+                ? shop
+                : ownerShipValidateService.validateShopOwnership(shop, userDetails));
         return mapper.toResponse(repository.save(table));
     }
 
     @Override
-    public TableResponse update(Long id, TableRequest tableRequest) {
-        TableEntity table = repository.getById(id);
-        if (table == null) {
-            throw new TableNotFoundException();
-        }
-        ShopEntity shop = shopRepository.getById(tableRequest.getShopId());
-        if (shop == null) {
-            throw new ShopNotFoundException();
-        }
+    public TableResponse update(Long id, TableRequest tableRequest, CustomUserDetails userDetails) {
+        ShopEntity shop = shopRepository.findById(tableRequest.getShopId())
+                .orElseThrow(ShopNotFoundException::new);
+        ownerShipValidateService.validateShopOwnership(shop, userDetails);
+        TableEntity table = repository.findById(id)
+                .orElseThrow(TableNotFoundException::new);
         if (!table.getShop().getId().equals(shop.getId())) {
             throw new TableNotFoundInShopException(id, shop.getId());
         }
@@ -67,44 +68,54 @@ public class TableServiceImpl implements TableService {
     }
 
     @Override
-    public void delete(Long id) {
-        TableEntity table = repository.getById(id);
-        if (table == null) {
-            throw new TableNotFoundException();
+    public void delete(Long id, CustomUserDetails userDetails) {
+        TableEntity table = repository.findById(id)
+                .orElseThrow(TableNotFoundException::new);
+
+        boolean isAdmin = ownerShipValidateService.checkAdmin(userDetails);
+        if (!isAdmin) {
+            ownerShipValidateService.validateShopOwnership(table.getShop(), userDetails);
         }
         table.setStatus(TableStatus.OUT_OF_SERVICE);
+        table.setUpdatedAt(LocalDateTime.now());
         repository.save(table);
     }
 
     @Override
-    public TableResponse getById(Long id) {
-        TableEntity table = repository.getById(id);
-        if (table == null) {
-            throw new TableNotFoundException();
-        }
-        return mapper.toResponse(table);
-    }
-
-    @Override
-    public List<TableResponse> getAll() {
+    public TableResponse getById(Long id, CustomUserDetails userDetails) {
         return null;
     }
 
     @Override
+    public List<TableResponse> getAll(CustomUserDetails userDetails) {
+        return null;
+    }
+
+
+    @Override
     public List<TableResponse> getTablesByShopId(Long shopId, CustomUserDetails userDetails) {
-        if (!userDetails.getAuthorities().stream().anyMatch(x -> x.getAuthority().equals("ROLE_ADMIN")
-                || x.getAuthority().equals("ROLE_MANAGER"))) {
-            throw new ActionDeniedException();
-        }
-        ShopEntity shop = shopRepository.getById(shopId);
-        if (shop == null) {
-            throw new ShopNotFoundException();
-        }
-        if (!userDetails.getAuthorities().stream().anyMatch(x -> x.getAuthority().equals("ROLE_ADMIN"))
-                && !shop.getUser().getId().equals(userDetails.getUser().getId())) {
-            throw new ActionDeniedException();
+        ShopEntity shop = shopRepository.findById(shopId)
+                .orElseThrow(ShopNotFoundException::new);
+        boolean isAdmin = ownerShipValidateService.checkAdmin(userDetails);
+        if (!isAdmin) {
+            ownerShipValidateService.validateShopOwnership(shop, userDetails);
         }
         return repository.findByShopId(shopId).stream()
                 .map(x -> mapper.toResponse(x)).collect(Collectors.toList());
+
+    }
+
+    @Override
+    public void updateStatus(Long tableId, TableStatus status, CustomUserDetails userDetails) {
+        TableEntity table = repository.findById(tableId)
+                .orElseThrow(TableNotFoundException::new);
+        boolean isAdmin = ownerShipValidateService.checkAdmin(userDetails);
+        if (!isAdmin) {
+            //kiểm tra bàn của shop này có thuộc sở hữu của manager đang đăng nhập không
+            ownerShipValidateService.validateShopOwnership(table.getShop(), userDetails);
+        }
+        table.setStatus(status);
+        table.setUpdatedAt(LocalDateTime.now());
+        repository.save(table);
     }
 }

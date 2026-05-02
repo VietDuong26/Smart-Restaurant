@@ -52,10 +52,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<RoleResponse> getAllByUserId(Long userId) {
-        UserEntity user = userRepository.getById(userId);
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
         return repository.findByUsersContains(user).stream().map(x -> mapper.toResponse(x)).collect(Collectors.toList());
     }
 }
