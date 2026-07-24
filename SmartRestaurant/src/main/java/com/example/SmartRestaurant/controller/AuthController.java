@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.controller;
 
+import com.example.SmartRestaurant.dto.request.ActivateRequest;
 import com.example.SmartRestaurant.dto.request.RegisterRequest;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import com.example.SmartRestaurant.service.user.UserService;
@@ -48,6 +49,20 @@ public class AuthController {
         return ResponseEntity.status(201).body(new ApiResponse<>(
                 201
                 , "Gửi lại mã OTP thành công.Vui lòng kiểm tra email của bạn"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PostMapping("/activate-account")
+    @Operation(summary = "Kích hoạt tài khoản")
+    ResponseEntity<ApiResponse<?>> activate(
+            @Valid
+            @RequestBody ActivateRequest activateRequest) {
+        userService.activateAccount(activateRequest);
+        return ResponseEntity.status(204).body(new ApiResponse<>(
+                204
+                , "Đã kích hoạt tài khoản thành công"
                 , null
                 , LocalDateTime.now()
         ));

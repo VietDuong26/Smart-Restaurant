@@ -1,10 +1,9 @@
 package com.example.SmartRestaurant.service.otp;
 
+import com.example.SmartRestaurant.common.enums.OTPStatus;
 import com.example.SmartRestaurant.dto.request.MailRequest;
 import com.example.SmartRestaurant.entity.OTPEntity;
-import com.example.SmartRestaurant.exception.NotFoundException;
-import com.example.SmartRestaurant.exception.OTPRateLimitException;
-import com.example.SmartRestaurant.exception.OTPResendLimitExceededException;
+import com.example.SmartRestaurant.exception.*;
 import com.example.SmartRestaurant.repository.OTPRepository;
 import com.example.SmartRestaurant.service.email.EmailService;
 import lombok.AccessLevel;
@@ -28,6 +27,7 @@ public class OTPServiceImplement implements OTPService {
     public void save(OTPEntity otpEntity) {
         otpEntity.setCode(generateOTP());
         otpEntity.setResendCount(0);
+        otpEntity.setStatus(OTPStatus.PENDING);
         repository.save(otpEntity);
         emailService.sendOtpEmail(new MailRequest(
                 otpEntity.getUser().getEmail()
@@ -79,6 +79,22 @@ public class OTPServiceImplement implements OTPService {
                 , oldOTP.getCode()
                 , oldOTP.getUser().getName())
         );
+    }
+
+    @Override
+    public void activate(Long userId, String code) {
+        OTPEntity otpEntity = repository.findByUserId(userId);
+        if (otpEntity == null) {
+            throw new NotFoundException("Mã OTP");
+        }
+        if (!code.equals(otpEntity.getCode())) {
+            throw new InvalidOTPException();
+        }
+        if (!otpEntity.getExpiredAt().isAfter(LocalDateTime.now())) {
+            throw new ExpiredOTPException();
+        }
+        otpEntity.setStatus(OTPStatus.VERIFIED);
+        repository.save(otpEntity);
     }
 
     public String generateOTP() {

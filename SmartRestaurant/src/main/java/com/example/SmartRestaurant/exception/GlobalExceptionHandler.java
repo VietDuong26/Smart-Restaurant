@@ -69,4 +69,23 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(ExpiredOTPException.class)
+    public ResponseEntity<ApiResponse<?>> handleExpiredOTPException(ExpiredOTPException e) {
+        return ResponseEntity.status(400).body(new ApiResponse<>(
+                400
+                , e.getMessage()
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @ExceptionHandler(InvalidOTPException.class)
+    public ResponseEntity<ApiResponse<?>> handleInvalidOTPException(InvalidOTPException e) {
+        return ResponseEntity.status(400).body(new ApiResponse<>(
+                400
+                , e.getMessage()
+                , null
+                , LocalDateTime.now()
+        ));
+    }
 }

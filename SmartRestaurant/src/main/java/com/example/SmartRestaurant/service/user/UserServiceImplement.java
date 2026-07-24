@@ -1,6 +1,7 @@
 package com.example.SmartRestaurant.service.user;
 
 import com.example.SmartRestaurant.common.enums.UserStatus;
+import com.example.SmartRestaurant.dto.request.ActivateRequest;
 import com.example.SmartRestaurant.dto.request.RegisterRequest;
 import com.example.SmartRestaurant.entity.OTPEntity;
 import com.example.SmartRestaurant.entity.UserEntity;
@@ -18,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-import static com.example.SmartRestaurant.validator.AuthValidator.validateRegister;
-import static com.example.SmartRestaurant.validator.AuthValidator.validateResendOTP;
+import static com.example.SmartRestaurant.validator.AuthValidator.*;
 
 @Service
 @RequiredArgsConstructor
@@ -54,5 +54,20 @@ public class UserServiceImplement implements UserService {
             throw new InvalidAccountStatusException();
         }
         otpService.resendOTP(user.getId());
+    }
+
+    @Override
+    public void activateAccount(ActivateRequest activateRequest) {
+        validateActivateAccount(activateRequest);
+        UserEntity user = repository.findByEmail(activateRequest.getEmail());
+        if (user == null) {
+            throw new NotFoundException("Người dùng");
+        }
+        if (!user.getStatus().equals(UserStatus.PENDING)) {
+            throw new InvalidAccountStatusException();
+        }
+        user.setStatus(UserStatus.ACTIVE);
+        repository.save(user);
+        otpService.activate(user.getId(), activateRequest.getCode());
     }
 }

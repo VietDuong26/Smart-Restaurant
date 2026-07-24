@@ -6,4 +6,6 @@ public interface OTPService {
     void save(OTPEntity otpEntity);
 
     void resendOTP(Long userId);
+
+    void activate(Long userId, String code);
 }

@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.validator;
 
+import com.example.SmartRestaurant.dto.request.ActivateRequest;
 import com.example.SmartRestaurant.dto.request.RegisterRequest;
 import com.example.SmartRestaurant.exception.ValidateException;
 
@@ -30,6 +31,15 @@ public final class AuthValidator {
 
         if (!email.trim().endsWith("@gmail.com")) {
             throw new ValidateException("Email không hợp lệ");
+        }
+    }
+
+    public static void validateActivateAccount(ActivateRequest activateRequest) {
+        if (activateRequest.getCode() == null || activateRequest.getCode().isBlank()) {
+            throw new ValidateException("Mã OTP không được bỏ trống");
+        }
+        if (activateRequest.getCode().length() < 6) {
+            throw new ValidateException("Mã OTP không hợp lệ");
         }
     }
 }

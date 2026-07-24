@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.enums.OTPStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +24,11 @@ public class OTPEntity {
     private LocalDateTime lastSentAt;
     private Integer resendCount;
     private LocalDateTime lockedUntil;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OTPStatus status;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
