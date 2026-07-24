@@ -45,6 +45,9 @@ public class UserEntity {
     @Column
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private OTPEntity otp;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

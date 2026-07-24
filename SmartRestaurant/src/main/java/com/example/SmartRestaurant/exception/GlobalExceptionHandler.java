@@ -18,4 +18,14 @@ public class GlobalExceptionHandler {
                 , LocalDateTime.now()
         ));
     }
+
+    @ExceptionHandler(EmailSendException.class)
+    public ResponseEntity<ApiResponse<?>> handleEmailSendException(EmailSendException e) {
+        return ResponseEntity.status(400).body(new ApiResponse<>(
+                500
+                , e.getMessage()
+                , null
+                , LocalDateTime.now()
+        ));
+    }
 }

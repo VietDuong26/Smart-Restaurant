@@ -1,4 +1,4 @@
-package com.example.SmartRestaurant.service;
+package com.example.SmartRestaurant.service.user;
 
 import com.example.SmartRestaurant.dto.request.RegisterRequest;
 
