@@ -22,4 +22,14 @@ public final class AuthValidator {
             throw new ValidateException("Mật khẩu phải có từ 8 kí tự trở lên");
         }
     }
+
+    public static void validateResendOTP(String email) {
+        if (email == null || email.isBlank()) {
+            throw new ValidateException("Email không được bỏ trống");
+        }
+
+        if (!email.trim().endsWith("@gmail.com")) {
+            throw new ValidateException("Email không hợp lệ");
+        }
+    }
 }

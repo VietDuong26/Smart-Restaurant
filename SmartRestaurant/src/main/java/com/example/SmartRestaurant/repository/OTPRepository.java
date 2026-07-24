@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OTPRepository extends JpaRepository<OTPEntity, Long> {
+    OTPEntity findByUserId(Long id);
 }

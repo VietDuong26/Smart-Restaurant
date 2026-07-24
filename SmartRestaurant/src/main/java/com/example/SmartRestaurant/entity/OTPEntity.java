@@ -2,15 +2,17 @@ package com.example.SmartRestaurant.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "tbl_otp")
 public class OTPEntity {
     @Id
@@ -20,6 +22,7 @@ public class OTPEntity {
     private LocalDateTime expiredAt;
     private LocalDateTime lastSentAt;
     private Integer resendCount;
+    private LocalDateTime lockedUntil;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",

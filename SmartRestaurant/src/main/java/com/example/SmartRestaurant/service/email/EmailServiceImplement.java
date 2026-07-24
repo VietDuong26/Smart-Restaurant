@@ -16,9 +16,9 @@ import static com.example.SmartRestaurant.common.Constant.sendOTP;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmailServiceImplement implements EmailService {
-    JavaMailSender mailSender;
+    final JavaMailSender mailSender;
     @Value("${spring.mail.username}")
     String fromMail;
 
