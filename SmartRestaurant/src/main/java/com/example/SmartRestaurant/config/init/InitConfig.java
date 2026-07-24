@@ -15,6 +15,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class InitConfig {
     RoleRepository roleRepository;
 
     PermissionRepository permissionRepository;
+    PasswordEncoder passwordEncoder;
 
     UserRepository userRepository;
     List<String> permissions = List.of(
@@ -65,6 +67,15 @@ public class InitConfig {
                     permissionList.add(permission);
                 }
                 permissionRepository.saveAll(permissionList);
+            }
+            if (userRepository.findByEmail("smartrestaurant130907@gmail.com") == null) {
+                UserEntity admin = new UserEntity();
+                admin.setCreatedAt(LocalDateTime.now());
+                admin.setName("ADMIN");
+                admin.setEmail("smartrestaurant130907@gmail.com");
+                admin.setPassword(passwordEncoder.encode("12345678"));
+                admin.setStatus(UserStatus.ACTIVE);
+                userRepository.save(admin);
             }
         } catch (Exception e) {
             log.error("Init role data failed: " + e.getMessage());

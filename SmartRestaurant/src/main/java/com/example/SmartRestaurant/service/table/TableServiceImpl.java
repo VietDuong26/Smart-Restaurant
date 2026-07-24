@@ -60,9 +60,6 @@ public class TableServiceImpl implements TableService {
         if (tableRequest.getName() != null) {
             table.setName(tableRequest.getName());
         }
-        if (tableRequest.getQrCode() != null) {
-            table.setQrCode(tableRequest.getQrCode());
-        }
         table.setUpdatedAt(LocalDateTime.now());
         return mapper.toResponse(repository.save(table));
     }

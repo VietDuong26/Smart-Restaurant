@@ -57,27 +57,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse create(UserRequest userRequest) {
-        if (repository.findByPhoneNumber(userRequest.getPhoneNumber()) == null) {
-            UserEntity user = mapper.toEntity(userRequest);
-            user.setStatus(UserStatus.PENDING);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setCreatedAt(LocalDateTime.now());
-            user = repository.save(user);
-
-            OTPEntity otp = new OTPEntity();
-            LocalDateTime otpTime = LocalDateTime.now();
-            otp.setOtpToken(otpService.generateOTP());
-            otp.setUser(user);
-            otp.setCreatedAt(otpTime);
-            otp.setExpiredAt(otpTime.plusMinutes(5));
-            otp.setStatus(OTPStatus.PENDING);
-            otpService.create(otp);
-            emailService.sendOtp(user.getEmail(), user.getName(), otp.getOtpToken());
-            return mapper.toResponse(user);
-        } else {
-            throw new DuplicateDataException("Số điện thoại");
+        if (repository.existsByPhoneNumber(userRequest.getPhoneNumber())) {
+            throw new DuplicateDataException("Số diện thoại");
         }
-
+        if (repository.existsByEmail(userRequest.getEmail())) {
+            throw new DuplicateDataException("Email");
+        }
+        UserEntity user = mapper.toEntity(userRequest);
+        user.setStatus(UserStatus.PENDING);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreatedAt(LocalDateTime.now());
+        user = repository.save(user);
+        OTPEntity otp = new OTPEntity();
+        LocalDateTime otpTime = LocalDateTime.now();
+        otp.setOtpToken(otpService.generateOTP());
+        otp.setUser(user);
+        otp.setCreatedAt(otpTime);
+        otp.setExpiredAt(otpTime.plusMinutes(5));
+        otp.setStatus(OTPStatus.PENDING);
+        otpService.create(otp);
+        emailService.sendOtp(user.getEmail(), user.getName(), otp.getOtpToken());
+        return mapper.toResponse(user);
     }
 
     @Override

@@ -7,13 +7,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 @Builder
-public class TableRequest {
-    @NotBlank(message = "Tên bàn không được bỏ trống")
+@NoArgsConstructor
+@AllArgsConstructor
+public class CategoryRequest {
+    @NotBlank(message = "Tên danh mục không được trống")
     private String name;
-    @NotNull(message = "Shop phải tồn tại")
+    private String description;
+    @NotNull(message = "Shop id không được để trống")
     private Long shopId;
+
 }

@@ -13,7 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "tbl_category")
+@Table(name = "tbl_category"
+        , uniqueConstraints = @UniqueConstraint(columnNames = {"shop_id", "name"}))
 @Builder
 public class CategoryEntity {
     @Id

@@ -23,6 +23,8 @@ public class ProductEntity {
     private Float price;
     private String description;
     private String imageUrl;
+    private String imagePublicId;
+
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;

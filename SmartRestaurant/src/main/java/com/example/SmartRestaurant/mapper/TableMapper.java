@@ -3,16 +3,21 @@ package com.example.SmartRestaurant.mapper;
 import com.example.SmartRestaurant.dto.request.TableRequest;
 import com.example.SmartRestaurant.dto.response.TableResponse;
 import com.example.SmartRestaurant.entity.TableEntity;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TableMapper {
+
     public TableEntity toEntity(TableRequest request) {
         if (request == null) return null;
 
         return TableEntity.builder()
                 .name(request.getName())
-                .qrCode(request.getQrCode())
                 .build();
     }
 
@@ -23,7 +28,6 @@ public class TableMapper {
                 .id(table.getId())
                 .name(table.getName())
                 .status(table.getStatus())
-                .qrCode(table.getQrCode())
                 .build();
     }
 }

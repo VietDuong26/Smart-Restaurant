@@ -1,17 +1,16 @@
 package com.example.SmartRestaurant.dto.response;
 
-import com.example.SmartRestaurant.common.TableStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 @Builder
-public class TableResponse {
+@NoArgsConstructor
+@AllArgsConstructor
+public class CategoryResponse {
     private Long id;
     private String name;
-    private TableStatus status;
+    private String description;
 }

@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -15,6 +17,39 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    // xử lý ngoại lệ trường hợp không gửi body request
+    public ResponseEntity<ApiResponse<Object>> handleUnreadableBody(
+            HttpMessageNotReadableException e
+    ) {
+        return ResponseEntity.badRequest().body(
+                new ApiResponse<>(
+                        400,
+                        "Request body bị thiếu hoặc JSON không đúng định dạng",
+                        null,
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    // xử lý ngoại lệ ở validation bằng cách bắn ra message
+    public ResponseEntity<ApiResponse<Object>> handleValidation(
+            MethodArgumentNotValidException e
+    ) {
+        String message = e.getBindingResult()
+                .getFieldError()
+                .getDefaultMessage();
+
+        return ResponseEntity.badRequest().body(
+                new ApiResponse<>(
+                        400,
+                        message,
+                        null,
+                        LocalDateTime.now()
+                )
+        );
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiResponse<Object>> handleUserNotFound(UserNotFoundException e) {
@@ -81,17 +116,6 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(429, e.getMessage(), null, LocalDateTime.now()));
     }
 
-    @ExceptionHandler(AppException.class)
-    public ResponseEntity<ApiResponse<Object>> handleAppException(AppException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiResponse<>(500, e.getMessage(), null, LocalDateTime.now()));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleGeneral(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiResponse<>(500, "Internal error", null, LocalDateTime.now()));
-    }
 
     @ExceptionHandler(ShopBlockedException.class)
     public ResponseEntity<ApiResponse<Object>> handleShopBlocked(ShopBlockedException e) {

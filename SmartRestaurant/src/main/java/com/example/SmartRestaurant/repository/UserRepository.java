@@ -12,6 +12,10 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    boolean existsByEmail(String email);
+
     @Query(value = "select u from UserEntity u " +
             "join fetch u.roles " +
             "join fetch u.permissions " +

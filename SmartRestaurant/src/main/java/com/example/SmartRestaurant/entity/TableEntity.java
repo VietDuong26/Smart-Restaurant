@@ -20,7 +20,6 @@ public class TableEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String qrCode;
     @Enumerated(EnumType.STRING)
     private TableStatus status;
     private LocalDateTime createdAt;

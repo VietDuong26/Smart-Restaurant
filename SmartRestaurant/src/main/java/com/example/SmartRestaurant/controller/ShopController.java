@@ -35,7 +35,7 @@ public class ShopController {
             , Authentication authentication) {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(
-                201, "Yêu cầu đã được chấp",
+                201, "Yêu cầu đã được chấp nhận",
                 shopService.create(request, userDetails),
                 LocalDateTime.now()
         ));

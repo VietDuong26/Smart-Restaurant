@@ -1,6 +1,5 @@
 package com.example.SmartRestaurant.dto.response;
 
-import com.example.SmartRestaurant.common.TableStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class TableResponse {
-    private Long id;
-    private String name;
-    private TableStatus status;
+public class ImageResponse {
+    private String url;
+    private String publicId;
 }
