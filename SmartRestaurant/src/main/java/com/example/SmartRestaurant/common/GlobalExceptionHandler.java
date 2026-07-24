@@ -90,6 +90,12 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(400, e.getMessage(), null, LocalDateTime.now()));
     }
 
+    @ExceptionHandler(OTPCreateException.class)
+    public ResponseEntity<ApiResponse<Object>> handleOTPCreate(OTPCreateException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiResponse<>(500, e.getMessage(), null, LocalDateTime.now()));
+    }
+
     @ExceptionHandler(InvalidOTPException.class)
     public ResponseEntity<ApiResponse<Object>> handleInvalidOTP(InvalidOTPException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

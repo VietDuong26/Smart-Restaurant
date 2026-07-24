@@ -16,6 +16,8 @@ import com.example.SmartRestaurant.mapper.UserMapper;
 import com.example.SmartRestaurant.repository.*;
 import com.example.SmartRestaurant.service.otp.OTPService;
 import com.example.SmartRestaurant.util.mail.EmailService;
+import com.example.SmartRestaurant.util.requestutil.EmailUtil;
+import com.example.SmartRestaurant.util.requestutil.PhoneNumberUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -57,8 +59,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse create(UserRequest userRequest) {
+        userRequest.setPhoneNumber(PhoneNumberUtil.normalizePhoneNumber(userRequest.getPhoneNumber()));
+        userRequest.setEmail(EmailUtil.normalizeEmail(userRequest.getEmail()));
         if (repository.existsByPhoneNumber(userRequest.getPhoneNumber())) {
-            throw new DuplicateDataException("Số diện thoại");
+            throw new DuplicateDataException("Số điện thoại");
         }
         if (repository.existsByEmail(userRequest.getEmail())) {
             throw new DuplicateDataException("Email");

@@ -72,6 +72,7 @@ public class InitConfig {
                 UserEntity admin = new UserEntity();
                 admin.setCreatedAt(LocalDateTime.now());
                 admin.setName("ADMIN");
+                admin.setPhoneNumber("0912345678");
                 admin.setEmail("smartrestaurant130907@gmail.com");
                 admin.setPassword(passwordEncoder.encode("12345678"));
                 admin.setStatus(UserStatus.ACTIVE);

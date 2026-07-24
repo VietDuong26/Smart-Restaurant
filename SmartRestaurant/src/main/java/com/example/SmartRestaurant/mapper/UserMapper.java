@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
+
+
     public UserEntity toEntity(UserRequest request) {
         if (request == null) return null;
 
@@ -33,5 +35,5 @@ public class UserMapper {
                 .build();
     }
 
-    
+
 }

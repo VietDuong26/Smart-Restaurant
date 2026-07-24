@@ -40,7 +40,7 @@ public class OTPServiceImpl implements OTPService {
         try {
             repository.save(otpEntity);
         } catch (Exception e) {
-            System.out.println("OTP bug:" + e.getMessage());
+            throw new OTPCreateException(e.getMessage());
         }
     }
 
