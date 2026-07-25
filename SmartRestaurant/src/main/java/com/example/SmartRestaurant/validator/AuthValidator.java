@@ -1,8 +1,10 @@
 package com.example.SmartRestaurant.validator;
 
 import com.example.SmartRestaurant.dto.request.ActivateRequest;
+import com.example.SmartRestaurant.dto.request.LoginRequest;
 import com.example.SmartRestaurant.dto.request.RegisterRequest;
 import com.example.SmartRestaurant.exception.ValidateException;
+import jakarta.validation.ValidationException;
 
 public final class AuthValidator {
     public static void validateRegister(RegisterRequest request) {
@@ -40,6 +42,16 @@ public final class AuthValidator {
         }
         if (activateRequest.getCode().length() < 6) {
             throw new ValidateException("Mã OTP không hợp lệ");
+        }
+    }
+
+    public static void validateLogin(LoginRequest loginRequest) {
+        if (loginRequest.getEmail() == null || loginRequest.getEmail().isBlank()) {
+            throw new ValidationException("Email không được để trống");
+        }
+
+        if (loginRequest.getPassword() == null || loginRequest.getPassword().isBlank()) {
+            throw new ValidationException("Mật khẩu không được để trống");
         }
     }
 }

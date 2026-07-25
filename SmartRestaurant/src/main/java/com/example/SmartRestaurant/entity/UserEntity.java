@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -27,7 +28,7 @@ public class UserEntity {
     @Column(length = 50)
     private String name;
 
-    @Column(nullable = false, length = 8)
+    @Column(nullable = false)
     private String password;
 
     @Column(length = 255)
@@ -43,8 +44,19 @@ public class UserEntity {
     @Column
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private OTPEntity otp;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ShopEntity> shops;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<RoleEntity> roles;
 
     @PrePersist
     protected void onCreate() {

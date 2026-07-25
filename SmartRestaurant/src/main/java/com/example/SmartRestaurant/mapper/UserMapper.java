@@ -10,7 +10,6 @@ public class UserMapper {
         return UserEntity.builder()
                 .name(registerRequest.getName())
                 .email(registerRequest.getEmail())
-                .password(registerRequest.getPassword())
                 .phoneNumber(registerRequest.getPhoneNumber())
                 .build();
     }

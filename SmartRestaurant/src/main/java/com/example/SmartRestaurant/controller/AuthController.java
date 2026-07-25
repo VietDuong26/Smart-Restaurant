@@ -1,8 +1,10 @@
 package com.example.SmartRestaurant.controller;
 
 import com.example.SmartRestaurant.dto.request.ActivateRequest;
+import com.example.SmartRestaurant.dto.request.LoginRequest;
 import com.example.SmartRestaurant.dto.request.RegisterRequest;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
+import com.example.SmartRestaurant.dto.response.LoginResponse;
 import com.example.SmartRestaurant.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -64,6 +66,19 @@ public class AuthController {
                 204
                 , "Đã kích hoạt tài khoản thành công"
                 , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "Đăng nhập")
+    ResponseEntity<ApiResponse<LoginResponse>> login(
+            @Valid
+            @RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200
+                , "Đăng nhập tài khoản thành công"
+                , userService.login(loginRequest)
                 , LocalDateTime.now()
         ));
     }
