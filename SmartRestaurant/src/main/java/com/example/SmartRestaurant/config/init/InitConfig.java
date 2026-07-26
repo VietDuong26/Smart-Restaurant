@@ -21,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Configuration
 @RequiredArgsConstructor
@@ -131,15 +130,6 @@ public class InitConfig {
         //mặc định các permissions như trên
         //kiểm tra mỗi lần có role hoặc permission bị xóa
 
-        for (String roleName : roles
-        ) {
-            if (roleRepository.findByName(roleName) == null) {
-                RoleEntity role = new RoleEntity();
-                role.setName(roleName);
-                roleRepository.save(role);
-            }
-        }
-        List<RoleEntity> roleList = roleRepository.findAll();
 
         for (String permissionName : permissions
         ) {
@@ -150,11 +140,15 @@ public class InitConfig {
             }
         }
         List<PermissionEntity> permissionList = permissionRepository.findAll();
-
-        //gán tất cả các permission có sẵn cho admin và owner
-        for (RoleEntity role : roleList) {
-            role.setPermissions(new HashSet<>(permissionList));
-            roleRepository.save(role);
+        for (String roleName : roles
+        ) {
+            if (roleRepository.findByName(roleName) == null) {
+                RoleEntity role = new RoleEntity();
+                role.setName(roleName);
+                //gán tất cả các permission có sẵn cho admin và owner
+                role.setPermissions(new HashSet<>(permissionList));
+                roleRepository.save(role);
+            }
         }
     }
 
@@ -167,7 +161,7 @@ public class InitConfig {
             admin.setName("ADMIN");
             admin.setStatus(UserStatus.ACTIVE);
             admin.setType(AccountType.ADMIN);
-            admin.setRoles(Set.of(roleRepository.findByName("ROLE_ADMIN")));
+            admin.setRoles(new HashSet<>(List.of(roleRepository.findByName("ROLE_ADMIN"))));
             userRepository.save(admin);
         }
     }
