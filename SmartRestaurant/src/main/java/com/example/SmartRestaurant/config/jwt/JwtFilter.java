@@ -3,6 +3,7 @@ package com.example.SmartRestaurant.config.jwt;
 import com.example.SmartRestaurant.config.userdetails.CustomUserDetails;
 import com.example.SmartRestaurant.exception.ExpiredJwtTokenException;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -12,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @Component
 @AllArgsConstructor
@@ -25,34 +28,24 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) {
-        try {
-            String authHeader = request.getHeader("Authorization");
-
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7);
-
-                String username = jwtService.extractUsername(token);
-
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                    CustomUserDetails userDetails = (CustomUserDetails) userDetailService.loadUserByUsername(username);
-
-                    if (jwtService.validateToken(token, userDetails)) {
-                        UsernamePasswordAuthenticationToken authToken =
-                                new UsernamePasswordAuthenticationToken(
-                                        userDetails, null, userDetails.getAuthorities());
-
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-                    } else {
-                        throw new ExpiredJwtTokenException();
-                    }
+                                    FilterChain filterChain) throws ServletException, IOException {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            String username = jwtService.extractAccessUsername(token);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                CustomUserDetails userDetails =
+                        (CustomUserDetails) userDetailService.loadUserByUsername(username);
+                if (jwtService.validateAccessToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else {
+                    throw new ExpiredJwtTokenException();
                 }
             }
-
-            filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
         }
+        filterChain.doFilter(request, response);
     }
 }

@@ -4,6 +4,7 @@ import com.example.SmartRestaurant.common.enums.AccountType;
 import com.example.SmartRestaurant.common.enums.UserStatus;
 import com.example.SmartRestaurant.config.jwt.JwtService;
 import com.example.SmartRestaurant.config.userdetails.CustomUserDetails;
+import com.example.SmartRestaurant.config.userdetails.CustomUserDetailsService;
 import com.example.SmartRestaurant.dto.request.ActivateRequest;
 import com.example.SmartRestaurant.dto.request.LoginRequest;
 import com.example.SmartRestaurant.dto.request.RegisterRequest;
@@ -21,8 +22,6 @@ import com.example.SmartRestaurant.service.otp.OTPService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,6 +50,8 @@ public class UserServiceImplement implements UserService {
     PasswordEncoder passwordEncoder;
 
     JwtService jwtService;
+
+    CustomUserDetailsService userDetailsService;
 
     @Override
     public void register(RegisterRequest registerRequest) {
@@ -114,16 +115,14 @@ public class UserServiceImplement implements UserService {
                     new SimpleGrantedAuthority(role.getName())
             );
 
-
             for (PermissionEntity permission : role.getPermissions()) {
                 authorities.add(
                         new SimpleGrantedAuthority(permission.getName())
                 );
             }
         }
-        CustomUserDetails userDetails = new CustomUserDetails(user);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        CustomUserDetails userDetails =
+                (CustomUserDetails) userDetailsService.loadUserByUsername(user.getEmail());
         String accessToken = jwtService.generateAccessToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
         return LoginResponse.builder()
@@ -148,8 +147,7 @@ public class UserServiceImplement implements UserService {
     @Override
     public String refresh(String refreshToken) {
         String email = jwtService.extractRefreshUsername(refreshToken);
-        UserEntity user = repository.findByEmailHasRoleAndPermission(email);
-        CustomUserDetails userDetails = new CustomUserDetails(user);
+        CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(email);
         if (!jwtService.validateRefreshToken(refreshToken, userDetails)) {
             throw new ExpiredJwtTokenException();
         }

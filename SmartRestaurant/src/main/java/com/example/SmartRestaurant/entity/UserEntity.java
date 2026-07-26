@@ -43,11 +43,6 @@ public class UserEntity {
     @Column(nullable = false)
     private AccountType type;//sau này sẽ dựa vào đây có cho tạo shop hay không
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column
-    private LocalDateTime updatedAt;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private OTPEntity otp;
@@ -62,6 +57,12 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roles;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {

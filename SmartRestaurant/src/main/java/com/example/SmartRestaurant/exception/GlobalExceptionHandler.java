@@ -2,6 +2,7 @@ package com.example.SmartRestaurant.exception;
 
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -84,6 +85,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(401).body(new ApiResponse<>(
                 401
                 , e.getMessage()
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<?>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        return ResponseEntity.status(400).body(new ApiResponse<>(
+                400
+                , "Thời gian phải có định dạng HH:mm"
                 , null
                 , LocalDateTime.now()
         ));

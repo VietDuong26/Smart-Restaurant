@@ -1,6 +1,9 @@
 package com.example.SmartRestaurant.config.userdetails;
 
+import com.example.SmartRestaurant.common.enums.UserStatus;
 import com.example.SmartRestaurant.entity.UserEntity;
+import com.example.SmartRestaurant.exception.InvalidAccountStatusException;
+import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByEmailHasRoleAndPermission(email);
+        if (user == null) {
+            throw new NotFoundException("Người dùng");
+        }
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new InvalidAccountStatusException();
+        }
         return new CustomUserDetails(user);
     }
 }

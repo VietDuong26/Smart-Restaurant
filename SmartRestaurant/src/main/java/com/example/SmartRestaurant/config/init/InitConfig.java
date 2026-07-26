@@ -129,8 +129,7 @@ public class InitConfig {
         //mặc định 2 role admin và owner
         //mặc định các permissions như trên
         //kiểm tra mỗi lần có role hoặc permission bị xóa
-
-
+        
         for (String permissionName : permissions
         ) {
             if (!permissionRepository.existsByName(permissionName)) {
