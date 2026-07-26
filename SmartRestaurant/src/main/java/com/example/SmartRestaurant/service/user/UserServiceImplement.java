@@ -124,7 +124,7 @@ public class UserServiceImplement implements UserService {
         CustomUserDetails userDetails = new CustomUserDetails(user);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String accessToken = jwtService.generateToken(userDetails);
+        String accessToken = jwtService.generateAccessToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
         return LoginResponse.builder()
                 .userId(user.getId())
@@ -147,13 +147,13 @@ public class UserServiceImplement implements UserService {
 
     @Override
     public String refresh(String refreshToken) {
-        String email = jwtService.extractUsername(refreshToken);
+        String email = jwtService.extractRefreshUsername(refreshToken);
         UserEntity user = repository.findByEmailHasRoleAndPermission(email);
         CustomUserDetails userDetails = new CustomUserDetails(user);
-        if (!jwtService.validateToken(refreshToken, userDetails)) {
+        if (!jwtService.validateRefreshToken(refreshToken, userDetails)) {
             throw new ExpiredJwtTokenException();
         }
-        String newAccessToken = jwtService.generateToken(userDetails);
+        String newAccessToken = jwtService.generateAccessToken(userDetails);
         return newAccessToken;
     }
 }
