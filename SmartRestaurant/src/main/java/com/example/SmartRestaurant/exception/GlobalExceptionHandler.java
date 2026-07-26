@@ -71,8 +71,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpiredOTPException.class)
     public ResponseEntity<ApiResponse<?>> handleExpiredOTPException(ExpiredOTPException e) {
-        return ResponseEntity.status(400).body(new ApiResponse<>(
-                400
+        return ResponseEntity.status(401).body(new ApiResponse<>(
+                401
                 , e.getMessage()
                 , null
                 , LocalDateTime.now()
@@ -81,8 +81,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidOTPException.class)
     public ResponseEntity<ApiResponse<?>> handleInvalidOTPException(InvalidOTPException e) {
-        return ResponseEntity.status(400).body(new ApiResponse<>(
-                400
+        return ResponseEntity.status(401).body(new ApiResponse<>(
+                401
                 , e.getMessage()
                 , null
                 , LocalDateTime.now()

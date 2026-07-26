@@ -1,11 +1,12 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.enums.AccountType;
 import com.example.SmartRestaurant.common.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -38,6 +39,10 @@ public class UserEntity {
     @Column(nullable = false)
     private UserStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountType type;//sau này sẽ dựa vào đây có cho tạo shop hay không
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -48,7 +53,7 @@ public class UserEntity {
     private OTPEntity otp;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<ShopEntity> shops;
+    private Set<ShopEntity> shops;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -56,7 +61,7 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<RoleEntity> roles;
+    private Set<RoleEntity> roles;
 
     @PrePersist
     protected void onCreate() {

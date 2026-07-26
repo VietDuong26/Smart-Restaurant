@@ -15,4 +15,6 @@ public class LoginResponse {
     private String name;
 
     private String accessToken;
+
+    private String refreshToken;
 }

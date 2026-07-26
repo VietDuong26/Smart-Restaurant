@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -20,9 +20,6 @@ public class PermissionEntity {
     private Long id;
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "role_permission"
-            , joinColumns = @JoinColumn(name = "role_id")
-            , inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private List<RoleEntity> roles;
+    @ManyToMany(mappedBy = "permissions")
+    private Set<RoleEntity> roles;
 }

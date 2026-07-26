@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.config.jwt;
 
+import com.example.SmartRestaurant.config.userdetails.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,6 +23,10 @@ public class JwtService {
     String secretToken;
     @Value("${jwt.expiration}")
     Long expiration;
+    @Value("${refresh-token.secret-key}")
+    String refreshSecretToken;
+    @Value("${refresh-token.expiration}")
+    Long refreshExpiration;
 
 
     public String generateToken(UserDetails userDetails) {
@@ -34,12 +39,23 @@ public class JwtService {
 
         List<String> permissions = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .filter(auth -> !auth.startsWith("ROLE_"))
+                .filter(auth -> auth.startsWith("PERM_"))
                 .toList();
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("roles", roles)
                 .claim("permissions", permissions)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    public String generateRefreshToken(CustomUserDetails userDetails) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expiration);
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
@@ -72,4 +88,6 @@ public class JwtService {
         byte[] keyBytes = Base64.getDecoder().decode(secretToken);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+
 }

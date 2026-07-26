@@ -1,102 +1,111 @@
 package com.example.SmartRestaurant.config.init;
 
 
+import com.example.SmartRestaurant.common.enums.AccountType;
+import com.example.SmartRestaurant.common.enums.UserStatus;
 import com.example.SmartRestaurant.entity.PermissionEntity;
 import com.example.SmartRestaurant.entity.RoleEntity;
+import com.example.SmartRestaurant.entity.UserEntity;
 import com.example.SmartRestaurant.repository.PermissionRepository;
 import com.example.SmartRestaurant.repository.RoleRepository;
+import com.example.SmartRestaurant.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Configuration
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class InitConfig {
+
     RoleRepository roleRepository;
 
     PermissionRepository permissionRepository;
-    //    PasswordEncoder passwordEncoder;
-//
-//    UserRepository userRepository;
+    PasswordEncoder passwordEncoder;
+
+    UserRepository userRepository;
     List<String> permissions = List.of(
             // ================= MENU =================
-            "MENU_VIEW",
-            "MENU_ORDER",
-            "MENU_DISCOUNT",
-            "MENU_CANCEL_ITEM",
-            "MENU_GIFT_ITEM",
-            "MENU_TRANSFER_TABLE",
-            "MENU_MERGE_TABLE",
-            "MENU_SEPARATE_ORDER",
-            "MENU_CHANGE_PRICE",
+            "PERM_MENU_VIEW",
+            "PERM_MENU_ORDER",
+            "PERM_MENU_DISCOUNT",
+            "PERM_MENU_CANCEL_ITEM",
+            "PERM_MENU_GIFT_ITEM",
+            "PERM_MENU_TRANSFER_TABLE",
+            "PERM_MENU_MERGE_TABLE",
+            "PERM_MENU_SEPARATE_ORDER",
+            "PERM_MENU_CHANGE_PRICE",
 
             // ================= ORDER =================
-            "ORDER_VIEW",
-            "ORDER_PRINT",
-            "ORDER_ACCEPT",
-            "ORDER_DELETE",
-            "ORDER_CANCEL",
-            "ORDER_UPDATE",
-            "ORDER_PAYMENT",
-            "ORDER_CHANGE_STATUS",
-            "ORDER_INVOICE",
+            "PERM_ORDER_VIEW",
+            "PERM_ORDER_PRINT",
+            "PERM_ORDER_ACCEPT",
+            "PERM_ORDER_DELETE",
+            "PERM_ORDER_CANCEL",
+            "PERM_ORDER_UPDATE",
+            "PERM_ORDER_PAYMENT",
+            "PERM_ORDER_CHANGE_STATUS",
+            "PERM_ORDER_INVOICE",
 
             // ================= SHOP =================
-            "SHOP_SETTING",
+            "PERM_SHOP_SETTING",
 
             // ================= PRODUCT =================
-            "PRODUCT_SETTING",
+            "PERM_PRODUCT_SETTING",
 
             // ================= INGREDIENT =================
-            "INGREDIENT_SETTING",
+            "PERM_INGREDIENT_SETTING",
 
             // ================= INVENTORY =================
-            "INVENTORY_SETTING",
+            "PERM_INVENTORY_SETTING",
 
             // ================= EMPLOYEE =================
-            "EMPLOYEE_SETTING",
+            "PERM_EMPLOYEE_SETTING",
 
             // ================= FINANCE =================
-            "FINANCE_SETTING",
+            "PERM_FINANCE_SETTING",
 
             // ================= ATTENDANCE =================
-            "ATTENDANCE_SETTING",
+            "PERM_ATTENDANCE_SETTING",
 
             // ================= MEMBER =================
-            "MEMBER_SETTING",
+            "PERM_MEMBER_SETTING",
 
             // ================= ROLE =================
-            "ROLE_SETTING",
+            "PERM_ROLE_SETTING",
 
             // ================= HARDWARE =================
-            "HARDWARE_SETTING",
+            "PERM_HARDWARE_SETTING",
 
             // ================= REPORT =================
-            "REPORT_DAILY_BUSINESS",
-            "REPORT_DAILY_STORE_RANKING",
-            "REPORT_DAILY_ORDER_SUMMARY",
-            "REPORT_DAILY_ORDER_RANKING",
-            "REPORT_DAILY_ATTENDANCE",
-            "REPORT_WEEKLY_BUSINESS_RANKING",
-            "REPORT_MONTHLY_TARGET",
-            "REPORT_MONTHLY_PROFIT",
-            "REPORT_DAILY_INVENTORY",
-            "REPORT_DAILY_SHIFT",
-            "REPORT_CATEGORY",
-            "REPORT_DISCOUNT",
-            "REPORT_DEVICE",
+            "PERM_REPORT_DAILY_BUSINESS",
+            "PERM_REPORT_DAILY_STORE_RANKING",
+            "PERM_REPORT_DAILY_ORDER_SUMMARY",
+            "PERM_REPORT_DAILY_ORDER_RANKING",
+            "PERM_REPORT_DAILY_ATTENDANCE",
+            "PERM_REPORT_WEEKLY_BUSINESS_RANKING",
+            "PERM_REPORT_MONTHLY_TARGET",
+            "PERM_REPORT_MONTHLY_PROFIT",
+            "PERM_REPORT_DAILY_INVENTORY",
+            "PERM_REPORT_DAILY_SHIFT",
+            "PERM_REPORT_CATEGORY",
+            "PERM_REPORT_DISCOUNT",
+            "PERM_REPORT_DEVICE",
+
             // ================= OTHER =================
-            "SHIFT_HANDOVER",
-            "ATTENDANCE_QR_SCAN"
+            "PERM_SHIFT_HANDOVER",
+            "PERM_ATTENDANCE_QR_SCAN"
     );
     List<String> roles = List.of(
             "ROLE_ADMIN"
@@ -104,48 +113,62 @@ public class InitConfig {
     );
 
     @Bean
-    CommandLineRunner init() {
-        try {
-            List<RoleEntity> roleList = new ArrayList<>();
-            List<PermissionEntity> permissionList = new ArrayList<>();
-            //mặc định 2 role admin và owner
-            //mặc định các permissions như trên
-            //kiểm tra mỗi lần có role hoặc permission bị xóa
-            if (!roleRepository.existsByNameIn(roles)) {
-                for (String roleName : roles
-                ) {
-                    RoleEntity role = new RoleEntity();
-                    role.setName(roleName);
-                    roleList.add(role);
-                }
-                roleRepository.saveAll(roleList);
-            }
-            if (!permissionRepository.existsByNameIn(permissions)) {
-                for (String permissionName : permissions
-                ) {
-                    PermissionEntity permission = new PermissionEntity();
-                    permission.setName(permissionName);
-                    permissionList.add(permission);
-                }
-                permissionRepository.saveAll(permissionList);
-            }
-//            if (userRepository.findByEmail("smartrestaurant130907@gmail.com") == null) {
-//                UserEntity admin = new UserEntity();
-//                admin.setCreatedAt(LocalDateTime.now());
-//                admin.setName("ADMIN");
-//                admin.setPhoneNumber("0912345678");
-//                admin.setEmail("smartrestaurant130907@gmail.com");
-//                admin.setPassword(passwordEncoder.encode("12345678"));
-//                admin.setStatus(UserStatus.ACTIVE);
-//                userRepository.save(admin);
-//            }
-        } catch (Exception e) {
-            log.error("Init role data failed: " + e.getMessage());
-        }
+    CommandLineRunner init(@Value("${admin.email}") String adminEmail,
+                           @Value("${admin.password}") String adminPassword) {
         return args -> {
+            try {
+                initRoleAndPermission();
+                initAdmin(adminEmail, adminPassword);
+            } catch (Exception e) {
+                log.error("Init role data failed: " + e.getMessage());
+            }
             log.info("Init data finished");
         };
     }
 
+    private void initRoleAndPermission() {
+        //mặc định 2 role admin và owner
+        //mặc định các permissions như trên
+        //kiểm tra mỗi lần có role hoặc permission bị xóa
 
+        for (String roleName : roles
+        ) {
+            if (roleRepository.findByName(roleName) == null) {
+                RoleEntity role = new RoleEntity();
+                role.setName(roleName);
+                roleRepository.save(role);
+            }
+        }
+        List<RoleEntity> roleList = roleRepository.findAll();
+
+        for (String permissionName : permissions
+        ) {
+            if (!permissionRepository.existsByName(permissionName)) {
+                PermissionEntity permission = new PermissionEntity();
+                permission.setName(permissionName);
+                permissionRepository.save(permission);
+            }
+        }
+        List<PermissionEntity> permissionList = permissionRepository.findAll();
+
+        //gán tất cả các permission có sẵn cho admin và owner
+        for (RoleEntity role : roleList) {
+            role.setPermissions(new HashSet<>(permissionList));
+            roleRepository.save(role);
+        }
+    }
+
+    private void initAdmin(String adminEmail
+            , String adminPassword) {
+        if (userRepository.findByEmail(adminEmail) == null) {
+            UserEntity admin = new UserEntity();
+            admin.setEmail(adminEmail);
+            admin.setPassword(passwordEncoder.encode(adminPassword));
+            admin.setName("ADMIN");
+            admin.setStatus(UserStatus.ACTIVE);
+            admin.setType(AccountType.ADMIN);
+            admin.setRoles(Set.of(roleRepository.findByName("ROLE_ADMIN")));
+            userRepository.save(admin);
+        }
+    }
 }

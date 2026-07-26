@@ -32,7 +32,7 @@ public class CustomUserDetails implements UserDetails {
         Set<GrantedAuthority> authorities = new HashSet<>();
         for (RoleEntity role : user.getRoles()) {
             authorities.add(
-                    new SimpleGrantedAuthority("ROLE_" + role.getName())
+                    new SimpleGrantedAuthority(role.getName())
             );
 
 
@@ -53,7 +53,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getPhoneNumber();
+        return user.getEmail();
     }
 
     @Override

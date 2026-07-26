@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.config.jwt;
 
+import com.example.SmartRestaurant.config.userdetails.CustomUserDetails;
 import com.example.SmartRestaurant.exception.ExpiredJwtTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,8 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtFilter extends OncePerRequestFilter {
+    //mỗi request khi vào sẽ phải đi màng lọc này đầu tiên
     JwtService jwtService;
-
 
     com.example.SmartRestaurant.config.userdetails.CustomUserDetailsService userDetailService;
 
@@ -36,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                    UserDetails userDetails = userDetailService.loadUserByUsername(username);
+                    CustomUserDetails userDetails = (CustomUserDetails) userDetailService.loadUserByUsername(username);
 
                     if (jwtService.validateToken(token, userDetails)) {
                         UsernamePasswordAuthenticationToken authToken =

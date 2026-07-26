@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.service.user;
 
+import com.example.SmartRestaurant.common.enums.AccountType;
 import com.example.SmartRestaurant.common.enums.UserStatus;
 import com.example.SmartRestaurant.config.jwt.JwtService;
 import com.example.SmartRestaurant.config.userdetails.CustomUserDetails;
@@ -7,15 +8,14 @@ import com.example.SmartRestaurant.dto.request.ActivateRequest;
 import com.example.SmartRestaurant.dto.request.LoginRequest;
 import com.example.SmartRestaurant.dto.request.RegisterRequest;
 import com.example.SmartRestaurant.dto.response.LoginResponse;
+import com.example.SmartRestaurant.dto.response.UserResponse;
 import com.example.SmartRestaurant.entity.OTPEntity;
 import com.example.SmartRestaurant.entity.PermissionEntity;
 import com.example.SmartRestaurant.entity.RoleEntity;
 import com.example.SmartRestaurant.entity.UserEntity;
-import com.example.SmartRestaurant.exception.InvalidAccountStatusException;
-import com.example.SmartRestaurant.exception.NotFoundException;
-import com.example.SmartRestaurant.exception.OTPResendLimitExceededException;
-import com.example.SmartRestaurant.exception.UnauthorizedException;
+import com.example.SmartRestaurant.exception.*;
 import com.example.SmartRestaurant.mapper.UserMapper;
+import com.example.SmartRestaurant.repository.RoleRepository;
 import com.example.SmartRestaurant.repository.UserRepository;
 import com.example.SmartRestaurant.service.otp.OTPService;
 import lombok.AccessLevel;
@@ -42,6 +42,8 @@ import static com.example.SmartRestaurant.validator.AuthValidator.*;
 @Transactional(noRollbackFor = OTPResendLimitExceededException.class)
 public class UserServiceImplement implements UserService {
     UserRepository repository;
+
+    RoleRepository roleRepository;
     UserMapper mapper;
 
     OTPService otpService;
@@ -56,6 +58,8 @@ public class UserServiceImplement implements UserService {
         UserEntity user = mapper.toEntity(registerRequest);
         user.setStatus(UserStatus.PENDING);
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setType(AccountType.OWNER);
+        user.setRoles(Set.of(roleRepository.findByName("ROLE_OWNER")));
         UserEntity savedUser = repository.save(user);
         OTPEntity otpEntity = new OTPEntity();
         otpEntity.setUser(savedUser);
@@ -107,7 +111,7 @@ public class UserServiceImplement implements UserService {
         Set<GrantedAuthority> authorities = new HashSet<>();
         for (RoleEntity role : user.getRoles()) {
             authorities.add(
-                    new SimpleGrantedAuthority("ROLE_" + role.getName())
+                    new SimpleGrantedAuthority(role.getName())
             );
 
 
@@ -121,15 +125,35 @@ public class UserServiceImplement implements UserService {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String accessToken = jwtService.generateToken(userDetails);
-//        RefreshTokenEntity refreshToken = new RefreshTokenEntity();
-//        refreshToken.setValue(UUID.randomUUID().toString());
-//        refreshToken.setUser(user);
-//        refreshToken.setExpiredAt(LocalDateTime.now().plusDays(refreshExpiration));
-//        refreshTokenRepository.save(refreshToken);
+        String refreshToken = jwtService.generateRefreshToken(userDetails);
         return LoginResponse.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
+                .name(user.getName())
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
+    }
+
+    @Override
+    public UserResponse getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = repository.findByEmail(email);
+        if (user == null) {
+            throw new NotFoundException("Người dùng");
+        }
+        return mapper.toResponse(user);
+    }
+
+    @Override
+    public String refresh(String refreshToken) {
+        String email = jwtService.extractUsername(refreshToken);
+        UserEntity user = repository.findByEmailHasRoleAndPermission(email);
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+        if (!jwtService.validateToken(refreshToken, userDetails)) {
+            throw new ExpiredJwtTokenException();
+        }
+        String newAccessToken = jwtService.generateToken(userDetails);
+        return newAccessToken;
     }
 }

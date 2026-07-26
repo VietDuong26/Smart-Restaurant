@@ -38,7 +38,7 @@ public class SecurityConfig {
                                 , "smart-restaurant/v1/auth/login"
                                 , "smart-restaurant/v1/auth/activate-account"
                                 , "smart-restaurant/v1/auth/resend-otp"
-                                , "smart-restaurant/v1/auth/refresh"
+                                , "smart-restaurant/v1/auth/refresh-token"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
