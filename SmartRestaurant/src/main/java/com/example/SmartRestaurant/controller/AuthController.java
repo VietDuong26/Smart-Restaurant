@@ -99,4 +99,18 @@ public class AuthController {
                 , LocalDateTime.now()
         ));
     }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Đăng xuất")
+    ResponseEntity<ApiResponse<?>> logout(
+            String refreshToken
+    ) {
+        userService.logout(refreshToken);
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200
+                , "Thành công"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
 }

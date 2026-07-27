@@ -10,5 +10,5 @@ import java.util.List;
 public interface ShopRepository extends JpaRepository<ShopEntity, Long> {
     List<ShopEntity> findAllByUser_Id(Long id);
 
-    ShopEntity findShopEntityById(Long id);
+    ShopEntity findShopEntityByIdAndUser_Id(Long id, Long userId);
 }

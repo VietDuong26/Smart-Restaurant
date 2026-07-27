@@ -123,8 +123,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(AccessDeniedException e) {
-        return ResponseEntity.status(401).body(new ApiResponse<>(
-                401
+        return ResponseEntity.status(403).body(new ApiResponse<>(
+                403
                 , e.getMessage()
                 , null
                 , LocalDateTime.now()

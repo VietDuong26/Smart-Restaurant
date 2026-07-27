@@ -10,10 +10,7 @@ import com.example.SmartRestaurant.dto.request.LoginRequest;
 import com.example.SmartRestaurant.dto.request.RegisterRequest;
 import com.example.SmartRestaurant.dto.response.LoginResponse;
 import com.example.SmartRestaurant.dto.response.UserResponse;
-import com.example.SmartRestaurant.entity.OTPEntity;
-import com.example.SmartRestaurant.entity.PermissionEntity;
-import com.example.SmartRestaurant.entity.RoleEntity;
-import com.example.SmartRestaurant.entity.UserEntity;
+import com.example.SmartRestaurant.entity.*;
 import com.example.SmartRestaurant.exception.InvalidAccountStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.OTPResendLimitExceededException;
@@ -21,22 +18,27 @@ import com.example.SmartRestaurant.exception.UnauthorizedException;
 import com.example.SmartRestaurant.mapper.UserMapper;
 import com.example.SmartRestaurant.repository.RoleRepository;
 import com.example.SmartRestaurant.repository.UserRepository;
+import com.example.SmartRestaurant.security.CurrentUserProvider;
 import com.example.SmartRestaurant.service.otp.OTPService;
+import com.example.SmartRestaurant.service.refreshtoken.RefreshTokenService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import static com.example.SmartRestaurant.validator.AuthValidator.*;
+import static org.apache.commons.codec.digest.DigestUtils.sha256;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,8 @@ public class UserServiceImplement implements UserService {
     UserRepository repository;
 
     RoleRepository roleRepository;
+
+
     UserMapper mapper;
 
     OTPService otpService;
@@ -55,6 +59,14 @@ public class UserServiceImplement implements UserService {
     JwtService jwtService;
 
     CustomUserDetailsService userDetailsService;
+
+    CurrentUserProvider currentUserProvider;
+
+    RefreshTokenService refreshTokenService;
+
+    @NonFinal
+    @Value("${refresh-token.expiration}")
+    Long refreshExpiration;
 
     @Override
     public void register(RegisterRequest registerRequest) {
@@ -114,37 +126,24 @@ public class UserServiceImplement implements UserService {
         }
         Set<GrantedAuthority> authorities = new HashSet<>();
         for (RoleEntity role : user.getRoles()) {
-            authorities.add(
-                    new SimpleGrantedAuthority(role.getName())
-            );
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
 
             for (PermissionEntity permission : role.getPermissions()) {
-                authorities.add(
-                        new SimpleGrantedAuthority(permission.getName())
-                );
+                authorities.add(new SimpleGrantedAuthority(permission.getName()));
             }
         }
-        CustomUserDetails userDetails =
-                (CustomUserDetails) userDetailsService.loadUserByUsername(user.getEmail());
+        CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(user.getEmail());
         String accessToken = jwtService.generateAccessToken(userDetails);
-        String refreshToken = jwtService.generateRefreshToken(userDetails);
-        return LoginResponse.builder()
-                .userId(user.getId())
-                .email(user.getEmail())
-                .name(user.getName())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshExpiration);
+        String refreshToken = jwtService.generateRefreshToken(userDetails, expiryDate);
+        refreshTokenService.create(RefreshTokenEntity.builder().hashToken(String.valueOf(sha256(refreshToken))).user(user).expiredDate(expiryDate).build());
+        return LoginResponse.builder().userId(user.getId()).email(user.getEmail()).name(user.getName()).accessToken(accessToken).refreshToken(refreshToken).build();
     }
 
     @Override
     public UserResponse getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserEntity user = repository.findByEmail(email);
-        if (user == null) {
-            throw new NotFoundException("Người dùng");
-        }
-        return mapper.toResponse(user);
+        return mapper.toResponse(currentUserProvider.getCurrentUser().getUser());
     }
 
     @Override
@@ -153,5 +152,10 @@ public class UserServiceImplement implements UserService {
         CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(email);
         String newAccessToken = jwtService.generateAccessToken(userDetails);
         return newAccessToken;
+    }
+
+    @Override
+    public void logout(String refreshToken) {
+        refreshTokenService.deleteByHashToken(String.valueOf(sha256(refreshToken)));
     }
 }

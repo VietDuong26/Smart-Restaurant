@@ -27,8 +27,7 @@ public class JwtService {
     Long expiration;
     @Value("${refresh-token.secret-key}")
     String refreshSecretToken;
-    @Value("${refresh-token.expiration}")
-    Long refreshExpiration;
+
 
     //access token
     public String generateAccessToken(UserDetails userDetails) {
@@ -80,12 +79,10 @@ public class JwtService {
     }
 
     //refresh token
-    public String generateRefreshToken(CustomUserDetails userDetails) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + refreshExpiration);
+    public String generateRefreshToken(CustomUserDetails userDetails, Date expiryDate) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(now)
+                .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(getRefreshSigningKey(), SignatureAlgorithm.HS512)
                 .compact();

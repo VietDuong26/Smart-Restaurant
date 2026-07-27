@@ -18,4 +18,6 @@ public interface UserService {
     UserResponse getCurrentUser();
 
     String refresh(String refreshToken);
+
+    void logout(String refreshToken);
 }

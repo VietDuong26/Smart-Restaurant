@@ -10,7 +10,6 @@ import com.example.SmartRestaurant.security.CurrentUserProvider;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,12 +61,11 @@ public class ShopServiceImplement implements ShopService {
 
     @Override
     public ShopResponse getShopByIdOfCurrentUser(Long id) {
-        ShopEntity shop = repository.findShopEntityById(id);
+        ShopEntity shop = repository.findShopEntityByIdAndUser_Id(
+                id
+                , currentUserProvider.getCurrentUserId());
         if (shop == null) {
             throw new NotFoundException("Shop");
-        }
-        if (currentUserProvider.getCurrentUserId() != shop.getUser().getId()) {
-            throw new AccessDeniedException("Không có quyền truy cập");
         }
         return mapper.toResponse(shop);
     }
