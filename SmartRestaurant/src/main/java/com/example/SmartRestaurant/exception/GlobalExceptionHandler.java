@@ -3,6 +3,7 @@ package com.example.SmartRestaurant.exception;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -112,6 +113,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpiredJwtTokenException.class)
     public ResponseEntity<ApiResponse<?>> handleExpiredJwtTokenException(ExpiredJwtTokenException e) {
+        return ResponseEntity.status(401).body(new ApiResponse<>(
+                401
+                , e.getMessage()
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(AccessDeniedException e) {
         return ResponseEntity.status(401).body(new ApiResponse<>(
                 401
                 , e.getMessage()

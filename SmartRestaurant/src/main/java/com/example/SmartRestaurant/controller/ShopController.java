@@ -10,12 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.example.SmartRestaurant.common.Constant.URL;
 
@@ -40,25 +38,29 @@ public class ShopController {
         ));
     }
 
-//    /**
-//     * OWNER
-//     * Lấy shop của chính mình
-//     */
-//    @GetMapping("/me")
-//    @PreAuthorize("hasAuthority('PERM_SHOP_READ')")
-//    public ApiResponse<ShopResponse> getMyShop() {
-//    }
-//
-//    /**
-//     * OWNER hoặc ADMIN
-//     * Xem thông tin shop theo id
-//     */
-//    @GetMapping("/{shopId}")
-//    @PreAuthorize("hasAuthority('PERM_SHOP_READ')")
-//    public ApiResponse<ShopResponse> getShop(
-//            @PathVariable Long shopId
-//    ) {
-//    }
+    @GetMapping("/me")
+    @Operation(summary = "Lấy tất cả các shop của người dùng")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<ApiResponse<List<ShopResponse>>> getMyShops() {
+        return ResponseEntity.ok(new ApiResponse<List<ShopResponse>>(
+                201
+                , "Thành công"
+                , shopService.getAllShopOfCurrentUser()
+                , LocalDateTime.now()
+        ));
+    }
+
+    @GetMapping("/me/{id}")
+    @Operation(summary = "Lấy thông tin shop theo shopId của người dùng")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<ApiResponse<ShopResponse>> getMyShops(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(new ApiResponse<ShopResponse>(
+                201
+                , "Thành công"
+                , shopService.getShopByIdOfCurrentUser(id)
+                , LocalDateTime.now()
+        ));
+    }
 //
 //    /**
 //     * OWNER hoặc ADMIN
