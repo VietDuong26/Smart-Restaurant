@@ -1,7 +1,9 @@
 package com.example.SmartRestaurant.config.jwt;
 
 import com.example.SmartRestaurant.config.userdetails.CustomUserDetails;
+import com.example.SmartRestaurant.exception.ExpiredJwtTokenException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -57,19 +59,19 @@ public class JwtService {
 
     public boolean validateAccessToken(String token, UserDetails userDetails) {
         final String username = extractAccessUsername(token);
-        return username.equals(userDetails.getUsername()) && !isAccessTokenExpired(token);
-    }
-
-    private boolean isAccessTokenExpired(String token) {
-        return extractAccessAllClaims(token).getExpiration().before(new Date());
+        return username.equals(userDetails.getUsername());
     }
 
     private Claims extractAccessAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getAccessSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getAccessSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredJwtTokenException("Access");
+        }
     }
 
     private Key getAccessSigningKey() {
@@ -95,19 +97,19 @@ public class JwtService {
 
     public boolean validateRefreshToken(String token, UserDetails userDetails) {
         final String username = extractRefreshUsername(token);
-        return username.equals(userDetails.getUsername()) && !isRefreshTokenExpired(token);
-    }
-
-    private boolean isRefreshTokenExpired(String token) {
-        return extractRefreshAllClaims(token).getExpiration().before(new Date());
+        return username.equals(userDetails.getUsername());
     }
 
     private Claims extractRefreshAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getRefreshSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getRefreshSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredJwtTokenException("Refresh");
+        }
     }
 
     private Key getRefreshSigningKey() {

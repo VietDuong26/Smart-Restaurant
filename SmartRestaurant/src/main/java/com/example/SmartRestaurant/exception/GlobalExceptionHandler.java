@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
-@RestControllerAdvice
+@RestControllerAdvice//đánh dấu là bộ xử lý exception
 public class GlobalExceptionHandler {
     @ExceptionHandler(ValidateException.class)
     public ResponseEntity<ApiResponse<?>> handleValidateException(ValidateException e) {
@@ -95,6 +95,26 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body(new ApiResponse<>(
                 400
                 , "Thời gian phải có định dạng HH:mm"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @ExceptionHandler(InvalidJWTException.class)
+    public ResponseEntity<ApiResponse<?>> handleInvalidJWTException(InvalidJWTException e) {
+        return ResponseEntity.status(401).body(new ApiResponse<>(
+                401
+                , e.getMessage()
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @ExceptionHandler(ExpiredJwtTokenException.class)
+    public ResponseEntity<ApiResponse<?>> handleExpiredJwtTokenException(ExpiredJwtTokenException e) {
+        return ResponseEntity.status(401).body(new ApiResponse<>(
+                401
+                , e.getMessage()
                 , null
                 , LocalDateTime.now()
         ));

@@ -14,7 +14,10 @@ import com.example.SmartRestaurant.entity.OTPEntity;
 import com.example.SmartRestaurant.entity.PermissionEntity;
 import com.example.SmartRestaurant.entity.RoleEntity;
 import com.example.SmartRestaurant.entity.UserEntity;
-import com.example.SmartRestaurant.exception.*;
+import com.example.SmartRestaurant.exception.InvalidAccountStatusException;
+import com.example.SmartRestaurant.exception.NotFoundException;
+import com.example.SmartRestaurant.exception.OTPResendLimitExceededException;
+import com.example.SmartRestaurant.exception.UnauthorizedException;
 import com.example.SmartRestaurant.mapper.UserMapper;
 import com.example.SmartRestaurant.repository.RoleRepository;
 import com.example.SmartRestaurant.repository.UserRepository;
@@ -148,9 +151,6 @@ public class UserServiceImplement implements UserService {
     public String refresh(String refreshToken) {
         String email = jwtService.extractRefreshUsername(refreshToken);
         CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(email);
-        if (!jwtService.validateRefreshToken(refreshToken, userDetails)) {
-            throw new ExpiredJwtTokenException();
-        }
         String newAccessToken = jwtService.generateAccessToken(userDetails);
         return newAccessToken;
     }
