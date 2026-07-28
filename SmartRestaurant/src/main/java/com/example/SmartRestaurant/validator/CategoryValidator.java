@@ -1,0 +1,13 @@
+package com.example.SmartRestaurant.validator;
+
+
+import com.example.SmartRestaurant.dto.request.CategoryRequest;
+import com.example.SmartRestaurant.exception.ValidateException;
+
+public final class CategoryValidator {
+    public static void validateCategoryRequest(CategoryRequest request) {
+        if (request.getName() == null || request.getName().isBlank()) {
+            throw new ValidateException("Tên shop không được để trống");
+        }
+    }
+}
