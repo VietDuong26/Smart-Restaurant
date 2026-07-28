@@ -9,5 +9,8 @@ public final class CategoryValidator {
         if (request.getName() == null || request.getName().isBlank()) {
             throw new ValidateException("Tên danh mục không được để trống");
         }
+        if (request.getName().length() > 100) {
+            throw new ValidateException("Tên danh mục không được vượt quá 100 kí tự");
+        }
     }
 }
