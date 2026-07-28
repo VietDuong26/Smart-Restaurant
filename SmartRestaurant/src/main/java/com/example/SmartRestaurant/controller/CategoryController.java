@@ -42,7 +42,7 @@ public class CategoryController {
         ));
     }
 
-    @GetMapping("/{shopId}")
+    @GetMapping("/shop/{shopId}")
     @Operation(summary = "Tìm tất cả danh mục theo shopId")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<Page<CategoryResponse>>> getAllByShopId(
@@ -102,7 +102,7 @@ public class CategoryController {
         ));
     }
 
-    @DeleteMapping("/{categoryId}")
+    @PatchMapping("/{categoryId}")
     @Operation(summary = "Bật lại danh mục")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<CategoryResponse>> activate(

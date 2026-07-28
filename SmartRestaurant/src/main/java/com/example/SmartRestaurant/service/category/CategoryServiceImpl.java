@@ -7,6 +7,7 @@ import com.example.SmartRestaurant.entity.CategoryEntity;
 import com.example.SmartRestaurant.entity.ShopEntity;
 import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
+import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.mapper.CategoryMapper;
 import com.example.SmartRestaurant.repository.CategoryRepository;
 import com.example.SmartRestaurant.repository.ShopRepository;
@@ -38,6 +39,9 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new NotFoundException("Shop"));
         authorizationService.checkOwnerShop(shopId);
         validateCategoryRequest(request);
+        if (repository.findByNameIgnoreCaseAndShopId(request.getName(), shopId) != null) {
+            throw new ValidateException("Tên danh mục đã tồn tại trong shop");
+        }
         CategoryEntity category = mapper.toEntity(request);
         category.setShop(shop);
         category.setStatus(CategoryStatus.ACTIVE);
@@ -49,6 +53,10 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryEntity category = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Danh mục"));
         authorizationService.checkOwnerShop(category.getShop().getId());
+        validateCategoryRequest(categoryRequest);
+        if (repository.findByNameIgnoreCaseAndShopId(categoryRequest.getName(), category.getShop().getId()) != null) {
+            throw new ValidateException("Tên danh mục đã tồn tại trong shop");
+        }
         category.setName(categoryRequest.getName());
         category.setDescription(categoryRequest.getDescription());
         return mapper.toResponse(repository.save(category));

@@ -16,4 +16,5 @@ public interface ShopRepository extends JpaRepository<ShopEntity, Long> {
     ShopEntity findShopEntityByIdAndUser_Id(Long id, Long userId);
 
     Page<ShopEntity> findAllByStatus(ShopStatus status, Pageable pageable);
+
 }

@@ -7,7 +7,7 @@ import com.example.SmartRestaurant.exception.ValidateException;
 public final class CategoryValidator {
     public static void validateCategoryRequest(CategoryRequest request) {
         if (request.getName() == null || request.getName().isBlank()) {
-            throw new ValidateException("Tên shop không được để trống");
+            throw new ValidateException("Tên danh mục không được để trống");
         }
     }
 }
