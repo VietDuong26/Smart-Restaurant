@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.enums.ShopStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,12 @@ public class ShopEntity {
     private String name;
     private String address;
     private String phoneNumber;
+    @Column(length = 500)
+    private String statusReason;//không lưu lịch sử trạng thái tài khoản làm gì
+    //, sau này nếu cần thì sẽ thêm bảng cho mục này sau
+
+    @Enumerated(EnumType.STRING)
+    private ShopStatus status;
 
     @JsonFormat(pattern = "HH:mm")
     private LocalTime openTime;

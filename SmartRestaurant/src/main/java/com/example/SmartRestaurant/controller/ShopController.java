@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.controller;
 
+import com.example.SmartRestaurant.common.enums.ShopStatus;
 import com.example.SmartRestaurant.dto.request.ShopRequest;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import com.example.SmartRestaurant.dto.response.ShopResponse;
@@ -8,6 +9,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +33,7 @@ public class ShopController {
     public ResponseEntity<ApiResponse<ShopResponse>> createShop(
             @RequestBody ShopRequest request
     ) {
-        return ResponseEntity.ok(new ApiResponse<ShopResponse>(
+        return ResponseEntity.ok(new ApiResponse<>(
                 201
                 , "Thành công"
                 , shopService.create(request)
@@ -42,7 +45,7 @@ public class ShopController {
     @Operation(summary = "Lấy tất cả các shop của người dùng")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<List<ShopResponse>>> getMyShops() {
-        return ResponseEntity.ok(new ApiResponse<List<ShopResponse>>(
+        return ResponseEntity.ok(new ApiResponse<>(
                 201
                 , "Thành công"
                 , shopService.getAllShopOfCurrentUser()
@@ -54,69 +57,116 @@ public class ShopController {
     @Operation(summary = "Lấy thông tin shop theo shopId của người dùng")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<ShopResponse>> getMyShops(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(new ApiResponse<ShopResponse>(
+        return ResponseEntity.ok(new ApiResponse<>(
                 201
                 , "Thành công"
                 , shopService.getShopByIdOfCurrentUser(id)
                 , LocalDateTime.now()
         ));
     }
-//
-//    /**
-//     * OWNER hoặc ADMIN
-//     * Cập nhật thông tin shop
-//     */
-//    @PutMapping("/{shopId}")
-//    @PreAuthorize("hasAuthority('PERM_SHOP_UPDATE')")
-//    public ApiResponse<ShopResponse> updateShop(
-//            @PathVariable Long shopId,
-//            @Valid @RequestBody UpdateShopRequest request
-//    ) {
-//    }
-//
-//    /**
-//     * OWNER hoặc ADMIN
-//     * Đổi trạng thái shop
-//     */
-//    @PatchMapping("/{shopId}/status")
-//    @PreAuthorize("hasAuthority('PERM_SHOP_UPDATE')")
-//    public ApiResponse<ShopResponse> updateStatus(
-//            @PathVariable Long shopId,
-//            @Valid @RequestBody UpdateShopStatusRequest request
-//    ) {
-//    }
-//
-//    /**
-//     * ADMIN
-//     * Lấy danh sách tất cả shop
-//     */
-//    @GetMapping
-//    @PreAuthorize("hasAuthority('PERM_SHOP_READ_ALL')")
-//    public ApiResponse<PageResponse<ShopResponse>> getAllShops(
-//            Pageable pageable
-//    ) {
-//    }
-//
-//    /**
-//     * ADMIN
-//     * Khóa shop
-//     */
-//    @PatchMapping("/{shopId}/suspend")
-//    @PreAuthorize("hasAuthority('PERM_SHOP_SUSPEND')")
-//    public ApiResponse<Void> suspendShop(
-//            @PathVariable Long shopId
-//    ) {
-//    }
-//
-//    /**
-//     * ADMIN
-//     * Mở lại shop
-//     */
-//    @PatchMapping("/{shopId}/activate")
-//    @PreAuthorize("hasAuthority('PERM_SHOP_ACTIVATE')")
-//    public ApiResponse<Void> activateShop(
-//            @PathVariable Long shopId
-//    ) {
-//    }
 
+    @PutMapping("/{shopId}")
+    @Operation(summary = "Người dùng tự sửa thông tin shop")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<ApiResponse<ShopResponse>> updateShop(
+            @PathVariable Long shopId,
+            @RequestBody ShopRequest request
+    ) {
+        return ResponseEntity.ok(new ApiResponse(
+                200
+                , "Thành công"
+                , shopService.update(shopId, request)
+                , LocalDateTime.now()
+        ));
+    }
+
+
+    @GetMapping
+    @Operation(summary = "Admin xem tất cả các shop")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Page<ShopResponse>>> getAll(
+            Pageable pageable
+            , @RequestParam(required = false) ShopStatus status
+    ) {
+        return ResponseEntity.ok(new ApiResponse(
+                200
+                , "Thành công"
+                , shopService.getAll(pageable, status)
+                , LocalDateTime.now()
+        ));
+    }
+
+    @GetMapping("/{shopId}")
+    @Operation(summary = "Admin xem thông tin shop")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<ShopResponse>> getById(
+            @PathVariable Long shopId
+    ) {
+        return ResponseEntity.ok(new ApiResponse(
+                200
+                , "Thành công"
+                , shopService.getById(shopId)
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PatchMapping("/{shopId}/approve")
+    @Operation(summary = "Admin duyệt shop")
+    @PreAuthorize("hasRole(ADMIN)")
+    public ResponseEntity<ApiResponse<?>> approve(
+            @PathVariable("shopId") Long shopId
+    ) {
+        shopService.approve(shopId);
+        return ResponseEntity.ok(new ApiResponse(
+                200
+                , "Thành công"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PatchMapping("/{shopId}/reject")
+    @Operation(summary = "Admin từ chối shop")
+    @PreAuthorize("hasRole(ADMIN)")
+    public ResponseEntity<ApiResponse<?>> reject(
+            @PathVariable("shopId") Long shopId,
+            @RequestBody String reason) {
+        shopService.reject(shopId, reason);
+        return ResponseEntity.ok(new ApiResponse(
+                200
+                , "Thành công"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PatchMapping("/{shopId}/lock")
+    @Operation(summary = "Admin khóa shop")
+    @PreAuthorize("hasRole(ADMIN)")
+    public ResponseEntity<ApiResponse<?>> lock(
+            @PathVariable("shopId") Long shopId,
+            @RequestBody String reason) {
+        shopService.lock(shopId, reason);
+        return ResponseEntity.ok(new ApiResponse(
+                200
+                , "Thành công"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PatchMapping("/{shopId}/unlock")
+    @Operation(summary = "Admin mở khóa shop")
+    @PreAuthorize("hasRole(ADMIN)")
+    public ResponseEntity<ApiResponse<?>> unlock(
+            @PathVariable("shopId") Long shopId
+    ) {
+        shopService.unlock(shopId);
+        return ResponseEntity.ok(new ApiResponse(
+                200
+                , "Thành công"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
 }

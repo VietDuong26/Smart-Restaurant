@@ -11,7 +11,7 @@ import com.example.SmartRestaurant.dto.request.RegisterRequest;
 import com.example.SmartRestaurant.dto.response.LoginResponse;
 import com.example.SmartRestaurant.dto.response.UserResponse;
 import com.example.SmartRestaurant.entity.*;
-import com.example.SmartRestaurant.exception.InvalidAccountStatusException;
+import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.OTPResendLimitExceededException;
 import com.example.SmartRestaurant.exception.UnauthorizedException;
@@ -91,7 +91,7 @@ public class UserServiceImplement implements UserService {
             throw new NotFoundException("Người dùng");
         }
         if (!user.getStatus().equals(UserStatus.PENDING)) {
-            throw new InvalidAccountStatusException();
+            throw new InvalidStatusException("tài khoản");
         }
         otpService.resendOTP(user.getId());
     }
@@ -104,7 +104,7 @@ public class UserServiceImplement implements UserService {
             throw new NotFoundException("Người dùng");
         }
         if (!user.getStatus().equals(UserStatus.PENDING)) {
-            throw new InvalidAccountStatusException();
+            throw new InvalidStatusException("tài khoản");
         }
         user.setStatus(UserStatus.ACTIVE);
         repository.save(user);
@@ -121,8 +121,8 @@ public class UserServiceImplement implements UserService {
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new UnauthorizedException();
         }
-        switch (user.getStatus()) {
-            case PENDING, LOCKED, DELETED -> throw new InvalidAccountStatusException();
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new InvalidStatusException("tài khoản");
         }
         Set<GrantedAuthority> authorities = new HashSet<>();
         for (RoleEntity role : user.getRoles()) {

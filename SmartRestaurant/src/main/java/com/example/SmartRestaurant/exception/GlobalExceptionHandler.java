@@ -6,6 +6,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 
@@ -31,8 +32,8 @@ public class GlobalExceptionHandler {
         ));
     }
 
-    @ExceptionHandler(InvalidAccountStatusException.class)
-    public ResponseEntity<ApiResponse<?>> handleInvalidAccountStatusException(InvalidAccountStatusException e) {
+    @ExceptionHandler(InvalidStatusException.class)
+    public ResponseEntity<ApiResponse<?>> handleInvalidAccountStatusException(InvalidStatusException e) {
         return ResponseEntity.status(409).body(new ApiResponse<>(
                 409
                 , e.getMessage()
@@ -126,6 +127,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(403).body(new ApiResponse<>(
                 403
                 , e.getMessage()
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<?>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        return ResponseEntity.status(400).body(new ApiResponse<>(
+                400
+                , "ShopStatus không hợp lệ"
                 , null
                 , LocalDateTime.now()
         ));
