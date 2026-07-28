@@ -9,4 +9,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface CategoryService extends ShopResourceBaseService<CategoryRequest, CategoryResponse, Long> {
     Page<CategoryResponse> getAllByShopId(Long shopId, CategoryStatus status, Pageable pageable);
+
+    void activate(Long categoryId);
 }

@@ -40,6 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
         validateCategoryRequest(request);
         CategoryEntity category = mapper.toEntity(request);
         category.setShop(shop);
+        category.setStatus(CategoryStatus.ACTIVE);
         return mapper.toResponse(repository.save(category));
     }
 
@@ -82,5 +83,17 @@ public class CategoryServiceImpl implements CategoryService {
                 ? repository.findAllByShopId(shopId, pageable)
                 : repository.findAllByShopIdAndStatus(shopId, status, pageable);
         return categories.map(x -> mapper.toResponse(x));
+    }
+
+    @Override
+    public void activate(Long categoryId) {
+        CategoryEntity category = repository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException("Danh mục"));
+        authorizationService.checkOwnerShop(category.getShop().getId());
+        if (category.getStatus() != CategoryStatus.INACTIVE) {
+            throw new InvalidStatusException("Danh mục");
+        }
+        category.setStatus(CategoryStatus.ACTIVE);
+        repository.save(category);
     }
 }

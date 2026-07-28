@@ -29,7 +29,7 @@ public class CategoryController {
     @PostMapping("/{shopId}")
     @Operation(summary = "Tạo danh mục")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(
+    public ResponseEntity<ApiResponse<CategoryResponse>> create(
             @PathVariable Long shopId,
             @RequestBody CategoryRequest request
     ) {
@@ -45,7 +45,7 @@ public class CategoryController {
     @GetMapping("/{shopId}")
     @Operation(summary = "Tìm tất cả danh mục theo shopId")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<Page<CategoryResponse>>> getCategories(
+    public ResponseEntity<ApiResponse<Page<CategoryResponse>>> getAllByShopId(
             @PathVariable Long shopId,
             @RequestParam(required = false) CategoryStatus status,
             Pageable pageable
@@ -61,7 +61,7 @@ public class CategoryController {
     @GetMapping("/{categoryId}")
     @Operation(summary = "Tìm danh mục theo id")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(
+    public ResponseEntity<ApiResponse<CategoryResponse>> getById(
             @PathVariable Long categoryId
     ) {
         return ResponseEntity.ok(new ApiResponse<>(
@@ -75,7 +75,7 @@ public class CategoryController {
     @PutMapping("/{categoryId}")
     @Operation(summary = "Sửa thông tin danh mục")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<CategoryResponse>> updateCategory(
+    public ResponseEntity<ApiResponse<CategoryResponse>> update(
             @PathVariable Long categoryId,
             @RequestBody CategoryRequest request
     ) {
@@ -87,4 +87,33 @@ public class CategoryController {
         ));
     }
 
+    @DeleteMapping("/{categoryId}")
+    @Operation(summary = "Xóa danh mục")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<ApiResponse<CategoryResponse>> delete(
+            @PathVariable Long categoryId
+    ) {
+        categoryService.delete(categoryId);
+        return ResponseEntity.ok(new ApiResponse<>(
+                200
+                , "Thành công"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @DeleteMapping("/{categoryId}")
+    @Operation(summary = "Bật lại danh mục")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<ApiResponse<CategoryResponse>> activate(
+            @PathVariable Long categoryId
+    ) {
+        categoryService.activate(categoryId);
+        return ResponseEntity.ok(new ApiResponse<>(
+                200
+                , "Thành công"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
 }
