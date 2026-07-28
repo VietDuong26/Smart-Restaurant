@@ -10,4 +10,7 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
     Page<CategoryEntity> findAllByShopId(Long shopId, Pageable pageable);
 
     Page<CategoryEntity> findAllByShopIdAndStatus(Long shopId, CategoryStatus status, Pageable pageable);
+
+    CategoryEntity findByNameIgnoreCaseAndShopId(String name, Long shopId);
+
 }
