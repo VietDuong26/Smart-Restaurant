@@ -19,7 +19,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     @Override
     public void checkOwnerShop(Long shopId) {
-        if (shopRepository.getById(shopId).getUser().getId().equals(currentUserProvider.getCurrentUserId())) {
+        if (!shopRepository.findById(shopId).get().getUser().getId()
+                .equals(currentUserProvider.getCurrentUserId())) {
             throw new AccessDeniedException("Không thuộc quyền sở hữu");
         }
     }

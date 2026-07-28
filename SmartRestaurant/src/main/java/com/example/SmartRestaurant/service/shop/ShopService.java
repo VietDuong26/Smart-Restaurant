@@ -1,6 +1,7 @@
 package com.example.SmartRestaurant.service.shop;
 
 import com.example.SmartRestaurant.common.enums.ShopStatus;
+import com.example.SmartRestaurant.dto.request.ReasonRequest;
 import com.example.SmartRestaurant.dto.request.ShopRequest;
 import com.example.SmartRestaurant.dto.response.ShopResponse;
 import com.example.SmartRestaurant.service.base.BaseService;
@@ -17,9 +18,9 @@ public interface ShopService extends BaseService<ShopRequest, ShopResponse, Long
 
     void approve(Long shopId);
 
-    void reject(Long shopId, String reason);
+    void reject(Long shopId, ReasonRequest reason);
 
-    void lock(Long shopId, String reason);
+    void lock(Long shopId, ReasonRequest reason);
 
     void unlock(Long shopId);
 

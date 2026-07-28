@@ -1,6 +1,7 @@
 package com.example.SmartRestaurant.controller;
 
 import com.example.SmartRestaurant.common.enums.ShopStatus;
+import com.example.SmartRestaurant.dto.request.ReasonRequest;
 import com.example.SmartRestaurant.dto.request.ShopRequest;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import com.example.SmartRestaurant.dto.response.ShopResponse;
@@ -33,7 +34,7 @@ public class ShopController {
     public ResponseEntity<ApiResponse<ShopResponse>> createShop(
             @RequestBody ShopRequest request
     ) {
-        return ResponseEntity.ok(new ApiResponse<>(
+        return ResponseEntity.status(201).body(new ApiResponse<>(
                 201
                 , "Thành công"
                 , shopService.create(request)
@@ -46,7 +47,7 @@ public class ShopController {
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<List<ShopResponse>>> getMyShops() {
         return ResponseEntity.ok(new ApiResponse<>(
-                201
+                200
                 , "Thành công"
                 , shopService.getAllShopOfCurrentUser()
                 , LocalDateTime.now()
@@ -58,7 +59,7 @@ public class ShopController {
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<ShopResponse>> getMyShops(@PathVariable("id") Long id) {
         return ResponseEntity.ok(new ApiResponse<>(
-                201
+                200
                 , "Thành công"
                 , shopService.getShopByIdOfCurrentUser(id)
                 , LocalDateTime.now()
@@ -112,7 +113,7 @@ public class ShopController {
 
     @PatchMapping("/{shopId}/approve")
     @Operation(summary = "Admin duyệt shop")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<?>> approve(
             @PathVariable("shopId") Long shopId
     ) {
@@ -127,10 +128,10 @@ public class ShopController {
 
     @PatchMapping("/{shopId}/reject")
     @Operation(summary = "Admin từ chối shop")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<?>> reject(
             @PathVariable("shopId") Long shopId,
-            @RequestBody String reason) {
+            @RequestBody ReasonRequest reason) {
         shopService.reject(shopId, reason);
         return ResponseEntity.ok(new ApiResponse(
                 200
@@ -142,10 +143,10 @@ public class ShopController {
 
     @PatchMapping("/{shopId}/lock")
     @Operation(summary = "Admin khóa shop")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<?>> lock(
             @PathVariable("shopId") Long shopId,
-            @RequestBody String reason) {
+            @RequestBody ReasonRequest reason) {
         shopService.lock(shopId, reason);
         return ResponseEntity.ok(new ApiResponse(
                 200
@@ -157,7 +158,7 @@ public class ShopController {
 
     @PatchMapping("/{shopId}/unlock")
     @Operation(summary = "Admin mở khóa shop")
-    @PreAuthorize("hasRole(ADMIN)")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<?>> unlock(
             @PathVariable("shopId") Long shopId
     ) {

@@ -1,6 +1,7 @@
 package com.example.SmartRestaurant.service.shop;
 
 import com.example.SmartRestaurant.common.enums.ShopStatus;
+import com.example.SmartRestaurant.dto.request.ReasonRequest;
 import com.example.SmartRestaurant.dto.request.ShopRequest;
 import com.example.SmartRestaurant.dto.response.ShopResponse;
 import com.example.SmartRestaurant.entity.ShopEntity;
@@ -36,7 +37,7 @@ public class ShopServiceImplement implements ShopService {
 
     @Override
     public ShopResponse create(ShopRequest request) {
-        validateCreate(request);
+        validateShopRequest(request);
         ShopEntity shop = mapper.toEntity(request);
         shop.setUser(currentUserProvider.getCurrentUser().getUser());
         shop.setStatus(ShopStatus.PENDING);
@@ -45,10 +46,9 @@ public class ShopServiceImplement implements ShopService {
 
     @Override
     public ShopResponse update(Long id, ShopRequest request) {
-        ShopEntity shop = repository.getById(id);
-        if (shop == null) {
-            throw new NotFoundException("Shop");
-        }
+        ShopEntity shop = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Shop"));
+        validateShopRequest(request);
         authorizationService.checkOwnerShop(id);
         shop.setName(request.getName());
         shop.setAddress(request.getAddress());
@@ -60,20 +60,15 @@ public class ShopServiceImplement implements ShopService {
 
     @Override
     public void delete(Long id) {
-        ShopEntity shop = repository.getById(id);
-        if (shop == null) {
-            throw new NotFoundException("Shop");
-        }
+        ShopEntity shop = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Shop"));
         shop.setStatus(ShopStatus.LOCKED);
     }
 
     @Override
     public ShopResponse getById(Long id) {
-        ShopEntity shop = repository.getById(id);
-        if (shop == null) {
-            throw new NotFoundException("Shop");
-        }
-        ;
+        ShopEntity shop = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Shop"));
         return mapper.toResponse(shop);
     }
 
@@ -98,10 +93,8 @@ public class ShopServiceImplement implements ShopService {
 
     @Override
     public void approve(Long shopId) {
-        ShopEntity shop = repository.getById(shopId);
-        if (shop == null) {
-            throw new NotFoundException("Shop");
-        }
+        ShopEntity shop = repository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException("Shop"));
         if (shop.getStatus() != ShopStatus.PENDING) {
             throw new InvalidStatusException("shop");
         }
@@ -111,40 +104,35 @@ public class ShopServiceImplement implements ShopService {
     }
 
     @Override
-    public void reject(Long shopId, String reason) {
+    public void reject(Long shopId, ReasonRequest reason) {
         validateReject(reason);
-        ShopEntity shop = repository.getById(shopId);
-        if (shop == null) {
-            throw new NotFoundException("Shop");
-        }
+        ShopEntity shop = repository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException("Shop"));
+
         if (shop.getStatus() != ShopStatus.PENDING) {
             throw new InvalidStatusException("shop");
         }
-        shop.setStatusReason(reason);
+        shop.setStatusReason(reason.getReason());
         repository.save(shop);
     }
 
     @Override
-    public void lock(Long shopId, String reason) {
+    public void lock(Long shopId, ReasonRequest reason) {
         validateLock(reason);
-        ShopEntity shop = repository.getById(shopId);
-        if (shop == null) {
-            throw new NotFoundException("Shop");
-        }
+        ShopEntity shop = repository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException("Shop"));
         if (shop.getStatus() != ShopStatus.ACTIVE) {
             throw new InvalidStatusException("shop");
         }
         shop.setStatus(ShopStatus.LOCKED);
-        shop.setStatusReason(reason);
+        shop.setStatusReason(reason.getReason());
         repository.save(shop);
     }
 
     @Override
     public void unlock(Long shopId) {
-        ShopEntity shop = repository.getById(shopId);
-        if (shop == null) {
-            throw new NotFoundException("Shop");
-        }
+        ShopEntity shop = repository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException("Shop"));
         if (shop.getStatus() != ShopStatus.LOCKED) {
             throw new InvalidStatusException("shop");
         }

@@ -38,10 +38,8 @@ public class RefreshTokenServiceImplement implements RefreshTokenService {
 
     @Override
     public void deleteAllByUserId(Long userId) {
-        UserEntity user = userRepository.getById(userId);
-        if (user == null) {
-            throw new NotFoundException("Người dùng");
-        }
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Người dùng"));
         repository.deleteAllByUserId(userId);
     }
 
