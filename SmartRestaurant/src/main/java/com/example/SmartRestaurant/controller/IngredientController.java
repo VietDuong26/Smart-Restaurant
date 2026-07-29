@@ -1,17 +1,16 @@
 package com.example.SmartRestaurant.controller;
 
-import com.example.SmartRestaurant.common.enums.ProductStatus;
-import com.example.SmartRestaurant.dto.request.ProductRequest;
+import com.example.SmartRestaurant.common.enums.IngredientStatus;
+import com.example.SmartRestaurant.dto.request.IngredientRequest;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
-import com.example.SmartRestaurant.dto.response.ProductResponse;
-import com.example.SmartRestaurant.service.product.ProductService;
+import com.example.SmartRestaurant.dto.response.IngredientResponse;
+import com.example.SmartRestaurant.service.ingredient.IngredientService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,78 +22,78 @@ import static com.example.SmartRestaurant.common.Constant.URL;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@RequestMapping(URL + "/product")
-public class ProductController {
-    ProductService productService;
+@RequestMapping(URL + "/ingredient")
+public class IngredientController {
+    IngredientService ingredientService;
 
-    @PostMapping(value = "/{categoryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Tạo sản phẩm")
+    @PostMapping("/{shopId}")
+    @Operation(summary = "Tạo nguyên liệu")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<ProductResponse>> create(
-            @PathVariable Long categoryId,
-            @ModelAttribute ProductRequest request
+    public ResponseEntity<ApiResponse<IngredientResponse>> create(
+            @PathVariable Long shopId,
+            @RequestBody IngredientRequest request
     ) {
 
         return ResponseEntity.status(201).body(new ApiResponse<>(
                 201
                 , "Thành công"
-                , productService.create(request, categoryId)
+                , ingredientService.create(request, shopId)
                 , LocalDateTime.now()
         ));
     }
 
-    @GetMapping("/category/{categoryId}")
-    @Operation(summary = "Tìm tất cả sản phẩm theo danh mục")
+    @GetMapping("/shop/{shopId}")
+    @Operation(summary = "Tìm tất cả nguyên liệu theo shopId")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<Page<ProductResponse>>> getAllByCategoryId(
-            @PathVariable Long categoryId,
-            @RequestParam(required = false) ProductStatus status,
+    public ResponseEntity<ApiResponse<Page<IngredientResponse>>> getAllByShopId(
+            @PathVariable Long shopId,
+            @RequestParam(required = false) IngredientStatus status,
             Pageable pageable
     ) {
         return ResponseEntity.ok(new ApiResponse<>(
                 200
                 , "Thành công"
-                , productService.getAllByCategoryId(categoryId, status, pageable)
+                , ingredientService.getAllByShopId(shopId, status, pageable)
                 , LocalDateTime.now()
         ));
     }
 
-    @GetMapping("/{productId}")
-    @Operation(summary = "Tìm sản phẩm theo id")
+    @GetMapping("/{ingredientId}")
+    @Operation(summary = "Tìm nguyên liệu theo id")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<ProductResponse>> getById(
-            @PathVariable Long productId
+    public ResponseEntity<ApiResponse<IngredientResponse>> getById(
+            @PathVariable Long ingredientId
     ) {
         return ResponseEntity.ok(new ApiResponse<>(
                 200
                 , "Thành công"
-                , productService.getById(productId)
+                , ingredientService.getById(ingredientId)
                 , LocalDateTime.now()
         ));
     }
 
-    @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Sửa thông tin sản phẩm")
+    @PutMapping("/{ingredientId}")
+    @Operation(summary = "Sửa thông tin nguyên liệu")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<ProductResponse>> update(
-            @PathVariable Long productId,
-            @ModelAttribute ProductRequest request
+    public ResponseEntity<ApiResponse<IngredientResponse>> update(
+            @PathVariable Long ingredientId,
+            @RequestBody IngredientRequest request
     ) {
         return ResponseEntity.ok(new ApiResponse<>(
                 200
                 , "Thành công"
-                , productService.update(productId, request)
+                , ingredientService.update(ingredientId, request)
                 , LocalDateTime.now()
         ));
     }
 
-    @DeleteMapping("/{productId}")
-    @Operation(summary = "Xóa sản phẩm")
+    @DeleteMapping("/{ingredientId}")
+    @Operation(summary = "Xóa nguyên liệu")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<Void>> delete(
-            @PathVariable Long productId
+            @PathVariable Long ingredientId
     ) {
-        productService.delete(productId);
+        ingredientService.delete(ingredientId);
         return ResponseEntity.ok(new ApiResponse<>(
                 200
                 , "Thành công"
@@ -103,13 +102,13 @@ public class ProductController {
         ));
     }
 
-    @PatchMapping("/{productId}/activate")
-    @Operation(summary = "Đăng bán lại sản phẩm")
+    @PatchMapping("/{ingredientId}/activate")
+    @Operation(summary = "Bật lại nguyên liệu")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<Void>> activate(
-            @PathVariable Long productId
+            @PathVariable Long ingredientId
     ) {
-        productService.activate(productId);
+        ingredientService.activate(ingredientId);
         return ResponseEntity.ok(new ApiResponse<>(
                 200
                 , "Thành công"

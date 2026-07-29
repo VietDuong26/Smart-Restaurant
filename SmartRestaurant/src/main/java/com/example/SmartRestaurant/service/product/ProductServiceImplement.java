@@ -49,7 +49,7 @@ public class ProductServiceImplement implements ProductService {
         product.setCategory(category);
         product.setStatus(ProductStatus.ACTIVE);
         ProductEntity savedProduct = repository.save(product);
-        if (productRequest.getImageFile() != null) {
+        if (productRequest.getImageFile() != null && !productRequest.getImageFile().isEmpty()) {
             savedProduct.setImageUrl(cloudinaryService.uploadProductImage(productRequest.getImageFile(), savedProduct.getId()));
         }
         return mapper.toResponse(repository.save(savedProduct));
@@ -71,7 +71,7 @@ public class ProductServiceImplement implements ProductService {
         product.setName(newProduct.getName());
         product.setDescription(newProduct.getDescription());
         product.setPrice(newProduct.getPrice());
-        if (productRequest.getImageFile() != null) {
+        if (productRequest.getImageFile() != null && !productRequest.getImageFile().isEmpty()) {
             product.setImageUrl(cloudinaryService.uploadProductImage(productRequest.getImageFile(), product.getId()));
         }
         return mapper.toResponse(repository.save(product));
