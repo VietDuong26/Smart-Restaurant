@@ -1,9 +1,10 @@
 package com.example.SmartRestaurant.entity;
 
-import com.example.SmartRestaurant.common.enums.TableStatus;
+import com.example.SmartRestaurant.common.enums.ProductStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,8 +13,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@Table(name = "tbl_table")
-public class TableEntity {
+@Table(name = "tbl_product")
+public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,16 +22,20 @@ public class TableEntity {
     @Column(length = 50, nullable = false)
     private String name;
 
+    @Column(length = 500)
+    private String description;
+
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
-    private TableStatus status;
-
-    private String qrImageUrl;
-
-    private boolean qrEnabled;
+    private ProductStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "area_id", nullable = false)
-    private AreaEntity area;
+    @JoinColumn(name = "category_id", nullable = false)
+    private CategoryEntity category;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

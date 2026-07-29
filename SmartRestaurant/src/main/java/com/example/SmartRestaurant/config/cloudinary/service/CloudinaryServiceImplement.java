@@ -39,4 +39,28 @@ public class CloudinaryServiceImplement implements CloudinaryService {
             );
         }
     }
+
+    @Override
+    public String uploadProductImage(MultipartFile file, Long productId) {
+        try {
+            String publicId =
+                    "smart-restaurant/product/product_" + productId;
+
+            Map<?, ?> result = cloudinary.uploader().upload(
+                    file.getBytes(),
+                    ObjectUtils.asMap(
+                            "public_id", publicId,
+                            "overwrite", true,
+                            "invalidate", true,
+                            "resource_type", "image"
+                    )
+            );
+            return result.get("secure_url").toString();
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Không thể tải ảnh sản phẩm lên Cloudinary",
+                    e
+            );
+        }
+    }
 }
