@@ -7,11 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface AreaRepository extends JpaRepository<AreaEntity, Long> {
     AreaEntity findByNameAndShopId(String name, Long shopId);
 
-    AreaEntity findByNameAndShopIdAndIdNot(String name, Long shopId, Long id);
+    List<AreaEntity> findByNameAndShopIdAndIdNot(String name, Long shopId, Long id);
 
     Page<AreaEntity> findAllByShopId(Long shopId, Pageable pageable);
 

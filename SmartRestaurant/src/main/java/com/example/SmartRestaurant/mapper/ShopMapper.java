@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class ShopMapper {
     public ShopEntity toEntity(ShopRequest request) {
         return ShopEntity.builder()
-                .name(request.getName())
+                .name(request.getName().trim().toLowerCase())
                 .address(request.getAddress())
                 .phoneNumber(request.getPhoneNumber())
                 .openTime(request.getOpenTime())

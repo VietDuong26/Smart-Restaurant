@@ -17,7 +17,7 @@ public class CategoryMapper {
     public CategoryResponse toResponse(CategoryEntity category) {
         return CategoryResponse.builder()
                 .id(category.getId())
-                .name(category.getName().toUpperCase())
+                .name(category.getName())
                 .description(category.getDescription())
                 .status(category.getStatus())
                 .build();

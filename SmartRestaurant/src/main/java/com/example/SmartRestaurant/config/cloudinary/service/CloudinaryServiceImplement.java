@@ -1,0 +1,42 @@
+package com.example.SmartRestaurant.config.cloudinary.service;
+
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+public class CloudinaryServiceImplement implements CloudinaryService {
+    Cloudinary cloudinary;
+
+    public String uploadQRImage(MultipartFile file, Long tableId) {
+        try {
+            String publicId =
+                    "smart-restaurant/qrs/qr_" + tableId;
+
+            Map<?, ?> result = cloudinary.uploader().upload(
+                    file.getBytes(),
+                    ObjectUtils.asMap(
+                            "public_id", publicId,
+                            "overwrite", true,
+                            "invalidate", true,
+                            "resource_type", "image"
+                    )
+            );
+            return result.get("secure_url").toString();
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Không thể tải ảnh mã QR lên Cloudinary",
+                    e
+            );
+        }
+    }
+}

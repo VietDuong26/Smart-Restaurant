@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
     Page<CategoryEntity> findAllByShopId(Long shopId, Pageable pageable);
 
@@ -13,6 +15,6 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
 
     CategoryEntity findByNameAndShopId(String name, Long shopId);
 
-    CategoryEntity findByNameAndShopIdAndIdNot(String name, Long shopId, Long id);
+    List<CategoryEntity> findByNameAndShopIdAndIdNot(String name, Long shopId, Long id);
     //tìm thằng cate trong cùng shop này có tên khác mà ngoại trừ ra thằng đang chọn
 }

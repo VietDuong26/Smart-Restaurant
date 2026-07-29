@@ -17,7 +17,7 @@ public class AreaMapper {
     public AreaResponse toResponse(AreaEntity area) {
         return AreaResponse.builder()
                 .id(area.getId())
-                .name(area.getName().toUpperCase())
+                .name(area.getName())
                 .description(area.getDescription())
                 .status(area.getStatus())
                 .build();

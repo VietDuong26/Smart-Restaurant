@@ -7,6 +7,7 @@ import com.example.SmartRestaurant.dto.response.ShopResponse;
 import com.example.SmartRestaurant.entity.ShopEntity;
 import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
+import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.mapper.ShopMapper;
 import com.example.SmartRestaurant.repository.ShopRepository;
 import com.example.SmartRestaurant.security.CurrentUserProvider;
@@ -39,6 +40,9 @@ public class ShopServiceImplement implements ShopService {
     public ShopResponse create(ShopRequest request) {
         validateShopRequest(request);
         ShopEntity shop = mapper.toEntity(request);
+        if (repository.findByNameAndUserId(shop.getName(), currentUserProvider.getCurrentUserId()).size() != 0) {
+            throw new ValidateException("Tên shop đã tồn tại");
+        }
         shop.setUser(currentUserProvider.getCurrentUser().getUser());
         shop.setStatus(ShopStatus.PENDING);
         return mapper.toResponse(repository.save(shop));
@@ -50,11 +54,15 @@ public class ShopServiceImplement implements ShopService {
                 .orElseThrow(() -> new NotFoundException("Shop"));
         validateShopRequest(request);
         authorizationService.checkOwnerShop(id);
-        shop.setName(request.getName());
-        shop.setAddress(request.getAddress());
-        shop.setPhoneNumber(request.getPhoneNumber());
-        shop.setOpenTime(request.getOpenTime());
-        shop.setCloseTime(request.getCloseTime());
+        ShopEntity newShop = mapper.toEntity(request);
+        if (repository.findByNameAndUserIdAndIdNot(newShop.getName(), currentUserProvider.getCurrentUserId(), shop.getId()).size() != 0) {
+            throw new ValidateException("Tên shop đã tồn tại");
+        }
+        shop.setName(newShop.getName());
+        shop.setAddress(newShop.getAddress());
+        shop.setPhoneNumber(newShop.getPhoneNumber());
+        shop.setOpenTime(newShop.getOpenTime());
+        shop.setCloseTime(newShop.getCloseTime());
         return mapper.toResponse(repository.save(shop));
     }
 
