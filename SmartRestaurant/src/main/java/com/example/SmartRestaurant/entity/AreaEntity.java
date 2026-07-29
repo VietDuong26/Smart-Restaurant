@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@Table(name = "tbl_category")
-public class CategoryEntity {
+@Table(name = "tbl_area")
+public class AreaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

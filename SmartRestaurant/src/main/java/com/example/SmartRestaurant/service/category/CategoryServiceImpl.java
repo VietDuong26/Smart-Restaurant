@@ -73,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new NotFoundException("Danh mục"));
         authorizationService.checkOwnerShop(category.getShop().getId());
         if (category.getStatus() != CategoryStatus.ACTIVE) {
-            throw new InvalidStatusException("Danh mục");
+            throw new InvalidStatusException("danh mục");
         }
         category.setStatus(CategoryStatus.INACTIVE);
         repository.save(category);
