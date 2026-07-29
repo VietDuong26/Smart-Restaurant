@@ -40,7 +40,7 @@ public class AreaServiceImplement implements AreaService {
         validateAreaRequest(areaRequest);
 
         AreaEntity area = mapper.toEntity(areaRequest);
-        if (repository.findByNameAndShopId(area.getName(), shopId) != null) {
+        if (repository.existsByNameAndShopId(area.getName(), shopId)) {
             throw new ValidateException("Tên khu vực đã tồn tại trong shop");
         }
         area.setShop(shop);
@@ -55,10 +55,10 @@ public class AreaServiceImplement implements AreaService {
         authorizationService.checkOwnerShop(area.getShop().getId());
         validateAreaRequest(areaRequest);
         AreaEntity newArea = mapper.toEntity(areaRequest);
-        if (repository.findByNameAndShopIdAndIdNot(
+        if (repository.existsByNameAndShopIdAndIdNot(
                 newArea.getName()
                 , area.getShop().getId()
-                , area.getId()) != null) {
+                , area.getId())) {
             throw new ValidateException("Tên khu vực đã tồn tại trong shop");
         }
         area.setName(newArea.getName());

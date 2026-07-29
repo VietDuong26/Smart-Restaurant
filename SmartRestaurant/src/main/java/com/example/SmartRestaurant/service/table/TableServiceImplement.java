@@ -41,7 +41,7 @@ public class TableServiceImplement implements TableService {
         validateTableRequest(tableRequest);
 
         TableEntity table = mapper.toEntity(tableRequest);
-        if (repository.findByNameAndAreaId(table.getName(), parentId) != null) {
+        if (repository.existsByNameAndAreaId(table.getName(), parentId)) {
             throw new ValidateException("Tên bàn đã tồn tại trong khu vực");
         }
         table.setArea(area);
@@ -56,10 +56,10 @@ public class TableServiceImplement implements TableService {
         authorizationService.checkOwnerShop(table.getArea().getShop().getId());
         validateTableRequest(tableRequest);
         TableEntity newTable = mapper.toEntity(tableRequest);
-        if (repository.findByNameAndAreaIdAndIdNot(
+        if (repository.existsByNameAndAreaIdAndIdNot(
                 newTable.getName()
                 , table.getArea().getId()
-                , table.getId()) != null) {
+                , table.getId())) {
             throw new ValidateException("Tên bàn đã tồn tại trong khu vực");
         }
         table.setName(newTable.getName());
@@ -103,10 +103,10 @@ public class TableServiceImplement implements TableService {
         TableEntity table = repository.findById(tableId)
                 .orElseThrow(() -> new NotFoundException("Bàn"));
         authorizationService.checkOwnerShop(table.getArea().getShop().getId());
-        if (table.getStatus() != TableStatus.ACTIVE) {
+        if (table.getStatus() != TableStatus.INACTIVE) {
             throw new InvalidStatusException("bàn");
         }
-        table.setStatus(TableStatus.INACTIVE);
+        table.setStatus(TableStatus.ACTIVE);
         repository.save(table);
     }
 }

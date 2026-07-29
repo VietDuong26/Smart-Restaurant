@@ -17,7 +17,7 @@ public interface ShopRepository extends JpaRepository<ShopEntity, Long> {
 
     Page<ShopEntity> findAllByStatus(ShopStatus status, Pageable pageable);
 
-    List<ShopEntity> findByNameAndUserId(String name, Long currentUserId);
+    boolean existsByNameAndUserId(String name, Long currentUserId);
 
-    List<ShopEntity> findByNameAndUserIdAndIdNot(String name, Long currentUserId, Long id);
+    boolean existsByNameAndUserIdAndIdNot(String name, Long currentUserId, Long id);
 }

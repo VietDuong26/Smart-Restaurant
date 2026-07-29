@@ -40,7 +40,7 @@ public class ShopServiceImplement implements ShopService {
     public ShopResponse create(ShopRequest request) {
         validateShopRequest(request);
         ShopEntity shop = mapper.toEntity(request);
-        if (repository.findByNameAndUserId(shop.getName(), currentUserProvider.getCurrentUserId()).size() != 0) {
+        if (repository.existsByNameAndUserId(shop.getName(), currentUserProvider.getCurrentUserId())) {
             throw new ValidateException("Tên shop đã tồn tại");
         }
         shop.setUser(currentUserProvider.getCurrentUser().getUser());
@@ -55,7 +55,8 @@ public class ShopServiceImplement implements ShopService {
         validateShopRequest(request);
         authorizationService.checkOwnerShop(id);
         ShopEntity newShop = mapper.toEntity(request);
-        if (repository.findByNameAndUserIdAndIdNot(newShop.getName(), currentUserProvider.getCurrentUserId(), shop.getId()).size() != 0) {
+        if (repository.existsByNameAndUserIdAndIdNot(newShop.getName()
+                , currentUserProvider.getCurrentUserId(), shop.getId())) {
             throw new ValidateException("Tên shop đã tồn tại");
         }
         shop.setName(newShop.getName());

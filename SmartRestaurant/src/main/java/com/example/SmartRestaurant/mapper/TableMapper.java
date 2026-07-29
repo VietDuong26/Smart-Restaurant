@@ -10,7 +10,7 @@ public class TableMapper {
 
     public TableEntity toEntity(TableRequest request) {
         return TableEntity.builder()
-                .name(request.getName())
+                .name(request.getName().trim().toLowerCase())
                 .qrEnabled(request.isQrEnabled())
                 .build();
     }

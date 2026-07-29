@@ -8,7 +8,7 @@ public final class TableValidator {
         if (request.getName() == null || request.getName().isBlank()) {
             throw new ValidateException("Tên bàn không được để trống");
         }
-        if (request.getName().length() > 100) {
+        if (request.getName().length() > 50) {
             throw new ValidateException("Tên bàn không được vượt quá 50 kí tự");
         }
     }

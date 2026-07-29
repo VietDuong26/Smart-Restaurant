@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
         validateCategoryRequest(request);
 
         CategoryEntity category = mapper.toEntity(request);
-        if (repository.findByNameAndShopId(category.getName(), shopId) != null) {
+        if (repository.existsByNameAndShopId(category.getName(), shopId)) {
             throw new ValidateException("Tên danh mục đã tồn tại trong shop");
         }
         category.setShop(shop);
@@ -56,10 +56,10 @@ public class CategoryServiceImpl implements CategoryService {
         authorizationService.checkOwnerShop(category.getShop().getId());
         validateCategoryRequest(categoryRequest);
         CategoryEntity newCategory = mapper.toEntity(categoryRequest);
-        if (repository.findByNameAndShopIdAndIdNot(
+        if (repository.existsByNameAndShopIdAndIdNot(
                 newCategory.getName()
                 , category.getShop().getId()
-                , category.getId()) != null) {
+                , category.getId())) {
             throw new ValidateException("Tên danh mục đã tồn tại trong shop");
         }
         category.setName(newCategory.getName());
