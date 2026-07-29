@@ -90,7 +90,7 @@ public class AreaController {
     @DeleteMapping("/{areaId}")
     @Operation(summary = "Xóa khu vực")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<?>> delete(
+    public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long areaId
     ) {
         areaService.delete(areaId);
@@ -102,10 +102,10 @@ public class AreaController {
         ));
     }
 
-    @PatchMapping("/{areaId}")
+    @PatchMapping("/{areaId}/activate")
     @Operation(summary = "Bật lại khu vực")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<?>> activate(
+    public ResponseEntity<ApiResponse<Void>> activate(
             @PathVariable Long areaId
     ) {
         areaService.activate(areaId);
