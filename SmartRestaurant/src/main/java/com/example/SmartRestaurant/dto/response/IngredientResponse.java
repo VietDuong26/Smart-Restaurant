@@ -3,8 +3,6 @@ package com.example.SmartRestaurant.dto.response;
 import com.example.SmartRestaurant.common.enums.IngredientType;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -15,6 +13,6 @@ public class IngredientResponse {
     private String name;
     private IngredientType type;
     private String unit;
-    private BigDecimal minStock;
-    private BigDecimal yieldRate;
+    private Double minStock;
+    private Double yieldRate;
 }

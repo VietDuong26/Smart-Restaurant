@@ -45,6 +45,7 @@ public class IngredientServiceImplement implements IngredientService {
         }
         ingredient.setShop(shop);
         ingredient.setStatus(IngredientStatus.ACTIVE);
+        ingredient.setCurrentStock(0.0);
         return mapper.toResponse(repository.save(ingredient));
     }
 
@@ -63,7 +64,6 @@ public class IngredientServiceImplement implements IngredientService {
         }
         ingredient.setName(newIngredient.getName());
         ingredient.setType(newIngredient.getType());
-        ingredient.setStatus(newIngredient.getStatus());
         ingredient.setUnit(newIngredient.getUnit());
         ingredient.setMinStock(newIngredient.getMinStock());
         ingredient.setYieldRate(newIngredient.getYieldRate());
