@@ -50,7 +50,7 @@ public class ProductServiceImplement implements ProductService {
         product.setStatus(ProductStatus.ACTIVE);
         ProductEntity savedProduct = repository.save(product);
         if (productRequest.getImageFile() != null) {
-            savedProduct.setImageUrl(cloudinaryService.uploadQRImage(productRequest.getImageFile(), savedProduct.getId()));
+            savedProduct.setImageUrl(cloudinaryService.uploadProductImage(productRequest.getImageFile(), savedProduct.getId()));
         }
         return mapper.toResponse(repository.save(savedProduct));
     }

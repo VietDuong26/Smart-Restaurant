@@ -31,6 +31,7 @@ public class ProductEntity {
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ProductStatus status;
 
     @ManyToOne

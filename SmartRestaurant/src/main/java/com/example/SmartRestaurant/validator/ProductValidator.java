@@ -14,7 +14,7 @@ public final class ProductValidator {
             throw new ValidateException("Tên sản phẩm không được vượt quá 50 kí tự");
         }
         if (request.getPrice() == null) {
-            throw new ValidateException("Tên sản phẩm không được để trống");
+            throw new ValidateException("Giá sản phẩm không được để trống");
         }
         if (request.getPrice().compareTo(BigDecimal.valueOf(0)) < 0) {
             throw new ValidateException("Giá sản phẩm không thể là số âm");

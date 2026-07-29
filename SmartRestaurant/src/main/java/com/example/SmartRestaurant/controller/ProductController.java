@@ -26,12 +26,12 @@ import static com.example.SmartRestaurant.common.Constant.URL;
 public class ProductController {
     ProductService productService;
 
-    @PostMapping("/{categoryId}")
+    @PostMapping(name = "/{categoryId}", consumes = "multipart/form-data")
     @Operation(summary = "Tạo sản phẩm")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<ProductResponse>> create(
             @PathVariable Long categoryId,
-            @RequestBody ProductRequest request
+            @ModelAttribute ProductRequest request
     ) {
 
         return ResponseEntity.status(201).body(new ApiResponse<>(
@@ -72,12 +72,12 @@ public class ProductController {
         ));
     }
 
-    @PutMapping("/{productId}")
+    @PutMapping(name = "/{productId}", consumes = "multipart/form-data")
     @Operation(summary = "Sửa thông tin sản phẩm")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<ProductResponse>> update(
             @PathVariable Long productId,
-            @RequestBody ProductRequest request
+            @ModelAttribute ProductRequest request
     ) {
         return ResponseEntity.ok(new ApiResponse<>(
                 200
