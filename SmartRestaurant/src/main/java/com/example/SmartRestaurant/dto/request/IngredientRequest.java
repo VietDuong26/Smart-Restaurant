@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -14,6 +16,6 @@ public class IngredientRequest {
     private String name;
     private IngredientType type;
     private String unit;
-    private Double minStock;
-    private Double yieldRate;
+    private BigDecimal minStock;
+    private BigDecimal yieldRate;
 }

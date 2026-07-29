@@ -1,7 +1,10 @@
 package com.example.SmartRestaurant.dto.response;
 
+import com.example.SmartRestaurant.common.enums.IngredientStatus;
 import com.example.SmartRestaurant.common.enums.IngredientType;
 import lombok.*;
+
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +16,8 @@ public class IngredientResponse {
     private String name;
     private IngredientType type;
     private String unit;
-    private Double minStock;
-    private Double yieldRate;
+    private BigDecimal minStock;
+    private BigDecimal yieldRate;
+    private BigDecimal currentStock;
+    private IngredientStatus status;
 }

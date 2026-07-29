@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -13,6 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductRequest {
     private String name;
     private String description;
-    private Double price;
+    private BigDecimal price;
     private MultipartFile imageFile;
 }

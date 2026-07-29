@@ -1,6 +1,7 @@
 package com.example.SmartRestaurant.service.ingredient;
 
 import com.example.SmartRestaurant.common.enums.IngredientStatus;
+import com.example.SmartRestaurant.common.enums.IngredientType;
 import com.example.SmartRestaurant.dto.request.IngredientRequest;
 import com.example.SmartRestaurant.dto.response.IngredientResponse;
 import com.example.SmartRestaurant.entity.IngredientEntity;
@@ -19,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 import static com.example.SmartRestaurant.validator.IngredientValidator.validateIngredientRequest;
 
@@ -43,9 +46,12 @@ public class IngredientServiceImplement implements IngredientService {
         if (repository.existsByNameAndShopId(ingredient.getName(), parentId)) {
             throw new ValidateException("Tên nguyên liệu đã tồn tại trong shop");
         }
+        if (request.getType() == IngredientType.DRY) {
+            ingredient.setYieldRate(BigDecimal.valueOf(0));
+        }
         ingredient.setShop(shop);
         ingredient.setStatus(IngredientStatus.ACTIVE);
-        ingredient.setCurrentStock(0.0);
+        ingredient.setCurrentStock(BigDecimal.valueOf(0));
         return mapper.toResponse(repository.save(ingredient));
     }
 
@@ -60,13 +66,15 @@ public class IngredientServiceImplement implements IngredientService {
                 newIngredient.getName()
                 , ingredient.getShop().getId()
                 , ingredient.getId())) {
-            throw new ValidateException("Tên danh mục đã tồn tại trong shop");
+            throw new ValidateException("Tên nguyên liệu đã tồn tại trong shop");
         }
         ingredient.setName(newIngredient.getName());
         ingredient.setType(newIngredient.getType());
         ingredient.setUnit(newIngredient.getUnit());
         ingredient.setMinStock(newIngredient.getMinStock());
-        ingredient.setYieldRate(newIngredient.getYieldRate());
+        ingredient.setYieldRate(request.getType() == IngredientType.DRY
+                ? BigDecimal.valueOf(0)
+                : newIngredient.getYieldRate());
         return mapper.toResponse(repository.save(ingredient));
     }
 

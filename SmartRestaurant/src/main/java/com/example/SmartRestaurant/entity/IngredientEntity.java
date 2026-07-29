@@ -5,6 +5,7 @@ import com.example.SmartRestaurant.common.enums.IngredientType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,16 +24,20 @@ public class IngredientEntity {
     private String name;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private IngredientType type;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private IngredientStatus status;
 
+    @Column(length = 20, nullable = false)
     private String unit;
 
-    private Double currentStock;
-    private Double minStock;
-    private Double yieldRate;
+    private BigDecimal currentStock;
+    private BigDecimal minStock;
+    private BigDecimal yieldRate;
+
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = false)
     private ShopEntity shop;

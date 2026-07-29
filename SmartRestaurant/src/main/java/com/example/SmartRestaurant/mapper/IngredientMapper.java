@@ -25,6 +25,8 @@ public class IngredientMapper {
                 .unit(ingredient.getUnit())
                 .minStock(ingredient.getMinStock())
                 .yieldRate(ingredient.getYieldRate())
+                .currentStock(ingredient.getCurrentStock())
+                .status(ingredient.getStatus())
                 .build();
     }
 }
