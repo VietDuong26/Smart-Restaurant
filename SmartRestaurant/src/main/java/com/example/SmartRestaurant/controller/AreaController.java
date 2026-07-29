@@ -4,7 +4,6 @@ import com.example.SmartRestaurant.common.enums.AreaStatus;
 import com.example.SmartRestaurant.dto.request.AreaRequest;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import com.example.SmartRestaurant.dto.response.AreaResponse;
-import com.example.SmartRestaurant.dto.response.CategoryResponse;
 import com.example.SmartRestaurant.service.area.AreaService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
@@ -91,7 +90,7 @@ public class AreaController {
     @DeleteMapping("/{areaId}")
     @Operation(summary = "Xóa khu vực")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<CategoryResponse>> delete(
+    public ResponseEntity<ApiResponse<?>> delete(
             @PathVariable Long areaId
     ) {
         areaService.delete(areaId);
@@ -106,7 +105,7 @@ public class AreaController {
     @PatchMapping("/{areaId}")
     @Operation(summary = "Bật lại khu vực")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<CategoryResponse>> activate(
+    public ResponseEntity<ApiResponse<?>> activate(
             @PathVariable Long areaId
     ) {
         areaService.activate(areaId);

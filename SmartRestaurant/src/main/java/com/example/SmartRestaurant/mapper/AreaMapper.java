@@ -14,12 +14,12 @@ public class AreaMapper {
                 .build();
     }
 
-    public AreaResponse toResponse(AreaEntity category) {
+    public AreaResponse toResponse(AreaEntity area) {
         return AreaResponse.builder()
-                .id(category.getId())
-                .name(category.getName().toUpperCase())
-                .description(category.getDescription())
-                .status(category.getStatus())
+                .id(area.getId())
+                .name(area.getName().toUpperCase())
+                .description(area.getDescription())
+                .status(area.getStatus())
                 .build();
     }
 }

@@ -1,6 +1,6 @@
 package com.example.SmartRestaurant.dto.response;
 
-import com.example.SmartRestaurant.common.enums.CategoryStatus;
+import com.example.SmartRestaurant.common.enums.AreaStatus;
 import lombok.*;
 
 @AllArgsConstructor
@@ -12,5 +12,5 @@ public class AreaResponse {
     private Long id;
     private String name;
     private String description;
-    private CategoryStatus status;
+    private AreaStatus status;
 }

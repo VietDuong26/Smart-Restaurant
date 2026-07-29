@@ -1,6 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
-import com.example.SmartRestaurant.common.enums.CategoryStatus;
+import com.example.SmartRestaurant.common.enums.AreaStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +18,7 @@ public class AreaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 100)
     private String name;
 
     @Column(length = 255)
@@ -26,7 +26,7 @@ public class AreaEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CategoryStatus status;
+    private AreaStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", nullable = false)

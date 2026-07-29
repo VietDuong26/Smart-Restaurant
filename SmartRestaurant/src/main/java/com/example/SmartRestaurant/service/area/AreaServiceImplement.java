@@ -1,7 +1,6 @@
 package com.example.SmartRestaurant.service.area;
 
 import com.example.SmartRestaurant.common.enums.AreaStatus;
-import com.example.SmartRestaurant.common.enums.CategoryStatus;
 import com.example.SmartRestaurant.dto.request.AreaRequest;
 import com.example.SmartRestaurant.dto.response.AreaResponse;
 import com.example.SmartRestaurant.entity.AreaEntity;
@@ -13,13 +12,20 @@ import com.example.SmartRestaurant.mapper.AreaMapper;
 import com.example.SmartRestaurant.repository.AreaRepository;
 import com.example.SmartRestaurant.repository.ShopRepository;
 import com.example.SmartRestaurant.service.authorization.AuthorizationService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.example.SmartRestaurant.validator.AreaValidator.validateAreaRequest;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Transactional
 public class AreaServiceImplement implements AreaService {
     AreaRepository repository;
     AuthorizationService authorizationService;
@@ -38,7 +44,7 @@ public class AreaServiceImplement implements AreaService {
             throw new ValidateException("Tên khu vực đã tồn tại trong shop");
         }
         area.setShop(shop);
-        area.setStatus(CategoryStatus.ACTIVE);
+        area.setStatus(AreaStatus.ACTIVE);
         return mapper.toResponse(repository.save(area));
     }
 
@@ -65,10 +71,10 @@ public class AreaServiceImplement implements AreaService {
         AreaEntity area = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Khu vực"));
         authorizationService.checkOwnerShop(area.getShop().getId());
-        if (area.getStatus() != CategoryStatus.ACTIVE) {
+        if (area.getStatus() != AreaStatus.ACTIVE) {
             throw new InvalidStatusException("khu vực");
         }
-        area.setStatus(CategoryStatus.INACTIVE);
+        area.setStatus(AreaStatus.INACTIVE);
         repository.save(area);
     }
 
@@ -96,10 +102,10 @@ public class AreaServiceImplement implements AreaService {
         AreaEntity area = repository.findById(areaId)
                 .orElseThrow(() -> new NotFoundException("Khu vực"));
         authorizationService.checkOwnerShop(area.getShop().getId());
-        if (area.getStatus() != CategoryStatus.INACTIVE) {
+        if (area.getStatus() != AreaStatus.INACTIVE) {
             throw new InvalidStatusException("khu vực");
         }
-        area.setStatus(CategoryStatus.ACTIVE);
+        area.setStatus(AreaStatus.ACTIVE);
         repository.save(area);
     }
 }

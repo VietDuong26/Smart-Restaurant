@@ -90,7 +90,7 @@ public class CategoryController {
     @DeleteMapping("/{categoryId}")
     @Operation(summary = "Xóa danh mục")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<CategoryResponse>> delete(
+    public ResponseEntity<ApiResponse<?>> delete(
             @PathVariable Long categoryId
     ) {
         categoryService.delete(categoryId);
@@ -105,7 +105,7 @@ public class CategoryController {
     @PatchMapping("/{categoryId}")
     @Operation(summary = "Bật lại danh mục")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<ApiResponse<CategoryResponse>> activate(
+    public ResponseEntity<ApiResponse<?>> activate(
             @PathVariable Long categoryId
     ) {
         categoryService.activate(categoryId);
