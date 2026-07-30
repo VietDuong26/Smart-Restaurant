@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -34,13 +35,22 @@ public class IngredientEntity {
     @Column(length = 20, nullable = false)
     private String unit;
 
+    @Column(nullable = false)
     private BigDecimal currentStock;
+
+    @Column(nullable = false)
     private BigDecimal minStock;
+
+    @Column(nullable = false)
     private BigDecimal yieldRate;
 
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = false)
     private ShopEntity shop;
+
+    @OneToMany(mappedBy = "ingredient")
+    private List<RecipeIngredientEntity> recipeIngredientEntities;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

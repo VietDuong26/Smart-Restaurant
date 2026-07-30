@@ -1,6 +1,5 @@
 package com.example.SmartRestaurant.entity;
 
-import com.example.SmartRestaurant.common.enums.ProductStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,33 +12,20 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@Table(name = "tbl_product")
-public class ProductEntity {
+@Table(name = "tbl_recipe_ingredient")
+public class RecipeIngredientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(length = 50, nullable = false)
-    private String name;
-
-    @Column(length = 500)
-    private String description;
-
-    @Column(nullable = false)
-    private BigDecimal price;
-
-    private String imageUrl;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ProductStatus status;
+    private BigDecimal quantity;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private CategoryEntity category;
-
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    @JoinColumn(name = "recipe_id", nullable = false)
     private RecipeEntity recipe;
+
+    @ManyToOne
+    @JoinColumn(name = "ingredient_id", nullable = false)
+    private IngredientEntity ingredient;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

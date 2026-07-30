@@ -36,12 +36,12 @@ public final class IngredientValidator {
 
         if (request.getType() == IngredientType.FRESH) {
             if (request.getYieldRate() == null) {
-                throw new ValidateException("Tỷ lệ thu hồi cùa hàng tươi không được để trống");
+                throw new ValidateException("Tỷ lệ thu hồi cùa nguyên liệu tươi không được để trống");
             }
 
-            if (request.getYieldRate().compareTo(BigDecimal.valueOf(0)) < 0
+            if (request.getYieldRate().compareTo(BigDecimal.valueOf(0)) <= 0
                     || request.getYieldRate().compareTo(BigDecimal.valueOf(1)) > 0) {
-                throw new ValidateException("Tỷ lệ thu hồi phải lớn hơn bằng 0 và nhỏ hơn hoặc bằng 1");
+                throw new ValidateException("Tỷ lệ thu hồi phải lớn hơn 0 và nhỏ hơn hoặc bằng 1");
             }
         }
     }

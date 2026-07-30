@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Set;
+
 @Repository
 public interface IngredientRepository extends JpaRepository<IngredientEntity, Long> {
     boolean existsByNameAndShopId(String name, Long parentId);
@@ -17,4 +19,9 @@ public interface IngredientRepository extends JpaRepository<IngredientEntity, Lo
 
     Page<IngredientEntity> findAllByShopIdAndStatus(Long shopId, IngredientStatus status, Pageable pageable);
 
+    boolean existsByIdIn(Set<Long> ids);
+
+    Set<IngredientEntity> findAllByIdInAndShopId(Set<Long> ingredientIds, Long shopId);
+
+    boolean existsByShopIdAndIdIn(Long shopId, Set<Long> requestIngredientId);
 }

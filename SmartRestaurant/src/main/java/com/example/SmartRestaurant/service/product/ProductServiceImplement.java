@@ -6,12 +6,14 @@ import com.example.SmartRestaurant.dto.request.ProductRequest;
 import com.example.SmartRestaurant.dto.response.ProductResponse;
 import com.example.SmartRestaurant.entity.CategoryEntity;
 import com.example.SmartRestaurant.entity.ProductEntity;
+import com.example.SmartRestaurant.entity.RecipeEntity;
 import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.mapper.ProductMapper;
 import com.example.SmartRestaurant.repository.CategoryRepository;
 import com.example.SmartRestaurant.repository.ProductRepository;
+import com.example.SmartRestaurant.repository.RecipeRepository;
 import com.example.SmartRestaurant.service.authorization.AuthorizationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,8 @@ public class ProductServiceImplement implements ProductService {
     ProductMapper mapper;
     CategoryRepository categoryRepository;
 
+    RecipeRepository recipeRepository;
+
     CloudinaryService cloudinaryService;
 
     @Override
@@ -52,6 +56,10 @@ public class ProductServiceImplement implements ProductService {
         if (productRequest.getImageFile() != null && !productRequest.getImageFile().isEmpty()) {
             savedProduct.setImageUrl(cloudinaryService.uploadProductImage(productRequest.getImageFile(), savedProduct.getId()));
         }
+        RecipeEntity recipe = RecipeEntity.builder()
+                .product(savedProduct)
+                .build();
+        recipeRepository.save(recipe);
         return mapper.toResponse(repository.save(savedProduct));
     }
 
