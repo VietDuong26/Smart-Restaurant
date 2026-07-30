@@ -16,7 +16,7 @@ import java.util.List;
 public class RecipeEntity {
 
     @OneToMany(mappedBy = "recipe")
-    List<RecipeIngredientEntity> recipeIngredientEntities;
+    private List<RecipeIngredientEntity> recipeIngredientEntities;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

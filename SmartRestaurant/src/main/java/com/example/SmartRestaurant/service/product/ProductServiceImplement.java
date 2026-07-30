@@ -56,10 +56,10 @@ public class ProductServiceImplement implements ProductService {
         if (productRequest.getImageFile() != null && !productRequest.getImageFile().isEmpty()) {
             savedProduct.setImageUrl(cloudinaryService.uploadProductImage(productRequest.getImageFile(), savedProduct.getId()));
         }
-        RecipeEntity recipe = RecipeEntity.builder()
+        RecipeEntity recipe = recipeRepository.save(RecipeEntity.builder()
                 .product(savedProduct)
-                .build();
-        recipeRepository.save(recipe);
+                .build());
+        savedProduct.setRecipe(recipe);
         return mapper.toResponse(repository.save(savedProduct));
     }
 

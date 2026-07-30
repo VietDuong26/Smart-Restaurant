@@ -19,9 +19,5 @@ public interface IngredientRepository extends JpaRepository<IngredientEntity, Lo
 
     Page<IngredientEntity> findAllByShopIdAndStatus(Long shopId, IngredientStatus status, Pageable pageable);
 
-    boolean existsByIdIn(Set<Long> ids);
-
     Set<IngredientEntity> findAllByIdInAndShopId(Set<Long> ingredientIds, Long shopId);
-
-    boolean existsByShopIdAndIdIn(Long shopId, Set<Long> requestIngredientId);
 }

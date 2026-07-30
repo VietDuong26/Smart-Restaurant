@@ -17,6 +17,8 @@ public class RecipeIngredientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private BigDecimal quantity;
 
     @ManyToOne
