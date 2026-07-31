@@ -20,4 +20,5 @@ public interface IngredientRepository extends JpaRepository<IngredientEntity, Lo
     Page<IngredientEntity> findAllByShopIdAndStatus(Long shopId, IngredientStatus status, Pageable pageable);
 
     Set<IngredientEntity> findAllByIdInAndShopId(Set<Long> ingredientIds, Long shopId);
+
 }

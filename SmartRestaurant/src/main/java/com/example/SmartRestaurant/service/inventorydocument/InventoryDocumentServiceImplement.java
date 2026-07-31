@@ -5,15 +5,18 @@ import com.example.SmartRestaurant.dto.request.InventoryDocumentApproveRequest;
 import com.example.SmartRestaurant.dto.request.InventoryDocumentRejectRequest;
 import com.example.SmartRestaurant.dto.request.InventoryDocumentRequest;
 import com.example.SmartRestaurant.dto.response.InventoryDocumentResponse;
+import com.example.SmartRestaurant.entity.IngredientEntity;
 import com.example.SmartRestaurant.entity.InventoryDocumentEntity;
 import com.example.SmartRestaurant.entity.ShopEntity;
 import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
+import com.example.SmartRestaurant.exception.OutOfStockException;
 import com.example.SmartRestaurant.mapper.InventoryDocumentMapper;
 import com.example.SmartRestaurant.repository.InventoryDocumentRepository;
 import com.example.SmartRestaurant.repository.ShopRepository;
 import com.example.SmartRestaurant.security.CurrentUserProvider;
 import com.example.SmartRestaurant.service.authorization.AuthorizationService;
+import com.example.SmartRestaurant.service.inventorydocumentitem.InventoryDocumentItemService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,6 +40,7 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
     CurrentUserProvider currentUserProvider;
     InventoryDocumentMapper mapper;
     ShopRepository shopRepository;
+    InventoryDocumentItemService documentItemService;
 
     @Override
     public InventoryDocumentResponse create(Long shopId, InventoryDocumentRequest request) {
@@ -48,7 +52,9 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
         documentEntity.setCreatedBy(currentUserProvider.getCurrentUser().getUser());
         documentEntity.setStatus(InventoryDocumentStatus.PENDING);
         documentEntity.setShop(shop);
-        return mapper.toResponse(repository.save(documentEntity));
+        InventoryDocumentEntity savedDocument = repository.save(documentEntity);
+        documentItemService.createAll(savedDocument, request.getItems());
+        return mapper.toResponse(savedDocument);
     }
 
     @Override
@@ -68,6 +74,24 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
         documentEntity.setStatus(InventoryDocumentStatus.CONFIRMED);
         documentEntity.setReviewedBy(currentUserProvider.getCurrentUser().getUser());
         documentEntity.setReviewedAt(LocalDateTime.now());
+        //lấy ra tất cả các ingredient của phiếu
+        switch (documentEntity.getType()) {
+            case IMPORT:
+                documentEntity.getItems().forEach(x -> {
+                    IngredientEntity ingredient = x.getIngredient();
+                    ingredient.setCurrentStock(ingredient.getCurrentStock().add(x.getQuantity()));
+                });
+                break;
+            case EXPORT, WASTE:
+                documentEntity.getItems().forEach(x -> {
+                    IngredientEntity ingredient = x.getIngredient();
+                    if (ingredient.getCurrentStock().compareTo(x.getQuantity()) < 0) {
+                        throw new OutOfStockException("Không đủ tồn kho");
+                    }
+                    ingredient.setCurrentStock(ingredient.getCurrentStock().subtract(x.getQuantity()));
+                });
+                break;
+        }
         return mapper.toResponse(repository.save(documentEntity));
     }
 

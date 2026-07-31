@@ -17,6 +17,7 @@ public class InventoryDocumentMapper {
     public InventoryDocumentResponse toResponse(InventoryDocumentEntity entity) {
         return InventoryDocumentResponse.builder()
                 .id(entity.getId())
+                .type(entity.getType())
                 .rejectReason(entity.getRejectReason())
                 .note(entity.getNote())
                 .createdAt(entity.getCreatedAt())
@@ -25,9 +26,7 @@ public class InventoryDocumentMapper {
                 .reviewedBy(entity.getReviewedBy() == null
                         ? null
                         : entity.getReviewedBy().getName())
-                .reviewedAt(entity.getReviewedAt() == null
-                        ? null
-                        : entity.getReviewedAt())
+                .reviewedAt(entity.getReviewedAt())
                 .build();
     }
 

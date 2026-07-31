@@ -51,6 +51,9 @@ public class IngredientEntity {
     @OneToMany(mappedBy = "ingredient")
     private List<RecipeIngredientEntity> recipeIngredientEntities;
 
+    @OneToMany(mappedBy = "ingredient")
+    private List<InventoryDocumentItemEntity> items;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

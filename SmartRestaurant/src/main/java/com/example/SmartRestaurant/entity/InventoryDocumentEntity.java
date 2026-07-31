@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -37,16 +38,19 @@ public class InventoryDocumentEntity {
     @JoinColumn(name = "shop_id", nullable = false)
     private ShopEntity shop;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "created_by", nullable = false, updatable = false)
     private UserEntity createdBy;//nhân viên nào tạo phiếu này
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "reviewed_by")
     private UserEntity reviewedBy;//chủ hay quản lý xử lý phiếu này
 
     @Column
     private LocalDateTime reviewedAt;
+
+    @OneToMany(mappedBy = "inventoryDocument")
+    private List<InventoryDocumentItemEntity> items;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

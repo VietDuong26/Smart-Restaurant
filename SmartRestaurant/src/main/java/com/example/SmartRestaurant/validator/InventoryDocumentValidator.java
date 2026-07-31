@@ -10,16 +10,19 @@ public final class InventoryDocumentValidator {
         if (request.getType() == null) {
             throw new ValidateException("Loại phiếu không được bỏ trống");
         }
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw new ValidateException("Danh sách vật tư không được bỏ trống");
+        }
     }
 
     public static void validateApproveRequest(InventoryDocumentApproveRequest request) {
-        if (request.getId() == null) {
+        if (request.getId() == null || request.getId() <= 0) {
             throw new ValidateException("Id phiếu không hợp lệ");
         }
     }
 
     public static void validateRejectRequest(InventoryDocumentRejectRequest request) {
-        if (request.getId() == null) {
+        if (request.getId() == null || request.getId() <= 0) {
             throw new ValidateException("Id phiếu không hợp lệ");
         }
         if (request.getRejectReason() == null || request.getRejectReason().isBlank()) {

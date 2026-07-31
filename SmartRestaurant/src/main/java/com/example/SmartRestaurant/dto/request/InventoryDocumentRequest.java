@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -13,4 +15,5 @@ import lombok.Setter;
 public class InventoryDocumentRequest {
     private String note;
     private InventoryDocumentType type;
+    private List<InventoryDocumentItemRequest> items;
 }
