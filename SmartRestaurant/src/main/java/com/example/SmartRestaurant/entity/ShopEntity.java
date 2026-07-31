@@ -42,6 +42,9 @@ public class ShopEntity {
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private List<RoleEntity> roles;
 
+    @OneToMany(mappedBy = "shop")
+    private List<InventoryDocumentEntity> inventoryDocuments;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

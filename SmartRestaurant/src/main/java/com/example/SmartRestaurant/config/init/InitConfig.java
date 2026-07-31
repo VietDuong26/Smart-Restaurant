@@ -67,7 +67,9 @@ public class InitConfig {
             "PERM_INGREDIENT_SETTING",
 
             // ================= INVENTORY =================
-            "PERM_INVENTORY_SETTING",
+            "PERM_INVENTORY_CREATE",
+            "PERM_INVENTORY_APPROVE",
+            "PERM_INVENTORY_REJECT",
 
             // ================= EMPLOYEE =================
             "PERM_EMPLOYEE_SETTING",
@@ -129,7 +131,7 @@ public class InitConfig {
         //mặc định 2 role admin và owner
         //mặc định các permissions như trên
         //kiểm tra mỗi lần có role hoặc permission bị xóa
-        
+
         for (String permissionName : permissions
         ) {
             if (!permissionRepository.existsByName(permissionName)) {

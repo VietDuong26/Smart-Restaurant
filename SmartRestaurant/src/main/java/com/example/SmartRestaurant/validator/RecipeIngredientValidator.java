@@ -28,6 +28,9 @@ public final class RecipeIngredientValidator {
             throw new ValidateException("Danh sách nguyên liệu không được bỏ trống");
         }
         requests.forEach(x -> {
+            if (x == null) {
+                throw new ValidateException("Dữ liệu định lượng không hợp lệ");
+            }
             if (x.getIngredientId() == null || x.getIngredientId() <= 0) {
                 throw new ValidateException("Id định lượng không hợp lệ");
             }
@@ -45,6 +48,9 @@ public final class RecipeIngredientValidator {
             throw new ValidateException("Danh sách không được bỏ trống");
         }
         requests.forEach(x -> {
+            if (x == null) {
+                throw new ValidateException("Dữ liệu định lượng không hợp lệ");
+            }
             if (x.getId() == null || x.getId() <= 0) {
                 throw new ValidateException("Id định lượng không hợp lệ");
             }
@@ -62,7 +68,7 @@ public final class RecipeIngredientValidator {
             throw new ValidateException("Danh sách id không được bỏ trống");
         }
         requestIds.forEach(x -> {
-            if (x == null) {
+            if (x == null || x <= 0) {
                 throw new ValidateException("Id không hợp lệ");
             }
         });
