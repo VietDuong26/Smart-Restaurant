@@ -9,6 +9,7 @@ import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.repository.IngredientRepository;
 import com.example.SmartRestaurant.repository.InventoryDocumentItemRepository;
+import com.example.SmartRestaurant.validator.InventoryDocumentItemValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -30,6 +31,9 @@ public class InventoryDocumentItemServiceImplement implements InventoryDocumentI
                 .map(x -> x.getIngredientId())
                 .collect(Collectors.toSet());
         //kiểm tra có nguyên liệu nào bị lặp trong request không
+        itemRequests.forEach(x -> {
+            InventoryDocumentItemValidator.validateRequest(x);
+        });
         if (ingredientIds.size() != itemRequests.size()) {
             throw new ValidateException("Có nguyên liệu bị trùng trong phiếu");
         }
