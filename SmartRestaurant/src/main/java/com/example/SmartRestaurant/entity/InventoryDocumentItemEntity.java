@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Builder
-@Table(name = "tbl_inventory_document")
+@Table(name = "tbl_inventory_document_item")
 public class InventoryDocumentItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.service.inventorydocumentitem;
 
+import com.example.SmartRestaurant.common.enums.IngredientStatus;
 import com.example.SmartRestaurant.dto.request.InventoryDocumentItemRequest;
 import com.example.SmartRestaurant.entity.IngredientEntity;
 import com.example.SmartRestaurant.entity.InventoryDocumentEntity;
@@ -22,7 +23,7 @@ public class InventoryDocumentItemServiceImplement implements InventoryDocumentI
     IngredientRepository ingredientRepository;
 
     @Override
-    public void createAll(InventoryDocumentEntity documentEntity, List<InventoryDocumentItemRequest> itemRequests) {
+    public List<InventoryDocumentItemEntity> createAll(InventoryDocumentEntity documentEntity, List<InventoryDocumentItemRequest> itemRequests) {
         //lấy tất cả các id nguyên liệu trong request
         Set<Long> ingredientIds = itemRequests
                 .stream()
@@ -34,7 +35,9 @@ public class InventoryDocumentItemServiceImplement implements InventoryDocumentI
         }
         //kiểm tra các nguyên liệu có tồn tại/ tồn tại trong shop không
         Set<IngredientEntity> ingredients =
-                ingredientRepository.findAllByIdInAndShopId(ingredientIds, documentEntity.getShop().getId());
+                ingredientRepository.findAllByIdInAndShopIdAndStatus(ingredientIds
+                        , documentEntity.getShop().getId()
+                        , IngredientStatus.ACTIVE);
         if (ingredientIds.size() != ingredients.size()) {
             throw new NotFoundException("Nguyên liệu");
         }
@@ -53,6 +56,6 @@ public class InventoryDocumentItemServiceImplement implements InventoryDocumentI
                     return entity;
                 })
                 .collect(Collectors.toList());
-        repository.saveAll(items);
+        return repository.saveAll(items);
     }
 }

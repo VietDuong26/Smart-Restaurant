@@ -8,9 +8,9 @@ import com.example.SmartRestaurant.dto.response.InventoryDocumentResponse;
 import com.example.SmartRestaurant.entity.IngredientEntity;
 import com.example.SmartRestaurant.entity.InventoryDocumentEntity;
 import com.example.SmartRestaurant.entity.ShopEntity;
+import com.example.SmartRestaurant.exception.InsufficientStockException;
 import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
-import com.example.SmartRestaurant.exception.OutOfStockException;
 import com.example.SmartRestaurant.mapper.InventoryDocumentMapper;
 import com.example.SmartRestaurant.repository.InventoryDocumentRepository;
 import com.example.SmartRestaurant.repository.ShopRepository;
@@ -53,7 +53,7 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
         documentEntity.setStatus(InventoryDocumentStatus.PENDING);
         documentEntity.setShop(shop);
         InventoryDocumentEntity savedDocument = repository.save(documentEntity);
-        documentItemService.createAll(savedDocument, request.getItems());
+        savedDocument.setItems(documentItemService.createAll(savedDocument, request.getItems()));
         return mapper.toResponse(savedDocument);
     }
 
@@ -86,7 +86,7 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
                 documentEntity.getItems().forEach(x -> {
                     IngredientEntity ingredient = x.getIngredient();
                     if (ingredient.getCurrentStock().compareTo(x.getQuantity()) < 0) {
-                        throw new OutOfStockException("Không đủ tồn kho");
+                        throw new InsufficientStockException("Không đủ tồn kho");
                     }
                     ingredient.setCurrentStock(ingredient.getCurrentStock().subtract(x.getQuantity()));
                 });

@@ -21,4 +21,6 @@ public interface IngredientRepository extends JpaRepository<IngredientEntity, Lo
 
     Set<IngredientEntity> findAllByIdInAndShopId(Set<Long> ingredientIds, Long shopId);
 
+    Set<IngredientEntity> findAllByIdInAndShopIdAndStatus(Set<Long> ingredientIds, Long id, IngredientStatus active);
+
 }
