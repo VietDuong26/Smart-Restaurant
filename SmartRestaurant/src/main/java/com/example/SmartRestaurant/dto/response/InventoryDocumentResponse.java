@@ -1,6 +1,7 @@
 package com.example.SmartRestaurant.dto.response;
 
 import com.example.SmartRestaurant.common.enums.InventoryDocumentStatus;
+import com.example.SmartRestaurant.common.enums.InventoryDocumentType;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,8 @@ import java.time.LocalDateTime;
 @Builder
 public class InventoryDocumentResponse {
     private Long id;
+    private InventoryDocumentType type;
+    private String rejectReason;
     private String note;
     private LocalDateTime createdAt;
     private InventoryDocumentStatus status;

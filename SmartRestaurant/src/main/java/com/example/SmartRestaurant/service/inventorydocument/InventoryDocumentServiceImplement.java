@@ -47,6 +47,7 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
         InventoryDocumentEntity documentEntity = mapper.toEntity(request);
         documentEntity.setCreatedBy(currentUserProvider.getCurrentUser().getUser());
         documentEntity.setStatus(InventoryDocumentStatus.PENDING);
+        documentEntity.setShop(shop);
         return mapper.toResponse(repository.save(documentEntity));
     }
 
@@ -55,16 +56,18 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
         authorizationService.checkOwnerShop(shopId);
-        validateAppoveRequest(request);
+        validateApproveRequest(request);
         InventoryDocumentEntity documentEntity = repository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException("Phiếu vật tư"));
+        if (!documentEntity.getShop().getId().equals(shopId)) {
+            throw new NotFoundException("Phiếu vật tư");
+        }
         if (documentEntity.getStatus() != InventoryDocumentStatus.PENDING) {
             throw new InvalidStatusException("phiếu vật tư");
         }
         documentEntity.setStatus(InventoryDocumentStatus.CONFIRMED);
         documentEntity.setReviewedBy(currentUserProvider.getCurrentUser().getUser());
         documentEntity.setReviewedAt(LocalDateTime.now());
-        documentEntity.setNote(request.getNote());
         return mapper.toResponse(repository.save(documentEntity));
     }
 
@@ -76,10 +79,13 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
         validateRejectRequest(request);
         InventoryDocumentEntity documentEntity = repository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException("Phiếu vật tư"));
+        if (!documentEntity.getShop().getId().equals(shopId)) {
+            throw new NotFoundException("Phiếu vật tư");
+        }
         if (documentEntity.getStatus() != InventoryDocumentStatus.PENDING) {
             throw new InvalidStatusException("phiếu vật tư");
         }
-        documentEntity.setStatus(InventoryDocumentStatus.CONFIRMED);
+        documentEntity.setStatus(InventoryDocumentStatus.CANCELLED);
         documentEntity.setReviewedBy(currentUserProvider.getCurrentUser().getUser());
         documentEntity.setReviewedAt(LocalDateTime.now());
         documentEntity.setRejectReason(request.getRejectReason());

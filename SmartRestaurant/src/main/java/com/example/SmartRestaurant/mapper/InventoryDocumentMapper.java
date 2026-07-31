@@ -17,12 +17,17 @@ public class InventoryDocumentMapper {
     public InventoryDocumentResponse toResponse(InventoryDocumentEntity entity) {
         return InventoryDocumentResponse.builder()
                 .id(entity.getId())
+                .rejectReason(entity.getRejectReason())
                 .note(entity.getNote())
                 .createdAt(entity.getCreatedAt())
                 .status(entity.getStatus())
                 .createdByName(entity.getCreatedBy().getName())
-                .reviewedBy(entity.getReviewedBy().getName())
-                .reviewedAt(entity.getReviewedAt())
+                .reviewedBy(entity.getReviewedBy() == null
+                        ? null
+                        : entity.getReviewedBy().getName())
+                .reviewedAt(entity.getReviewedAt() == null
+                        ? null
+                        : entity.getReviewedAt())
                 .build();
     }
 

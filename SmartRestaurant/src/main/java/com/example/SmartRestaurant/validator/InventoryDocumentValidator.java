@@ -12,7 +12,7 @@ public final class InventoryDocumentValidator {
         }
     }
 
-    public static void validateAppoveRequest(InventoryDocumentApproveRequest request) {
+    public static void validateApproveRequest(InventoryDocumentApproveRequest request) {
         if (request.getId() == null) {
             throw new ValidateException("Id phiếu không hợp lệ");
         }

@@ -22,8 +22,8 @@ public class InventoryDocumentEntity {
     @Column(length = 500)
     private String rejectReason;//chỉ dùng với status CANCELLED
 
-    @Column(length = 500)
-    private String note;//chỉ dùng với status confirmed
+    @Column(length = 500, updatable = false)
+    private String note;//chỉ dùng khi tạo phiếu
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -57,8 +57,4 @@ public class InventoryDocumentEntity {
         createdAt = LocalDateTime.now();
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        reviewedAt = LocalDateTime.now();
-    }
 }

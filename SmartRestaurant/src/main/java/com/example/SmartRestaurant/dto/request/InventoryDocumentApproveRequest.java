@@ -11,5 +11,4 @@ import lombok.Setter;
 @Setter
 public class InventoryDocumentApproveRequest {
     private Long id;
-    private String note;
 }
