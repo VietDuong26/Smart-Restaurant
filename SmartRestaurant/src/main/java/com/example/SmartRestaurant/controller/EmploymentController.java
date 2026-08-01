@@ -29,7 +29,7 @@ public class EmploymentController {
     @PreAuthorize("hasAuthority('')")
     ResponseEntity<ApiResponse<EmploymentResponse>> create(
             @PathVariable Long shopId,
-            EmploymentRequest request
+            @RequestBody EmploymentRequest request
     ) {
         return ResponseEntity.status(201).body(new ApiResponse<>(
                 201,
@@ -44,7 +44,7 @@ public class EmploymentController {
     @PreAuthorize("hasAuthority('')")
     ResponseEntity<ApiResponse<EmploymentResponse>> update(
             @PathVariable Long employmentId,
-            EmploymentRequest request
+            @RequestBody EmploymentRequest request
     ) {
         return ResponseEntity.status(200).body(new ApiResponse<>(
                 200,
@@ -69,10 +69,10 @@ public class EmploymentController {
         ));
     }
 
-    @PostMapping("/{shopId}/rehire/{userId}")
-    @Operation(summary = "Tạo quan hệ với nhân viên cũ")
+    @PostMapping("/{shopId}/existing-users/{userId}")
+    @Operation(summary = "Tạo quan hệ mới với nhân viên cũ")
     @PreAuthorize("hasAuthority('')")
-    public ResponseEntity<ApiResponse<EmploymentResponse>> rehire(
+    public ResponseEntity<ApiResponse<EmploymentResponse>> createFromExistingUser(
             @PathVariable("shopId") Long shopId,
             @PathVariable("userId") Long userId,
             @RequestBody EmploymentRehireRequest request
@@ -81,7 +81,7 @@ public class EmploymentController {
         return ResponseEntity.ok(new ApiResponse<>(
                 200
                 , "Thành công"
-                , employmentService.rehire(shopId, userId, request)
+                , employmentService.createFromExistingUser(shopId, userId, request)
                 , LocalDateTime.now()
         ));
     }

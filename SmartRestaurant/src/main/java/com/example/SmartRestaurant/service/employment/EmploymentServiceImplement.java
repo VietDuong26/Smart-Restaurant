@@ -11,21 +11,30 @@ import com.example.SmartRestaurant.entity.UserEntity;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.mapper.EmploymentMapper;
+import com.example.SmartRestaurant.mapper.ShopMapper;
 import com.example.SmartRestaurant.mapper.UserMapper;
 import com.example.SmartRestaurant.repository.EmploymentRepository;
 import com.example.SmartRestaurant.repository.RoleRepository;
 import com.example.SmartRestaurant.repository.ShopRepository;
 import com.example.SmartRestaurant.repository.UserRepository;
 import com.example.SmartRestaurant.security.CurrentUserProvider;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 import static com.example.SmartRestaurant.validator.EmploymentValidator.*;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@Transactional
 public class EmploymentServiceImplement implements EmploymentService {
     EmploymentRepository repository;
     ShopRepository shopRepository;
@@ -38,6 +47,8 @@ public class EmploymentServiceImplement implements EmploymentService {
     EmploymentMapper mapper;
 
     UserMapper userMapper;
+
+    ShopMapper shopMapper;
 
     CurrentUserProvider currentUserProvider;
 
@@ -77,7 +88,10 @@ public class EmploymentServiceImplement implements EmploymentService {
         employment.setStatus(EmploymentStatus.ACTIVE);
         employment.setShop(shop);
         employment.setUser(savedUser);
-        return mapper.toResponse(repository.save(employment));
+        EmploymentResponse employmentResponse = mapper.toResponse(repository.save(employment));
+        employmentResponse.setUser(userMapper.toResponse(savedUser));
+        employmentResponse.setShop(shopMapper.toResponse(shop));
+        return employmentResponse;
     }
 
     @Override
@@ -93,8 +107,28 @@ public class EmploymentServiceImplement implements EmploymentService {
             throw new NotFoundException("Quan hệ nhân viên-shop");
         }
         validateUpdateRequest(employmentRequest);
+        //kiểm tra có roleId nào bị trùng trong request không
+        Set<Long> roleIds = new HashSet<>(employmentRequest.getRoleIds());
+        if (roleIds.size() != employmentRequest.getRoleIds().size()) {
+            throw new ValidateException("Có vai trò bị trùng");
+        }
+        //kiểm tra có role nào mà không thuộc shop không
+        Set<RoleEntity> roles = roleRepository.findAllByIdInAndShopId(roleIds, employment.getShop().getId());
+        if (roles.size() != roleIds.size()) {
+            throw new NotFoundException("Vai trò");
+        }
         employment.setSalary(employmentRequest.getSalary());
-        return mapper.toResponse(repository.save(employment));
+        //xóa các role cũ của nhân viên này tại shop này
+        employment.getUser().getRoles().removeIf(role ->
+                role.getShop() != null
+                        && role.getShop().getId().equals(employment.getShop().getId())
+        );
+        //thêm role mới
+        employment.getUser().getRoles().addAll(roles);
+        EmploymentResponse employmentResponse = mapper.toResponse(repository.save(employment));
+        employmentResponse.setUser(userMapper.toResponse(employment.getUser()));
+        employmentResponse.setShop(shopMapper.toResponse(employment.getShop()));
+        return employmentResponse;
     }
 
     @Override
@@ -109,7 +143,21 @@ public class EmploymentServiceImplement implements EmploymentService {
                 EmploymentStatus.ACTIVE)) {
             throw new NotFoundException("Quan hệ nhân viên-shop");
         }
+        if (employment.getStatus() != EmploymentStatus.ACTIVE) {
+            throw new ValidateException(
+                    "Quan hệ làm việc đã kết thúc"
+            );
+        }
         employment.setStatus(EmploymentStatus.TERMINATED);
+        employment.setEndedAt(LocalDate.now());
+        UserEntity user = employment.getUser();
+        //gỡ toàn bộ role theo shopId
+        Long shopId = employment.getShop().getId();
+        user.getRoles().removeIf(role ->
+                role.getShop() != null
+                        && role.getShop().getId().equals(shopId)
+        );
+        userRepository.save(user);
         repository.save(employment);
     }
 
@@ -128,8 +176,9 @@ public class EmploymentServiceImplement implements EmploymentService {
         return mapper.toResponse(employment);
     }
 
+
     @Override
-    public EmploymentResponse rehire(Long shopId, Long userId, EmploymentRehireRequest request) {
+    public EmploymentResponse createFromExistingUser(Long shopId, Long userId, EmploymentRehireRequest request) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
         //ở trên controller đã có check permission rồi
@@ -158,11 +207,21 @@ public class EmploymentServiceImplement implements EmploymentService {
         }
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Nhân viên"));
-        user.setRoles(roles);
+        //xóa các role cũ của nhân viên này tại shop này
+        user.getRoles().removeIf(role ->
+                role.getShop() != null
+                        && role.getShop().getId().equals(shopId)
+        );
+        //thêm role mới
+        user.getRoles().addAll(roles);
         userRepository.save(user);
         EmploymentEntity employment = mapper.toRehireEntity(request);
         employment.setShop(shop);
         employment.setUser(user);
-        return mapper.toResponse(repository.save(employment));
+        employment.setStatus(EmploymentStatus.ACTIVE);
+        EmploymentResponse employmentResponse = mapper.toResponse(repository.save(employment));
+        employmentResponse.setUser(userMapper.toResponse(user));
+        employmentResponse.setShop(shopMapper.toResponse(shop));
+        return employmentResponse;
     }
 }

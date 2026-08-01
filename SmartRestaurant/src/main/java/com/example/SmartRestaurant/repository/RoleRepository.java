@@ -1,6 +1,9 @@
 package com.example.SmartRestaurant.repository;
 
+import com.example.SmartRestaurant.common.enums.RoleStatus;
 import com.example.SmartRestaurant.entity.RoleEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +17,11 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
 
 
     Set<RoleEntity> findAllByIdInAndShopId(Set<Long> roleIds, Long parentId);
+
+    boolean existsByNameAndShopId(String name, Long parentId);
+
+    Page<RoleEntity> findAllByShopId(Long shopId, Pageable pageable);
+
+    Page<RoleEntity> findAllByShopIdAndStatus(Long shopId, RoleStatus status, Pageable pageable);
 
 }

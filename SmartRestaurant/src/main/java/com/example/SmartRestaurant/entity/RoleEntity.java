@@ -1,10 +1,8 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.enums.RoleStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Set;
 
@@ -13,6 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 @Table(name = "tbl_role")
 public class RoleEntity {
     @Id
@@ -21,6 +20,10 @@ public class RoleEntity {
 
     @Column(unique = true)
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RoleStatus status;
 
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = true)

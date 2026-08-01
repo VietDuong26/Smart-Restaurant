@@ -7,6 +7,7 @@ import com.example.SmartRestaurant.service.base.ParentResourceBaseService;
 
 public interface EmploymentService extends ParentResourceBaseService<EmploymentRequest, EmploymentResponse, Long> {
 
-    EmploymentResponse rehire(Long shopId, Long userId, EmploymentRehireRequest request);
+
+    EmploymentResponse createFromExistingUser(Long shopId, Long userId, EmploymentRehireRequest request);
 
 }

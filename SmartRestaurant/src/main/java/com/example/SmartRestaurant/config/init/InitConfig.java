@@ -35,10 +35,61 @@ public class InitConfig {
 
     UserRepository userRepository;
     List<String> permissions = List.of(
-            // ================= INVENTORY =================
+            //SHOP
+            "PERM_SHOP_VIEW",
+            "PERM_SHOP_UPDATE",
+
+            //EMPLOYMENT
+            "PERM_EMPLOYMENT_VIEW",
+            "PERM_EMPLOYMENT_CREATE",
+            "PERM_EMPLOYMENT_UPDATE",
+            "PERM_EMPLOYMENT_TERMINATE",
+            "PERM_EMPLOYMENT_REHIRE",
+
+            //CATEGORY
+            "PERM_CATEGORY_VIEW",
+            "PERM_CATEGORY_CREATE",
+            "PERM_CATEGORY_UPDATE",
+            "PERM_CATEGORY_DELETE",
+
+            //PRODUCT
+            "PERM_PRODUCT_VIEW",
+            "PERM_PRODUCT_CREATE",
+            "PERM_PRODUCT_UPDATE",
+            "PERM_PRODUCT_DELETE",
+
+            //AREA
+            "PERM_AREA_VIEW",
+            "PERM_AREA_CREATE",
+            "PERM_AREA_UPDATE",
+            "PERM_AREA_DELETE",
+
+            //INGREDIENT
+            "PERM_INGREDIENT_VIEW",
+            "PERM_INGREDIENT_CREATE",
+            "PERM_INGREDIENT_UPDATE",
+            "PERM_INGREDIENT_DELETE",
+
+            //INVENTORY
+            "PERM_INVENTORY_VIEW",
             "PERM_INVENTORY_CREATE",
+            "PERM_INVENTORY_UPDATE",
+            "PERM_INVENTORY_DELETE",
             "PERM_INVENTORY_APPROVE",
-            "PERM_INVENTORY_REJECT"
+            "PERM_INVENTORY_REJECT",
+
+            //RECIPE
+            "PERM_RECIPE_VIEW",
+            "PERM_RECIPE_CREATE",
+            "PERM_RECIPE_UPDATE",
+            "PERM_RECIPE_DELETE",
+
+            //TABLE
+            "PERM_TABLE_VIEW",
+            "PERM_TABLE_CREATE",
+            "PERM_TABLE_UPDATE",
+            "PERM_TABLE_DELETE"
+
     );
     List<String> roles = List.of(
             "ROLE_ADMIN"

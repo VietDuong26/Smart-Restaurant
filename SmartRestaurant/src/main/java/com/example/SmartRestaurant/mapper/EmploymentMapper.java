@@ -28,6 +28,7 @@ public class EmploymentMapper {
                 .salary(employment.getSalary())
                 .workFrom(employment.getWorkFrom())
                 .endedAt(employment.getEndedAt())
+                .status(employment.getStatus())
                 .build();
     }
 }
