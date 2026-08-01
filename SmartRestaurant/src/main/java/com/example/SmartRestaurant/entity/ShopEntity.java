@@ -45,6 +45,9 @@ public class ShopEntity {
     @OneToMany(mappedBy = "shop")
     private List<InventoryDocumentEntity> inventoryDocuments;
 
+    @OneToMany(mappedBy = "shop")
+    private List<EmploymentEntity> employments;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

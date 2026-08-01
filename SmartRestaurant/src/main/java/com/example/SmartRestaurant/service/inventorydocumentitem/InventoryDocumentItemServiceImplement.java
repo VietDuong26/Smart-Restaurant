@@ -25,15 +25,16 @@ public class InventoryDocumentItemServiceImplement implements InventoryDocumentI
 
     @Override
     public List<InventoryDocumentItemEntity> createAll(InventoryDocumentEntity documentEntity, List<InventoryDocumentItemRequest> itemRequests) {
+        itemRequests.forEach(x -> {
+            InventoryDocumentItemValidator.validateRequest(x);
+        });
         //lấy tất cả các id nguyên liệu trong request
         Set<Long> ingredientIds = itemRequests
                 .stream()
                 .map(x -> x.getIngredientId())
                 .collect(Collectors.toSet());
         //kiểm tra có nguyên liệu nào bị lặp trong request không
-        itemRequests.forEach(x -> {
-            InventoryDocumentItemValidator.validateRequest(x);
-        });
+
         if (ingredientIds.size() != itemRequests.size()) {
             throw new ValidateException("Có nguyên liệu bị trùng trong phiếu");
         }

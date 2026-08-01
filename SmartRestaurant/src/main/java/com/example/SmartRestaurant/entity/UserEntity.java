@@ -62,6 +62,9 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<RefreshTokenEntity> refreshTokens;
 
+    @OneToMany(mappedBy = "user")
+    private List<EmploymentEntity> employments;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

@@ -35,78 +35,10 @@ public class InitConfig {
 
     UserRepository userRepository;
     List<String> permissions = List.of(
-            // ================= MENU =================
-            "PERM_MENU_VIEW",
-            "PERM_MENU_ORDER",
-            "PERM_MENU_DISCOUNT",
-            "PERM_MENU_CANCEL_ITEM",
-            "PERM_MENU_GIFT_ITEM",
-            "PERM_MENU_TRANSFER_TABLE",
-            "PERM_MENU_MERGE_TABLE",
-            "PERM_MENU_SEPARATE_ORDER",
-            "PERM_MENU_CHANGE_PRICE",
-
-            // ================= ORDER =================
-            "PERM_ORDER_VIEW",
-            "PERM_ORDER_PRINT",
-            "PERM_ORDER_ACCEPT",
-            "PERM_ORDER_DELETE",
-            "PERM_ORDER_CANCEL",
-            "PERM_ORDER_UPDATE",
-            "PERM_ORDER_PAYMENT",
-            "PERM_ORDER_CHANGE_STATUS",
-            "PERM_ORDER_INVOICE",
-
-            // ================= SHOP =================
-            "PERM_SHOP_SETTING",
-
-            // ================= PRODUCT =================
-            "PERM_PRODUCT_SETTING",
-
-            // ================= INGREDIENT =================
-            "PERM_INGREDIENT_SETTING",
-
             // ================= INVENTORY =================
             "PERM_INVENTORY_CREATE",
             "PERM_INVENTORY_APPROVE",
-            "PERM_INVENTORY_REJECT",
-
-            // ================= EMPLOYEE =================
-            "PERM_EMPLOYEE_SETTING",
-
-            // ================= FINANCE =================
-            "PERM_FINANCE_SETTING",
-
-            // ================= ATTENDANCE =================
-            "PERM_ATTENDANCE_SETTING",
-
-            // ================= MEMBER =================
-            "PERM_MEMBER_SETTING",
-
-            // ================= ROLE =================
-            "PERM_ROLE_SETTING",
-
-            // ================= HARDWARE =================
-            "PERM_HARDWARE_SETTING",
-
-            // ================= REPORT =================
-            "PERM_REPORT_DAILY_BUSINESS",
-            "PERM_REPORT_DAILY_STORE_RANKING",
-            "PERM_REPORT_DAILY_ORDER_SUMMARY",
-            "PERM_REPORT_DAILY_ORDER_RANKING",
-            "PERM_REPORT_DAILY_ATTENDANCE",
-            "PERM_REPORT_WEEKLY_BUSINESS_RANKING",
-            "PERM_REPORT_MONTHLY_TARGET",
-            "PERM_REPORT_MONTHLY_PROFIT",
-            "PERM_REPORT_DAILY_INVENTORY",
-            "PERM_REPORT_DAILY_SHIFT",
-            "PERM_REPORT_CATEGORY",
-            "PERM_REPORT_DISCOUNT",
-            "PERM_REPORT_DEVICE",
-
-            // ================= OTHER =================
-            "PERM_SHIFT_HANDOVER",
-            "PERM_ATTENDANCE_QR_SCAN"
+            "PERM_INVENTORY_REJECT"
     );
     List<String> roles = List.of(
             "ROLE_ADMIN"
