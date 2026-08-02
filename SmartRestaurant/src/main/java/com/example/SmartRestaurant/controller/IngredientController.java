@@ -28,7 +28,7 @@ public class IngredientController {
 
     @PostMapping("/{shopId}")
     @Operation(summary = "Tạo nguyên liệu")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_INGREDIENT_CREATE')")
     public ResponseEntity<ApiResponse<IngredientResponse>> create(
             @PathVariable Long shopId,
             @RequestBody IngredientRequest request
@@ -44,7 +44,7 @@ public class IngredientController {
 
     @GetMapping("/shop/{shopId}")
     @Operation(summary = "Tìm tất cả nguyên liệu theo shopId")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_INGREDIENT_VIEW')")
     public ResponseEntity<ApiResponse<Page<IngredientResponse>>> getAllByShopId(
             @PathVariable Long shopId,
             @RequestParam(required = false) IngredientStatus status,
@@ -60,7 +60,7 @@ public class IngredientController {
 
     @GetMapping("/{ingredientId}")
     @Operation(summary = "Tìm nguyên liệu theo id")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_INGREDIENT_VIEW')")
     public ResponseEntity<ApiResponse<IngredientResponse>> getById(
             @PathVariable Long ingredientId
     ) {
@@ -74,7 +74,7 @@ public class IngredientController {
 
     @PutMapping("/{ingredientId}")
     @Operation(summary = "Sửa thông tin nguyên liệu")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_INGREDIENT_UPDATE')")
     public ResponseEntity<ApiResponse<IngredientResponse>> update(
             @PathVariable Long ingredientId,
             @RequestBody IngredientRequest request
@@ -89,7 +89,7 @@ public class IngredientController {
 
     @DeleteMapping("/{ingredientId}")
     @Operation(summary = "Xóa nguyên liệu")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_INGREDIENT_DELETE')")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long ingredientId
     ) {
@@ -104,7 +104,7 @@ public class IngredientController {
 
     @PatchMapping("/{ingredientId}/activate")
     @Operation(summary = "Bật lại nguyên liệu")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_INGREDIENT_ACTIVATE')")
     public ResponseEntity<ApiResponse<Void>> activate(
             @PathVariable Long ingredientId
     ) {

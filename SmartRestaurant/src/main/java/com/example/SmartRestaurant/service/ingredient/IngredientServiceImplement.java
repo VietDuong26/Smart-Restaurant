@@ -38,13 +38,14 @@ public class IngredientServiceImplement implements IngredientService {
     @Override
     public IngredientResponse create(IngredientRequest request, Long parentId) {
         ShopEntity shop = shopRepository.findById(parentId)
-                .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(parentId);
+                .orElseThrow(() -> new NotFoundException("Cửa hàng"));
+        authorizationService.checkOwnerShop(shop);
+        authorizationService.checkPermissionInShop(shop, "PERM_INGREDIENT_CREATE");
         validateIngredientRequest(request);
 
         IngredientEntity ingredient = mapper.toEntity(request);
         if (repository.existsByNameAndShopId(ingredient.getName(), parentId)) {
-            throw new ValidateException("Tên nguyên liệu đã tồn tại trong shop");
+            throw new ValidateException("Tên nguyên liệu đã tồn tại trong cửa hàng");
         }
         if (request.getType() == IngredientType.DRY) {
             ingredient.setYieldRate(BigDecimal.valueOf(0));
@@ -59,14 +60,15 @@ public class IngredientServiceImplement implements IngredientService {
     public IngredientResponse update(Long id, IngredientRequest request) {
         IngredientEntity ingredient = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Nguyên liệu"));
-        authorizationService.checkOwnerShop(ingredient.getShop().getId());
+        authorizationService.checkOwnerShop(ingredient.getShop());
+        authorizationService.checkPermissionInShop(ingredient.getShop(), "PERM_INGREDIENT_UPDATE");
         validateIngredientRequest(request);
         IngredientEntity newIngredient = mapper.toEntity(request);
         if (repository.existsByNameAndShopIdAndIdNot(
                 newIngredient.getName()
                 , ingredient.getShop().getId()
                 , ingredient.getId())) {
-            throw new ValidateException("Tên nguyên liệu đã tồn tại trong shop");
+            throw new ValidateException("Tên nguyên liệu đã tồn tại trong cửa hàng");
         }
         ingredient.setName(newIngredient.getName());
         ingredient.setType(newIngredient.getType());
@@ -82,7 +84,8 @@ public class IngredientServiceImplement implements IngredientService {
     public void delete(Long id) {
         IngredientEntity ingredient = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Nguyên liệu"));
-        authorizationService.checkOwnerShop(ingredient.getShop().getId());
+        authorizationService.checkOwnerShop(ingredient.getShop());
+        authorizationService.checkPermissionInShop(ingredient.getShop(), "PERM_INGREDIENT_DELETE");
         if (ingredient.getStatus() != IngredientStatus.ACTIVE) {
             throw new InvalidStatusException("nguyên liệu");
         }
@@ -94,7 +97,8 @@ public class IngredientServiceImplement implements IngredientService {
     public IngredientResponse getById(Long id) {
         IngredientEntity ingredient = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Nguyên liệu"));
-        authorizationService.checkOwnerShop(ingredient.getShop().getId());
+        authorizationService.checkOwnerShop(ingredient.getShop());
+        authorizationService.checkPermissionInShop(ingredient.getShop(), "PERM_INGREDIENT_VIEW");
         return mapper.toResponse(ingredient);
     }
 
@@ -102,7 +106,8 @@ public class IngredientServiceImplement implements IngredientService {
     public Page<IngredientResponse> getAllByShopId(Long shopId, IngredientStatus status, Pageable pageable) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(shopId);
+        authorizationService.checkOwnerShop(shop);
+        authorizationService.checkPermissionInShop(shop, "PERM_INGREDIENT_VIEW");
         Page<IngredientEntity> ingredients = status == null
                 ? repository.findAllByShopId(shopId, pageable)
                 : repository.findAllByShopIdAndStatus(shopId, status, pageable);
@@ -113,7 +118,8 @@ public class IngredientServiceImplement implements IngredientService {
     public void activate(Long ingredientId) {
         IngredientEntity ingredient = repository.findById(ingredientId)
                 .orElseThrow(() -> new NotFoundException("Nguyên liệu"));
-        authorizationService.checkOwnerShop(ingredient.getShop().getId());
+        authorizationService.checkOwnerShop(ingredient.getShop());
+        authorizationService.checkPermissionInShop(ingredient.getShop(), "PERM_INGREDIENT_ACTIVATE");
         if (ingredient.getStatus() != IngredientStatus.INACTIVE) {
             throw new InvalidStatusException("nguyên liệu");
         }

@@ -47,24 +47,23 @@ public class RoleController {
             @PathVariable Long roleId,
             @RequestBody RoleRequest request
     ) {
-        return ResponseEntity.status(201).body(new ApiResponse<>(
-                201,
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200,
                 "Thành công",
                 roleService.update(roleId, request),
                 LocalDateTime.now()
         ));
     }
 
-    @DeleteMapping("/{shopId}")
+    @DeleteMapping("/{roleId}")
     @Operation(summary = "Xóa role")
     @PreAuthorize("hasRole('OWNER')")
     ResponseEntity<ApiResponse<Void>> delete(
-            @PathVariable Long shopId,
-            @RequestBody RoleRequest request
+            @PathVariable Long roleId
     ) {
-        roleService.create(request, shopId);
-        return ResponseEntity.status(201).body(new ApiResponse<>(
-                201,
+        roleService.delete(roleId);
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200,
                 "Thành công",
                 null,
                 LocalDateTime.now()
@@ -77,15 +76,15 @@ public class RoleController {
     ResponseEntity<ApiResponse<RoleResponse>> getById(
             @PathVariable Long roleId
     ) {
-        return ResponseEntity.status(201).body(new ApiResponse<>(
-                201,
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200,
                 "Thành công",
                 roleService.getById(roleId),
                 LocalDateTime.now()
         ));
     }
 
-    @GetMapping("/{shopId}")
+    @GetMapping("/roles/{shopId}")
     @Operation(summary = "Xem các role trong shop")
     @PreAuthorize("hasRole('OWNER')")
     ResponseEntity<ApiResponse<Page<RoleResponse>>> getAllByShopId(
@@ -93,8 +92,8 @@ public class RoleController {
             @RequestParam(required = false) RoleStatus status,
             Pageable pageable
     ) {
-        return ResponseEntity.status(201).body(new ApiResponse<>(
-                201,
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200,
                 "Thành công",
                 roleService.getAllByShopId(shopId, status, pageable),
                 LocalDateTime.now()

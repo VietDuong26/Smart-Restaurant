@@ -28,7 +28,7 @@ public class TableController {
 
     @PostMapping("/area/{areaId}")
     @Operation(summary = "Tao bàn theo khu vực")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_TABLE_CREATE')")
     ResponseEntity<ApiResponse<TableResponse>> create(
             @PathVariable Long areaId,
             @RequestBody TableRequest request
@@ -43,7 +43,7 @@ public class TableController {
 
     @GetMapping("/{tableId}")
     @Operation(summary = "Xem chi tiết bàn")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_TABLE_VIEW')")
     ResponseEntity<ApiResponse<TableResponse>> getById(
             @PathVariable Long tableId
     ) {
@@ -57,7 +57,7 @@ public class TableController {
 
     @GetMapping("/area/{areaId}")
     @Operation(summary = "Danh sách bàn trong khu vực")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_TABLE_VIEW')")
     ResponseEntity<ApiResponse<Page<TableResponse>>> getAllByAreaId(
             @PathVariable Long areaId
             , @RequestParam(required = false) TableStatus status
@@ -73,7 +73,7 @@ public class TableController {
 
     @PutMapping("/{tableId}")
     @Operation(summary = "Sửa bàn")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_TABLE_UPDATE')")
     ResponseEntity<ApiResponse<TableResponse>> update(
             @PathVariable Long tableId
             , @RequestBody TableRequest request
@@ -88,7 +88,7 @@ public class TableController {
 
     @DeleteMapping("/{tableId}")
     @Operation(summary = "Xóa bàn")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_TABLE_DELETE')")
     ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long tableId
     ) {
@@ -103,7 +103,7 @@ public class TableController {
 
     @PatchMapping("/{tableId}/activate")
     @Operation(summary = "Mở lại bàn")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_TABLE_ACTIVATE'))")
     ResponseEntity<ApiResponse<Void>> activate(
             @PathVariable Long tableId
     ) {

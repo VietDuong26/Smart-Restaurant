@@ -26,8 +26,8 @@ public class RecipeIngredientController {
     RecipeIngredientService service;
 
     @PostMapping
-    @Operation(summary = "Thêm nguyên liệu vào công thức")
-    @PreAuthorize("hasRole('OWNER')")
+    @Operation(summary = "Thêm định lượng vào công thức")
+    @PreAuthorize("hasAuthority('PERM_RECIPE_INGREDIENT_CREATE')")
     ResponseEntity<ApiResponse<List<RecipeIngredientResponse>>> create(
             @PathVariable Long recipeId,
             @RequestBody List<RecipeIngredientCreateRequest> recipeIngredientRequestList
@@ -42,7 +42,7 @@ public class RecipeIngredientController {
 
     @PutMapping
     @Operation(summary = "Điều chỉnh định lượng nguyên liệu")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_RECIPE_INGREDIENT_UPDATE')")
     ResponseEntity<ApiResponse<List<RecipeIngredientResponse>>> update(
             @PathVariable Long recipeId,
             @RequestBody List<RecipeIngredientUpdateRequest> recipeIngredientRequestList
@@ -57,7 +57,7 @@ public class RecipeIngredientController {
 
     @DeleteMapping
     @Operation(summary = "Xóa định lượng nguyên liệu")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_RECIPE_INGREDIENT_DELETE')")
     ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long recipeId,
             @RequestBody List<Long> recipeIngredientIdList
@@ -73,7 +73,7 @@ public class RecipeIngredientController {
 
     @GetMapping
     @Operation(summary = "Lấy danh sách định lượng theo công thức")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_RECIPE_INGREDIENT_VIEW')")
     ResponseEntity<ApiResponse<List<RecipeIngredientResponse>>> getByRecipeId(
             @PathVariable Long recipeId
     ) {

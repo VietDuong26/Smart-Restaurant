@@ -1,7 +1,9 @@
 package com.example.SmartRestaurant.service.authorization;
 
-public interface AuthorizationService {
-    void checkOwnerShop(Long shopId);
+import com.example.SmartRestaurant.entity.ShopEntity;
 
-    void hasPermissionInShop(Long shopId, String permissionName);
+public interface AuthorizationService {
+    void checkOwnerShop(ShopEntity shop);
+
+    void checkPermissionInShop(ShopEntity shop, String permisisonName);
 }

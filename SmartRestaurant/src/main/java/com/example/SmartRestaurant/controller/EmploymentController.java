@@ -26,7 +26,7 @@ public class EmploymentController {
 
     @PostMapping("/{shopId}")
     @Operation(summary = "Thêm mới quan hệ giữa nhân viên và shop")
-    @PreAuthorize("hasAuthority('')")
+    @PreAuthorize("hasAuthority('PERM_EMPLOYMENT_CREATE')")
     ResponseEntity<ApiResponse<EmploymentResponse>> create(
             @PathVariable Long shopId,
             @RequestBody EmploymentRequest request
@@ -41,7 +41,7 @@ public class EmploymentController {
 
     @PutMapping("/{employmentId}")
     @Operation(summary = "Sửa quan hệ giữa nhân viên và shop")
-    @PreAuthorize("hasAuthority('')")
+    @PreAuthorize("hasAuthority('PERM_EMPLOYMENT_UPDATE')")
     ResponseEntity<ApiResponse<EmploymentResponse>> update(
             @PathVariable Long employmentId,
             @RequestBody EmploymentRequest request
@@ -56,7 +56,7 @@ public class EmploymentController {
 
     @DeleteMapping("/{employmentId}")
     @Operation(summary = "Xóa quan hệ")
-    @PreAuthorize("hasAuthority('')")
+    @PreAuthorize("hasAuthority('PERM_EMPLOYMENT_TERMINATE')")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long employmentId
     ) {
@@ -71,7 +71,7 @@ public class EmploymentController {
 
     @PostMapping("/{shopId}/existing-users/{userId}")
     @Operation(summary = "Tạo quan hệ mới với nhân viên cũ")
-    @PreAuthorize("hasAuthority('')")
+    @PreAuthorize("hasAuthority('PERM_EMPLOYMENT_CREATE')")
     public ResponseEntity<ApiResponse<EmploymentResponse>> createFromExistingUser(
             @PathVariable("shopId") Long shopId,
             @PathVariable("userId") Long userId,

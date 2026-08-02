@@ -36,6 +36,7 @@ public class ShopServiceImplement implements ShopService {
     CurrentUserProvider currentUserProvider;
     AuthorizationService authorizationService;
 
+    //owner thực hiện, nên check owner có đúng là sở hữu shop không
     @Override
     public ShopResponse create(ShopRequest request) {
         validateShopRequest(request);
@@ -48,12 +49,13 @@ public class ShopServiceImplement implements ShopService {
         return mapper.toResponse(repository.save(shop));
     }
 
+
     @Override
     public ShopResponse update(Long id, ShopRequest request) {
         ShopEntity shop = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Shop"));
+                .orElseThrow(() -> new NotFoundException("Cửa hàng"));
         validateShopRequest(request);
-        authorizationService.checkOwnerShop(id);
+        authorizationService.checkOwnerShop(shop);
         ShopEntity newShop = mapper.toEntity(request);
         if (repository.existsByNameAndUserIdAndIdNot(newShop.getName()
                 , currentUserProvider.getCurrentUserId(), shop.getId())) {
@@ -68,20 +70,6 @@ public class ShopServiceImplement implements ShopService {
     }
 
     @Override
-    public void delete(Long id) {
-        ShopEntity shop = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Shop"));
-        shop.setStatus(ShopStatus.LOCKED);
-    }
-
-    @Override
-    public ShopResponse getById(Long id) {
-        ShopEntity shop = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Shop"));
-        return mapper.toResponse(shop);
-    }
-
-    @Override
     public List<ShopResponse> getAllShopOfCurrentUser() {
         return repository.findAllByUser_Id(currentUserProvider.getCurrentUserId())
                 .stream()
@@ -91,12 +79,25 @@ public class ShopServiceImplement implements ShopService {
 
     @Override
     public ShopResponse getShopByIdOfCurrentUser(Long id) {
-        ShopEntity shop = repository.findShopEntityByIdAndUser_Id(
-                id
-                , currentUserProvider.getCurrentUserId());
-        if (shop == null) {
-            throw new NotFoundException("Shop");
-        }
+        ShopEntity shop = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Cửa hàng"));
+        authorizationService.checkOwnerShop(shop);
+        return mapper.toResponse(shop);
+    }
+
+
+    @Override
+    public void delete(Long id) {
+        throw new UnsupportedOperationException(
+                "Cửa hàng không hỗ trợ thao tác xóa"
+        );
+    }
+
+    //role admin mới được thực hiện, check bằng preauthorize ở api
+    @Override
+    public ShopResponse getById(Long id) {
+        ShopEntity shop = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Shop"));
         return mapper.toResponse(shop);
     }
 

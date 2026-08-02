@@ -28,7 +28,7 @@ public class CategoryController {
 
     @PostMapping("/{shopId}")
     @Operation(summary = "Tạo danh mục")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_CATEGORY_CREATE')")
     public ResponseEntity<ApiResponse<CategoryResponse>> create(
             @PathVariable Long shopId,
             @RequestBody CategoryRequest request
@@ -44,7 +44,7 @@ public class CategoryController {
 
     @GetMapping("/shop/{shopId}")
     @Operation(summary = "Tìm tất cả danh mục theo shopId")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_CATEGORY_VIEW')")
     public ResponseEntity<ApiResponse<Page<CategoryResponse>>> getAllByShopId(
             @PathVariable Long shopId,
             @RequestParam(required = false) CategoryStatus status,
@@ -60,7 +60,7 @@ public class CategoryController {
 
     @GetMapping("/{categoryId}")
     @Operation(summary = "Tìm danh mục theo id")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_CATEGORY_VIEW')")
     public ResponseEntity<ApiResponse<CategoryResponse>> getById(
             @PathVariable Long categoryId
     ) {
@@ -74,7 +74,7 @@ public class CategoryController {
 
     @PutMapping("/{categoryId}")
     @Operation(summary = "Sửa thông tin danh mục")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_CATEGORY_VIEW')")
     public ResponseEntity<ApiResponse<CategoryResponse>> update(
             @PathVariable Long categoryId,
             @RequestBody CategoryRequest request
@@ -89,7 +89,7 @@ public class CategoryController {
 
     @DeleteMapping("/{categoryId}")
     @Operation(summary = "Xóa danh mục")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_CATEGORY_DELETE')")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long categoryId
     ) {
@@ -104,7 +104,7 @@ public class CategoryController {
 
     @PatchMapping("/{categoryId}/activate")
     @Operation(summary = "Bật lại danh mục")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_CATEGORY_ACTIVATE')")
     public ResponseEntity<ApiResponse<Void>> activate(
             @PathVariable Long categoryId
     ) {

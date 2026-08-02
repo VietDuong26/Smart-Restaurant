@@ -28,7 +28,7 @@ public class AreaController {
 
     @PostMapping("/{shopId}")
     @Operation(summary = "Tạo khu vực")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_AREA_CREATE')")
     public ResponseEntity<ApiResponse<AreaResponse>> create(
             @PathVariable Long shopId,
             @RequestBody AreaRequest request
@@ -44,7 +44,7 @@ public class AreaController {
 
     @GetMapping("/shop/{shopId}")
     @Operation(summary = "Tìm tất cả khu vực theo shopId")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_AREA_VIEW')")
     public ResponseEntity<ApiResponse<Page<AreaResponse>>> getAllByShopId(
             @PathVariable Long shopId,
             @RequestParam(required = false) AreaStatus status,
@@ -60,7 +60,7 @@ public class AreaController {
 
     @GetMapping("/{areaId}")
     @Operation(summary = "Tìm khu vực theo id")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_AREA_VIEW')")
     public ResponseEntity<ApiResponse<AreaResponse>> getById(
             @PathVariable Long areaId
     ) {
@@ -74,7 +74,7 @@ public class AreaController {
 
     @PutMapping("/{areaId}")
     @Operation(summary = "Sửa thông tin khu vực")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_AREA_UPDATE')")
     public ResponseEntity<ApiResponse<AreaResponse>> update(
             @PathVariable Long areaId,
             @RequestBody AreaRequest request
@@ -89,7 +89,7 @@ public class AreaController {
 
     @DeleteMapping("/{areaId}")
     @Operation(summary = "Xóa khu vực")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_AREA_DELETE')")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long areaId
     ) {
@@ -104,7 +104,7 @@ public class AreaController {
 
     @PatchMapping("/{areaId}/activate")
     @Operation(summary = "Bật lại khu vực")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_AREA_ACTIVATE')")
     public ResponseEntity<ApiResponse<Void>> activate(
             @PathVariable Long areaId
     ) {

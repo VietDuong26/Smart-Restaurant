@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.example.SmartRestaurant.validator.RoleValidator.validateRequest;
 
@@ -44,11 +43,12 @@ public class RoleServiceImplement implements RoleService {
     PermissionRepository permissionRepository;
     AuthorizationService authorizationService;
 
+    //các thao tác này yêu cầu owner của shop mới được thực hiện
     @Override
     public RoleResponse create(RoleRequest roleRequest, Long parentId) {
         ShopEntity shop = shopRepository.findById(parentId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(shop.getId());
+        authorizationService.checkOwnerShop(shop);
         validateRequest(roleRequest);
         if (repository.existsByNameAndShopId(roleRequest.getName(), parentId)) {
             throw new ValidateException("Tên role đã tồn tại trong shop");
@@ -66,10 +66,6 @@ public class RoleServiceImplement implements RoleService {
         role.setPermissions(permissions);
         role.setStatus(RoleStatus.ACTIVE);
         RoleResponse roleResponse = mapper.toResponse(repository.save(role));
-        roleResponse.setPermissions(role.getPermissions()
-                .stream()
-                .map(x -> permissionMapper.toResponse(x))
-                .collect(Collectors.toList()));
         return roleResponse;
     }
 
@@ -80,9 +76,9 @@ public class RoleServiceImplement implements RoleService {
         if (role.getShop() == null) {
             throw new AccessDeniedException("Không thể sửa role hệ thống");
         }
-        authorizationService.checkOwnerShop(role.getShop().getId());
+        authorizationService.checkOwnerShop(role.getShop());
         validateRequest(roleRequest);
-        if (repository.existsByNameAndShopId(roleRequest.getName(), role.getShop().getId())) {
+        if (repository.existsByNameAndShopIdAndIdNot(roleRequest.getName(), role.getShop().getId(), id)) {
             throw new ValidateException("Tên role đã tồn tại trong shop");
         }
         Set<Long> permissionIds = new HashSet<>(roleRequest.getPermissionIds());
@@ -95,12 +91,8 @@ public class RoleServiceImplement implements RoleService {
         }
         role.setName(roleRequest.getName());
         role.getPermissions().clear();
-        role.setPermissions(permissions);
+        role.getPermissions().addAll(permissions);
         RoleResponse roleResponse = mapper.toResponse(repository.save(role));
-        roleResponse.setPermissions(role.getPermissions()
-                .stream()
-                .map(x -> permissionMapper.toResponse(x))
-                .collect(Collectors.toList()));
         return roleResponse;
     }
 
@@ -108,7 +100,10 @@ public class RoleServiceImplement implements RoleService {
     public void delete(Long id) {
         RoleEntity role = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Role"));
-        authorizationService.checkOwnerShop(role.getShop().getId());
+        if (role.getShop() == null) {
+            throw new AccessDeniedException("Không thể xóa role hệ thống");
+        }
+        authorizationService.checkOwnerShop(role.getShop());
         if (role.getStatus() != RoleStatus.ACTIVE) {
             throw new InvalidStatusException("role");
         }
@@ -120,15 +115,11 @@ public class RoleServiceImplement implements RoleService {
     public RoleResponse getById(Long id) {
         RoleEntity role = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Role"));
-        authorizationService.checkOwnerShop(role.getShop().getId());
-        if (role.getStatus() != RoleStatus.ACTIVE) {
-            throw new InvalidStatusException("role");
+        if (role.getShop() == null) {
+            throw new AccessDeniedException("Không thể xem role hệ thống");
         }
+        authorizationService.checkOwnerShop(role.getShop());
         RoleResponse roleResponse = mapper.toResponse(role);
-        roleResponse.setPermissions(role.getPermissions()
-                .stream()
-                .map(x -> permissionMapper.toResponse(x))
-                .collect(Collectors.toList()));
         return roleResponse;
     }
 
@@ -136,7 +127,7 @@ public class RoleServiceImplement implements RoleService {
     public Page<RoleResponse> getAllByShopId(Long shopId, RoleStatus status, Pageable pageable) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(shop.getId());
+        authorizationService.checkOwnerShop(shop);
         Page<RoleEntity> roles = status == null
                 ? repository.findAllByShopId(shopId, pageable)
                 : repository.findAllByShopIdAndStatus(shopId, status, pageable);

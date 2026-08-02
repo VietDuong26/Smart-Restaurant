@@ -24,4 +24,5 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
 
     Page<RoleEntity> findAllByShopIdAndStatus(Long shopId, RoleStatus status, Pageable pageable);
 
+    boolean existsByNameAndShopIdAndIdNot(String name, Long shopId, Long id);
 }

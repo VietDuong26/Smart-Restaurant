@@ -29,7 +29,7 @@ public class ProductController {
 
     @PostMapping(value = "/{categoryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Tạo sản phẩm")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_PRODUCT_CREATE')")
     public ResponseEntity<ApiResponse<ProductResponse>> create(
             @PathVariable Long categoryId,
             @ModelAttribute ProductRequest request
@@ -45,7 +45,7 @@ public class ProductController {
 
     @GetMapping("/category/{categoryId}")
     @Operation(summary = "Tìm tất cả sản phẩm theo danh mục")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_PRODUCT_VIEW')")
     public ResponseEntity<ApiResponse<Page<ProductResponse>>> getAllByCategoryId(
             @PathVariable Long categoryId,
             @RequestParam(required = false) ProductStatus status,
@@ -61,7 +61,7 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     @Operation(summary = "Tìm sản phẩm theo id")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_PRODUCT_VIEW')")
     public ResponseEntity<ApiResponse<ProductResponse>> getById(
             @PathVariable Long productId
     ) {
@@ -75,7 +75,7 @@ public class ProductController {
 
     @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Sửa thông tin sản phẩm")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_PRODUCT_UPDATE')")
     public ResponseEntity<ApiResponse<ProductResponse>> update(
             @PathVariable Long productId,
             @ModelAttribute ProductRequest request
@@ -90,7 +90,7 @@ public class ProductController {
 
     @DeleteMapping("/{productId}")
     @Operation(summary = "Xóa sản phẩm")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_PRODUCT_DELETE')")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long productId
     ) {
@@ -105,7 +105,7 @@ public class ProductController {
 
     @PatchMapping("/{productId}/activate")
     @Operation(summary = "Đăng bán lại sản phẩm")
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('PERM_PRODUCT_ACTIVATE')")
     public ResponseEntity<ApiResponse<Void>> activate(
             @PathVariable Long productId
     ) {

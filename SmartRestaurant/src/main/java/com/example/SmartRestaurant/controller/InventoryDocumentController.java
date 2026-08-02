@@ -75,6 +75,7 @@ public class InventoryDocumentController {
 
     @GetMapping("/{shopId}")
     @Operation(summary = "Lấy ra tất cả các phiếu vật tư của shop")
+    @PreAuthorize("hasAuthority('PERM_INVENTORY_VIEW')")
     ResponseEntity<ApiResponse<Page<InventoryDocumentResponse>>> getAllByShopId(
             @PathVariable Long shopId,
             @RequestParam(required = false) InventoryDocumentStatus status,
@@ -84,6 +85,20 @@ public class InventoryDocumentController {
                 200,
                 "Thành công",
                 inventoryDocumentService.getAllByShopId(shopId, status, pageable),
+                LocalDateTime.now()
+        ));
+    }
+
+    @GetMapping("/{inventoryDocumentId}")
+    @Operation(summary = "Xem chi tiết phiếu vật tư")
+    @PreAuthorize("hasAuthority('PERM_INVENTORY_VIEW')")
+    ResponseEntity<ApiResponse<InventoryDocumentResponse>> getById(
+            @PathVariable Long inventoryDocumentId
+    ) {
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200,
+                "Thành công",
+                inventoryDocumentService.getById(inventoryDocumentId),
                 LocalDateTime.now()
         ));
     }

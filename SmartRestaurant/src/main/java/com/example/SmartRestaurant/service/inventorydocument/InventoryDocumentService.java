@@ -18,4 +18,6 @@ public interface InventoryDocumentService {
 
     Page<InventoryDocumentResponse> getAllByShopId(Long shopId, InventoryDocumentStatus status, Pageable pageable);
 
+    InventoryDocumentResponse getById(Long inventoryDocumentId);
+
 }

@@ -32,13 +32,15 @@ public class AreaServiceImplement implements AreaService {
     AreaMapper mapper;
     ShopRepository shopRepository;
 
+    //kiểm tra có phải chủ shop không
+    //nếu là nhân viên thì sẽ kiểm tra có permission trong shop này không
     @Override
     public AreaResponse create(AreaRequest areaRequest, Long shopId) {
         ShopEntity shop = shopRepository.findById(shopId)
-                .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(shopId);
+                .orElseThrow(() -> new NotFoundException("Cửa hàng"));
+        authorizationService.checkOwnerShop(shop);
+        authorizationService.checkPermissionInShop(shop, "PERM_AREA_CREATE");
         validateAreaRequest(areaRequest);
-
         AreaEntity area = mapper.toEntity(areaRequest);
         if (repository.existsByNameAndShopId(area.getName(), shopId)) {
             throw new ValidateException("Tên khu vực đã tồn tại trong shop");
@@ -52,7 +54,8 @@ public class AreaServiceImplement implements AreaService {
     public AreaResponse update(Long id, AreaRequest areaRequest) {
         AreaEntity area = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Khu vực"));
-        authorizationService.checkOwnerShop(area.getShop().getId());
+        authorizationService.checkOwnerShop(area.getShop());
+        authorizationService.checkPermissionInShop(area.getShop(), "PERM_AREA_UPDATE");
         validateAreaRequest(areaRequest);
         AreaEntity newArea = mapper.toEntity(areaRequest);
         if (repository.existsByNameAndShopIdAndIdNot(
@@ -70,7 +73,8 @@ public class AreaServiceImplement implements AreaService {
     public void delete(Long id) {
         AreaEntity area = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Khu vực"));
-        authorizationService.checkOwnerShop(area.getShop().getId());
+        authorizationService.checkOwnerShop(area.getShop());
+        authorizationService.checkPermissionInShop(area.getShop(), "PERM_AREA_DELETE");
         if (area.getStatus() != AreaStatus.ACTIVE) {
             throw new InvalidStatusException("khu vực");
         }
@@ -82,7 +86,8 @@ public class AreaServiceImplement implements AreaService {
     public AreaResponse getById(Long id) {
         AreaEntity area = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Khu vực"));
-        authorizationService.checkOwnerShop(area.getShop().getId());
+        authorizationService.checkOwnerShop(area.getShop());
+        authorizationService.checkPermissionInShop(area.getShop(), "PERM_AREA_VIEW");
         return mapper.toResponse(area);
     }
 
@@ -90,7 +95,8 @@ public class AreaServiceImplement implements AreaService {
     public Page<AreaResponse> getAllByShopId(Long shopId, AreaStatus status, Pageable pageable) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(shopId);
+        authorizationService.checkOwnerShop(shop);
+        authorizationService.checkPermissionInShop(shop, "PERM_AREA_VIEW");
         Page<AreaEntity> areas = status == null
                 ? repository.findAllByShopId(shopId, pageable)
                 : repository.findAllByShopIdAndStatus(shopId, status, pageable);
@@ -101,7 +107,8 @@ public class AreaServiceImplement implements AreaService {
     public void activate(Long areaId) {
         AreaEntity area = repository.findById(areaId)
                 .orElseThrow(() -> new NotFoundException("Khu vực"));
-        authorizationService.checkOwnerShop(area.getShop().getId());
+        authorizationService.checkOwnerShop(area.getShop());
+        authorizationService.checkPermissionInShop(area.getShop(), "PERM_AREA_ACTIVATE");
         if (area.getStatus() != AreaStatus.INACTIVE) {
             throw new InvalidStatusException("khu vực");
         }
