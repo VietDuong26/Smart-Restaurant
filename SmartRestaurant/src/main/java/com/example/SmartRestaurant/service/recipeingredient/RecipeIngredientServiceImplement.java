@@ -43,8 +43,8 @@ public class RecipeIngredientServiceImplement implements RecipeIngredientService
         RecipeEntity recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new NotFoundException("Công thức"));
         ShopEntity shop = recipe.getProduct().getCategory().getShop();
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_RECIPE_INGREDIENT_CREATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_RECIPE_INGREDIENT_CREATE");
         //validate request
         validateRecipeIngredientCreate(recipeId, requests);
         //kiểm tra các id này có tồn tại trong shop không
@@ -98,8 +98,8 @@ public class RecipeIngredientServiceImplement implements RecipeIngredientService
         RecipeEntity recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new NotFoundException("Công thức"));
         ShopEntity shop = recipe.getProduct().getCategory().getShop();
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_RECIPE_INGREDIENT_UPDATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_RECIPE_INGREDIENT_UPDATE");
         //validate request
         validateRecipeIngredientUpdate(recipeId, requests);
         Set<Long> requestRecipeIngredientId = requests
@@ -134,8 +134,8 @@ public class RecipeIngredientServiceImplement implements RecipeIngredientService
         RecipeEntity recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new NotFoundException("Công thức"));
         ShopEntity shop = recipe.getProduct().getCategory().getShop();
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_RECIPE_INGREDIENT_DELETE");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_RECIPE_INGREDIENT_DELETE");
         //validate request
         validateRecipeIngredientDelete(recipeId, recipeIngredientIdList);
         Set<Long> requestRecipeIngredientId = new HashSet<>(recipeIngredientIdList);
@@ -157,8 +157,8 @@ public class RecipeIngredientServiceImplement implements RecipeIngredientService
         RecipeEntity recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new NotFoundException("Công thức"));
         ShopEntity shop = recipe.getProduct().getCategory().getShop();
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_RECIPE_INGREDIENT_VIEW");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_RECIPE_INGREDIENT_VIEW");
         return repository.findAllByRecipeId(recipeId)
                 .stream()
                 .map(x -> mapper.toResponse(x))

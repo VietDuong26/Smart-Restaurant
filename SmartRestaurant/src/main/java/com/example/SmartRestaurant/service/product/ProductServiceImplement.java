@@ -43,8 +43,7 @@ public class ProductServiceImplement implements ProductService {
     public ProductResponse create(ProductRequest productRequest, Long parentId) {
         CategoryEntity category = categoryRepository.findById(parentId)
                 .orElseThrow(() -> new NotFoundException("Danh mục"));
-        authorizationService.checkOwnerShop(category.getShop());
-        authorizationService.checkPermissionInShop(category.getShop(), "PERM_PRODUCT_CREATE");
+        authorizationService.checkOwnerOrPermissionInShop(category.getShop(), "PERM_PRODUCT_CREATE");
         validateProductRequest(productRequest);
 
         ProductEntity product = mapper.toEntity(productRequest);
@@ -68,8 +67,8 @@ public class ProductServiceImplement implements ProductService {
     public ProductResponse update(Long id, ProductRequest productRequest) {
         ProductEntity product = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Sản phẩm"));
-        authorizationService.checkOwnerShop(product.getCategory().getShop());
-        authorizationService.checkPermissionInShop(product.getCategory().getShop(), "PERM_PRODUCT_UPDATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(product.getCategory().getShop(), "PERM_PRODUCT_UPDATE");
         validateProductRequest(productRequest);
         ProductEntity newProduct = mapper.toEntity(productRequest);
         if (repository.existsByNameAndCategoryIdAndIdNot(
@@ -91,8 +90,8 @@ public class ProductServiceImplement implements ProductService {
     public void delete(Long id) {
         ProductEntity product = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Sản phẩm"));
-        authorizationService.checkOwnerShop(product.getCategory().getShop());
-        authorizationService.checkPermissionInShop(product.getCategory().getShop(), "PERM_PRODUCT_DELETE");
+
+        authorizationService.checkOwnerOrPermissionInShop(product.getCategory().getShop(), "PERM_PRODUCT_DELETE");
         if (product.getStatus() != ProductStatus.ACTIVE) {
             throw new InvalidStatusException("sản phẩm");
         }
@@ -104,8 +103,8 @@ public class ProductServiceImplement implements ProductService {
     public ProductResponse getById(Long id) {
         ProductEntity product = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Sản phẩm"));
-        authorizationService.checkOwnerShop(product.getCategory().getShop());
-        authorizationService.checkPermissionInShop(product.getCategory().getShop(), "PERM_PRODUCT_VIEW");
+
+        authorizationService.checkOwnerOrPermissionInShop(product.getCategory().getShop(), "PERM_PRODUCT_VIEW");
         return mapper.toResponse(product);
     }
 
@@ -113,8 +112,8 @@ public class ProductServiceImplement implements ProductService {
     public Page<ProductResponse> getAllByCategoryId(Long categoryId, ProductStatus status, Pageable pageable) {
         CategoryEntity category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Danh mục"));
-        authorizationService.checkOwnerShop(category.getShop());
-        authorizationService.checkPermissionInShop(category.getShop(), "PERM_PRODUCT_VIEW");
+
+        authorizationService.checkOwnerOrPermissionInShop(category.getShop(), "PERM_PRODUCT_VIEW");
         Page<ProductEntity> products = status == null
                 ? repository.findAllByCategoryId(categoryId, pageable)
                 : repository.findAllByCategoryIdAndStatus(categoryId, status, pageable);
@@ -125,8 +124,8 @@ public class ProductServiceImplement implements ProductService {
     public void activate(Long productId) {
         ProductEntity product = repository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Sản phẩm"));
-        authorizationService.checkOwnerShop(product.getCategory().getShop());
-        authorizationService.checkPermissionInShop(product.getCategory().getShop(), "PERM_PRODUCT_ACTIVATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(product.getCategory().getShop(), "PERM_PRODUCT_ACTIVATE");
         if (product.getStatus() != ProductStatus.INACTIVE) {
             throw new InvalidStatusException("sản phẩm");
         }

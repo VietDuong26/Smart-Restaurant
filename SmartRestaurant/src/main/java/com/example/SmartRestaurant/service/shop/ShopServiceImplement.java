@@ -55,7 +55,7 @@ public class ShopServiceImplement implements ShopService {
         ShopEntity shop = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cửa hàng"));
         validateShopRequest(request);
-        authorizationService.checkOwnerShop(shop);
+
         ShopEntity newShop = mapper.toEntity(request);
         if (repository.existsByNameAndUserIdAndIdNot(newShop.getName()
                 , currentUserProvider.getCurrentUserId(), shop.getId())) {
@@ -81,7 +81,7 @@ public class ShopServiceImplement implements ShopService {
     public ShopResponse getShopByIdOfCurrentUser(Long id) {
         ShopEntity shop = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cửa hàng"));
-        authorizationService.checkOwnerShop(shop);
+
         return mapper.toResponse(shop);
     }
 

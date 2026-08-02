@@ -2,6 +2,7 @@ package com.example.SmartRestaurant.config.init;
 
 
 import com.example.SmartRestaurant.common.enums.AccountType;
+import com.example.SmartRestaurant.common.enums.RoleStatus;
 import com.example.SmartRestaurant.common.enums.UserStatus;
 import com.example.SmartRestaurant.entity.PermissionEntity;
 import com.example.SmartRestaurant.entity.RoleEntity;
@@ -81,7 +82,6 @@ public class InitConfig {
             "PERM_EMPLOYMENT_CREATE",
             "PERM_EMPLOYMENT_UPDATE",
             "PERM_EMPLOYMENT_TERMINATE",
-            "PERM_EMPLOYMENT_REHIRE",
 
             //INVENTORY
             "PERM_INVENTORY_VIEW",
@@ -127,6 +127,7 @@ public class InitConfig {
             if (roleRepository.findByName(roleName) == null) {
                 RoleEntity role = new RoleEntity();
                 role.setName(roleName);
+                role.setStatus(RoleStatus.ACTIVE);
                 //gán tất cả các permission có sẵn cho admin và owner
                 role.setPermissions(new HashSet<>(permissionList));
                 roleRepository.save(role);

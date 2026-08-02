@@ -56,8 +56,8 @@ public class EmploymentServiceImplement implements EmploymentService {
     public EmploymentResponse create(EmploymentRequest employmentRequest, Long parentId) {
         ShopEntity shop = shopRepository.findById(parentId)
                 .orElseThrow(() -> new NotFoundException("Cửa hàng"));
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_EMPLOYMENT_CREATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_EMPLOYMENT_CREATE");
         validateRequest(employmentRequest);
         //kiểm tra có roleId nào bị trùng trong request không
         Set<Long> roleIds = new HashSet<>(employmentRequest.getRoleIds());
@@ -91,8 +91,8 @@ public class EmploymentServiceImplement implements EmploymentService {
     public EmploymentResponse update(Long id, EmploymentRequest employmentRequest) {
         EmploymentEntity employment = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Quan hệ nhân viên-cửa hàng"));
-        authorizationService.checkOwnerShop(employment.getShop());
-        authorizationService.checkPermissionInShop(employment.getShop(), "PERM_EMPLOYMENT_UPDATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(employment.getShop(), "PERM_EMPLOYMENT_UPDATE");
         validateUpdateRequest(employmentRequest);
         //kiểm tra có roleId nào bị trùng trong request không
         Set<Long> roleIds = new HashSet<>(employmentRequest.getRoleIds());
@@ -122,8 +122,8 @@ public class EmploymentServiceImplement implements EmploymentService {
     public void delete(Long id) {
         EmploymentEntity employment = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Quan hệ nhân viên-cửa hàng"));
-        authorizationService.checkOwnerShop(employment.getShop());
-        authorizationService.checkPermissionInShop(employment.getShop(), "PERM_EMPLOYMENT_TERMINATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(employment.getShop(), "PERM_EMPLOYMENT_TERMINATE");
         if (employment.getStatus() != EmploymentStatus.ACTIVE) {
             throw new ValidateException(
                     "Quan hệ làm việc đã kết thúc"
@@ -146,8 +146,8 @@ public class EmploymentServiceImplement implements EmploymentService {
     public EmploymentResponse getById(Long id) {
         EmploymentEntity employment = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Quan hệ nhân viên-cửa hàng"));
-        authorizationService.checkOwnerShop(employment.getShop());
-        authorizationService.checkPermissionInShop(employment.getShop(), "PERM_EMPLOYMENT_VIEW");
+
+        authorizationService.checkOwnerOrPermissionInShop(employment.getShop(), "PERM_EMPLOYMENT_VIEW");
         return mapper.toResponse(employment);
     }
 
@@ -156,8 +156,8 @@ public class EmploymentServiceImplement implements EmploymentService {
     public EmploymentResponse createFromExistingUser(Long shopId, Long userId, EmploymentRehireRequest request) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Cửa hàng"));
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_EMPLOYMENT_CREATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_EMPLOYMENT_CREATE");
         //kiểm tra xem đã có employment nào đang active của userId và shopId không
         if (repository.existsByUserIdAndShopIdAndStatus(userId, shopId, EmploymentStatus.ACTIVE)) {
             throw new ValidateException("Nhân viên này đang làm tại cửa hàng");

@@ -37,8 +37,8 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse create(CategoryRequest request, Long shopId) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_CATEGORY_CREATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_CATEGORY_CREATE");
         validateCategoryRequest(request);
 
         CategoryEntity category = mapper.toEntity(request);
@@ -54,8 +54,8 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse update(Long id, CategoryRequest categoryRequest) {
         CategoryEntity category = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Danh mục"));
-        authorizationService.checkOwnerShop(category.getShop());
-        authorizationService.checkPermissionInShop(category.getShop(), "PERM_CATEGORY_UPDATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(category.getShop(), "PERM_CATEGORY_UPDATE");
         validateCategoryRequest(categoryRequest);
         CategoryEntity newCategory = mapper.toEntity(categoryRequest);
         if (repository.existsByNameAndShopIdAndIdNot(
@@ -73,8 +73,8 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(Long id) {
         CategoryEntity category = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Danh mục"));
-        authorizationService.checkOwnerShop(category.getShop());
-        authorizationService.checkPermissionInShop(category.getShop(), "PERM_CATEGORY_DELETE");
+
+        authorizationService.checkOwnerOrPermissionInShop(category.getShop(), "PERM_CATEGORY_DELETE");
         if (category.getStatus() != CategoryStatus.ACTIVE) {
             throw new InvalidStatusException("danh mục");
         }
@@ -86,8 +86,8 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse getById(Long id) {
         CategoryEntity category = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Danh mục"));
-        authorizationService.checkOwnerShop(category.getShop());
-        authorizationService.checkPermissionInShop(category.getShop(), "PERM_CATEGORY_VIEW");
+
+        authorizationService.checkOwnerOrPermissionInShop(category.getShop(), "PERM_CATEGORY_VIEW");
         return mapper.toResponse(category);
     }
 
@@ -95,8 +95,8 @@ public class CategoryServiceImpl implements CategoryService {
     public Page<CategoryResponse> getAllByShopId(Long shopId, CategoryStatus status, Pageable pageable) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_CATEGORY_VIEW");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_CATEGORY_VIEW");
         Page<CategoryEntity> categories = status == null
                 ? repository.findAllByShopId(shopId, pageable)
                 : repository.findAllByShopIdAndStatus(shopId, status, pageable);
@@ -107,8 +107,8 @@ public class CategoryServiceImpl implements CategoryService {
     public void activate(Long categoryId) {
         CategoryEntity category = repository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Danh mục"));
-        authorizationService.checkOwnerShop(category.getShop());
-        authorizationService.checkPermissionInShop(category.getShop(), "PERM_CATEGORY_ACTIVATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(category.getShop(), "PERM_CATEGORY_ACTIVATE");
         if (category.getStatus() != CategoryStatus.INACTIVE) {
             throw new InvalidStatusException("Danh mục");
         }

@@ -28,16 +28,14 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     PermissionRepository permissionRepository;
 
+
     @Override
-    public void checkOwnerShop(ShopEntity shop) {
+    public void checkOwnerOrPermissionInShop(ShopEntity shop, String permissionName) {
+        //kiểm tra nếu là owner
         if (!shop.getUser().getId()
                 .equals(currentUserProvider.getCurrentUserId())) {
             throw new AccessDeniedException("Không có quyền thực hiện");
         }
-    }
-
-    @Override
-    public void checkPermissionInShop(ShopEntity shop, String permisisonName) {
         //KIỂM TRA NHÂN VIÊN CÓ CÒN ĐANG LÀM CHO SHOP NÀY KHÔNG
         if (!employmentRepository.existsByUserIdAndShopIdAndStatus(
                 currentUserProvider.getCurrentUserId(),
@@ -47,7 +45,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             throw new AccessDeniedException("Không có quyền thực hiện");
         }
         //kiểm tra user có role nào active và có permission có name cần thiết không
-        PermissionEntity permission = permissionRepository.findByName(permisisonName);
+        PermissionEntity permission = permissionRepository.findByName(permissionName);
         Set<RoleEntity> roles = currentUserProvider.getCurrentUser().getUser().getRoles();
         boolean allowed =
                 roles.stream()

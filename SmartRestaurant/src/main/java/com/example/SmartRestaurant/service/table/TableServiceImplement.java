@@ -37,8 +37,8 @@ public class TableServiceImplement implements TableService {
     public TableResponse create(TableRequest tableRequest, Long parentId) {
         AreaEntity area = areaRepository.findById(parentId)
                 .orElseThrow(() -> new NotFoundException("Khu vực"));
-        authorizationService.checkOwnerShop(area.getShop());
-        authorizationService.checkPermissionInShop(area.getShop(), "PERM_TABLE_CREATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(area.getShop(), "PERM_TABLE_CREATE");
         validateTableRequest(tableRequest);
 
         TableEntity table = mapper.toEntity(tableRequest);
@@ -54,8 +54,8 @@ public class TableServiceImplement implements TableService {
     public TableResponse update(Long id, TableRequest tableRequest) {
         TableEntity table = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bàn"));
-        authorizationService.checkOwnerShop(table.getArea().getShop());
-        authorizationService.checkPermissionInShop(table.getArea().getShop(), "PERM_TABLE_UPDATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(table.getArea().getShop(), "PERM_TABLE_UPDATE");
         validateTableRequest(tableRequest);
         TableEntity newTable = mapper.toEntity(tableRequest);
         if (repository.existsByNameAndAreaIdAndIdNot(
@@ -73,8 +73,8 @@ public class TableServiceImplement implements TableService {
     public void delete(Long id) {
         TableEntity table = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bàn"));
-        authorizationService.checkOwnerShop(table.getArea().getShop());
-        authorizationService.checkPermissionInShop(table.getArea().getShop(), "PERM_TABLE_DELETE");
+
+        authorizationService.checkOwnerOrPermissionInShop(table.getArea().getShop(), "PERM_TABLE_DELETE");
         if (table.getStatus() != TableStatus.ACTIVE) {
             throw new InvalidStatusException("bàn");
         }
@@ -86,8 +86,8 @@ public class TableServiceImplement implements TableService {
     public TableResponse getById(Long id) {
         TableEntity table = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Bàn"));
-        authorizationService.checkOwnerShop(table.getArea().getShop());
-        authorizationService.checkPermissionInShop(table.getArea().getShop(), "PERM_TABLE_VIEW");
+
+        authorizationService.checkOwnerOrPermissionInShop(table.getArea().getShop(), "PERM_TABLE_VIEW");
         return mapper.toResponse(table);
     }
 
@@ -95,8 +95,8 @@ public class TableServiceImplement implements TableService {
     public Page<TableResponse> getAllByAreaId(Long areaId, TableStatus status, Pageable pageable) {
         AreaEntity area = areaRepository.findById(areaId)
                 .orElseThrow(() -> new NotFoundException("Khu vực"));
-        authorizationService.checkOwnerShop(area.getShop());
-        authorizationService.checkPermissionInShop(area.getShop(), "PERM_TABLE_VIEW");
+
+        authorizationService.checkOwnerOrPermissionInShop(area.getShop(), "PERM_TABLE_VIEW");
         Page<TableEntity> tables = status == null
                 ? repository.findAllByAreaId(areaId, pageable)
                 : repository.findAllByAreaIdAndStatus(areaId, status, pageable);
@@ -107,8 +107,8 @@ public class TableServiceImplement implements TableService {
     public void activate(Long tableId) {
         TableEntity table = repository.findById(tableId)
                 .orElseThrow(() -> new NotFoundException("Bàn"));
-        authorizationService.checkOwnerShop(table.getArea().getShop());
-        authorizationService.checkPermissionInShop(table.getArea().getShop(), "PERM_TABLE_ACTIVATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(table.getArea().getShop(), "PERM_TABLE_ACTIVATE");
         if (table.getStatus() != TableStatus.INACTIVE) {
             throw new InvalidStatusException("bàn");
         }

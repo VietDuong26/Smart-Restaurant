@@ -46,8 +46,8 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
     public InventoryDocumentResponse create(Long shopId, InventoryDocumentRequest request) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Cửa hàng"));
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_INVENTORY_CREATE");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_INVENTORY_CREATE");
         validateRequest(request);
         InventoryDocumentEntity documentEntity = mapper.toEntity(request);
         documentEntity.setCreatedBy(currentUserProvider.getCurrentUser().getUser());
@@ -62,8 +62,8 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
     public InventoryDocumentResponse approve(Long shopId, InventoryDocumentApproveRequest request) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Của hàng"));
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_INVENTORY_APPROVE");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_INVENTORY_APPROVE");
         validateApproveRequest(request);
         InventoryDocumentEntity documentEntity = repository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException("Phiếu vật tư"));
@@ -101,8 +101,8 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
     public InventoryDocumentResponse reject(Long shopId, InventoryDocumentRejectRequest request) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_INVENTORY_REJECT");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_INVENTORY_REJECT");
         validateRejectRequest(request);
         InventoryDocumentEntity documentEntity = repository.findById(request.getId())
                 .orElseThrow(() -> new NotFoundException("Phiếu vật tư"));
@@ -123,8 +123,8 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
     public Page<InventoryDocumentResponse> getAllByShopId(Long shopId, InventoryDocumentStatus status, Pageable pageable) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Cửa hàng"));
-        authorizationService.checkOwnerShop(shop);
-        authorizationService.checkPermissionInShop(shop, "PERM_INVENTORY_VIEW");
+
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_INVENTORY_VIEW");
         Page<InventoryDocumentEntity> documentEntities = status == null
                 ? repository.findAllByShopId(shopId, pageable)
                 : repository.findAllByShopIdAndStatus(shopId, status, pageable);
@@ -135,8 +135,8 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
     public InventoryDocumentResponse getById(Long inventoryDocumentId) {
         InventoryDocumentEntity inventoryDocument = repository.findById(inventoryDocumentId)
                 .orElseThrow(() -> new NotFoundException("Phiếu vật tư"));
-        authorizationService.checkOwnerShop(inventoryDocument.getShop());
-        authorizationService.checkPermissionInShop(inventoryDocument.getShop(), "PERM_INVENTORY_VIEW");
+
+        authorizationService.checkOwnerOrPermissionInShop(inventoryDocument.getShop(), "PERM_INVENTORY_VIEW");
         return mapper.toResponse(inventoryDocument);
     }
 

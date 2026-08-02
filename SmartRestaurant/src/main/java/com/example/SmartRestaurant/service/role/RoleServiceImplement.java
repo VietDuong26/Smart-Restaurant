@@ -48,7 +48,7 @@ public class RoleServiceImplement implements RoleService {
     public RoleResponse create(RoleRequest roleRequest, Long parentId) {
         ShopEntity shop = shopRepository.findById(parentId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(shop);
+
         validateRequest(roleRequest);
         if (repository.existsByNameAndShopId(roleRequest.getName(), parentId)) {
             throw new ValidateException("Tên role đã tồn tại trong shop");
@@ -76,7 +76,7 @@ public class RoleServiceImplement implements RoleService {
         if (role.getShop() == null) {
             throw new AccessDeniedException("Không thể sửa role hệ thống");
         }
-        authorizationService.checkOwnerShop(role.getShop());
+
         validateRequest(roleRequest);
         if (repository.existsByNameAndShopIdAndIdNot(roleRequest.getName(), role.getShop().getId(), id)) {
             throw new ValidateException("Tên role đã tồn tại trong shop");
@@ -103,7 +103,7 @@ public class RoleServiceImplement implements RoleService {
         if (role.getShop() == null) {
             throw new AccessDeniedException("Không thể xóa role hệ thống");
         }
-        authorizationService.checkOwnerShop(role.getShop());
+
         if (role.getStatus() != RoleStatus.ACTIVE) {
             throw new InvalidStatusException("role");
         }
@@ -118,7 +118,7 @@ public class RoleServiceImplement implements RoleService {
         if (role.getShop() == null) {
             throw new AccessDeniedException("Không thể xem role hệ thống");
         }
-        authorizationService.checkOwnerShop(role.getShop());
+
         RoleResponse roleResponse = mapper.toResponse(role);
         return roleResponse;
     }
@@ -127,7 +127,7 @@ public class RoleServiceImplement implements RoleService {
     public Page<RoleResponse> getAllByShopId(Long shopId, RoleStatus status, Pageable pageable) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Shop"));
-        authorizationService.checkOwnerShop(shop);
+
         Page<RoleEntity> roles = status == null
                 ? repository.findAllByShopId(shopId, pageable)
                 : repository.findAllByShopIdAndStatus(shopId, status, pageable);
