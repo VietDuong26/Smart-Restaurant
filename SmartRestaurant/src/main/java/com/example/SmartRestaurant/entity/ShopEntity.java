@@ -21,7 +21,17 @@ public class ShopEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String address;
+    private String address;//mục này chỉ phục vụ mục đích hiển thị cho người dùng thôi
+
+    @Column
+    private Double longitude;//đây mới là mục phục vụ cho việc xác định trên bản đồ để xác nhận công
+
+    @Column
+    private Double latitude;
+
+    @Column
+    private Integer attendanceRadius;
+
     private String phoneNumber;
     @Column(length = 500)
     private String statusReason;//không lưu lịch sử trạng thái tài khoản làm gì

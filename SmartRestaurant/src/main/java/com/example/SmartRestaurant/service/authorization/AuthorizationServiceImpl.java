@@ -31,10 +31,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     @Override
     public void checkOwnerOrPermissionInShop(ShopEntity shop, String permissionName) {
-        //kiểm tra nếu là owner
-        if (!shop.getUser().getId()
-                .equals(currentUserProvider.getCurrentUserId())) {
-            throw new AccessDeniedException("Không có quyền thực hiện");
+        boolean isOwner = shop.getUser().getId()
+                .equals(currentUserProvider.getCurrentUserId());
+        if (isOwner) {
+            return;//nếu là chủ của shop thì cho qua
         }
         //KIỂM TRA NHÂN VIÊN CÓ CÒN ĐANG LÀM CHO SHOP NÀY KHÔNG
         if (!employmentRepository.existsByUserIdAndShopIdAndStatus(
@@ -50,6 +50,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         boolean allowed =
                 roles.stream()
                         .anyMatch(x -> x.getStatus() == RoleStatus.ACTIVE
+                                && x.getShop() != null
                                 && x.getShop().getId().equals(shop.getId())
                                 && x.getPermissions().contains(permission));
         if (!allowed) {

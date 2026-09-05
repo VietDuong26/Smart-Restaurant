@@ -2,6 +2,7 @@ package com.example.SmartRestaurant.service.shop;
 
 import com.example.SmartRestaurant.common.enums.ShopStatus;
 import com.example.SmartRestaurant.dto.request.ReasonRequest;
+import com.example.SmartRestaurant.dto.request.ShopLocationRequest;
 import com.example.SmartRestaurant.dto.request.ShopRequest;
 import com.example.SmartRestaurant.dto.response.ShopResponse;
 import com.example.SmartRestaurant.service.base.BaseService;
@@ -25,5 +26,7 @@ public interface ShopService extends BaseService<ShopRequest, ShopResponse, Long
     void unlock(Long shopId);
 
     Page<ShopResponse> getAll(Pageable pageable, ShopStatus status);
+
+    ShopResponse setLocation(Long shopId, ShopLocationRequest request);
 
 }

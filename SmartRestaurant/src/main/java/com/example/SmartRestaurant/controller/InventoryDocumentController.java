@@ -73,7 +73,7 @@ public class InventoryDocumentController {
         ));
     }
 
-    @GetMapping("/{shopId}")
+    @GetMapping("/shop/{shopId}")
     @Operation(summary = "Lấy ra tất cả các phiếu vật tư của shop")
     @PreAuthorize("hasAuthority('PERM_INVENTORY_VIEW')")
     ResponseEntity<ApiResponse<Page<InventoryDocumentResponse>>> getAllByShopId(

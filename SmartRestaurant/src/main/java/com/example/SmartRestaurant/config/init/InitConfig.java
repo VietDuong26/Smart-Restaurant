@@ -36,6 +36,9 @@ public class InitConfig {
 
     UserRepository userRepository;
     List<String> permissions = List.of(
+            //SHOP
+            "PERM_SHOP_SET_LOCATION",
+
             //AREA
             "PERM_AREA_VIEW",
             "PERM_AREA_CREATE",
@@ -87,7 +90,20 @@ public class InitConfig {
             "PERM_INVENTORY_VIEW",
             "PERM_INVENTORY_CREATE",
             "PERM_INVENTORY_APPROVE",
-            "PERM_INVENTORY_REJECT"
+            "PERM_INVENTORY_REJECT",
+
+            //SHIFT
+            "PERM_SHIFT_VIEW",
+            "PERM_SHIFT_CREATE",
+            "PERM_SHIFT_APPROVE",
+            "PERM_SHIFT_REJECT",
+            "PERM_SHIFT_ACTIVATE",
+
+            //WORKSCHEDULE
+            "PERM_WORK_SCHEDULE_CREATE",
+            "PERM_WORK_SCHEDULE_UPDATE",
+            "PERM_WORK_SCHEDULE_DELETE",
+            "PERM_WORK_SCHEDULE_VIEW"
     );
     List<String> roles = List.of(
             "ROLE_ADMIN"

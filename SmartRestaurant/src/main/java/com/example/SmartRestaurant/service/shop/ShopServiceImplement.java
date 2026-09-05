@@ -2,6 +2,7 @@ package com.example.SmartRestaurant.service.shop;
 
 import com.example.SmartRestaurant.common.enums.ShopStatus;
 import com.example.SmartRestaurant.dto.request.ReasonRequest;
+import com.example.SmartRestaurant.dto.request.ShopLocationRequest;
 import com.example.SmartRestaurant.dto.request.ShopRequest;
 import com.example.SmartRestaurant.dto.response.ShopResponse;
 import com.example.SmartRestaurant.entity.ShopEntity;
@@ -157,6 +158,18 @@ public class ShopServiceImplement implements ShopService {
                 ? repository.findAll(pageable)
                 : repository.findAllByStatus(status, pageable);
         return shops.map(mapper::toResponse);
+    }
+
+    @Override
+    public ShopResponse setLocation(Long shopId, ShopLocationRequest request) {
+        ShopEntity shop = repository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException("Cửa hàng"));
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_SHOP_SET_LOCATION");
+        validateShopLocationRequest(request);
+        shop.setLongitude(request.getLongitude());
+        shop.setLatitude(request.getLatitude());
+        shop.setAttendanceRadius(request.getAttendanceRadius());
+        return mapper.toResponse(repository.save(shop));
     }
 
 }

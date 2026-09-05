@@ -2,6 +2,7 @@ package com.example.SmartRestaurant.controller;
 
 import com.example.SmartRestaurant.common.enums.ShopStatus;
 import com.example.SmartRestaurant.dto.request.ReasonRequest;
+import com.example.SmartRestaurant.dto.request.ShopLocationRequest;
 import com.example.SmartRestaurant.dto.request.ShopRequest;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import com.example.SmartRestaurant.dto.response.ShopResponse;
@@ -81,6 +82,20 @@ public class ShopController {
         ));
     }
 
+    @PutMapping("/{shopId}/location")
+    @Operation(summary = "Người dùng chọn địa chỉ cho shop trên bản đồ thật")
+    @PreAuthorize("hasRole('OWNER') and hasAuthority('PERM_SHOP_SET_LOCATION')")
+    public ResponseEntity<ApiResponse<ShopResponse>> setLocation(
+            @PathVariable Long shopId,
+            @RequestBody ShopLocationRequest request
+    ) {
+        return ResponseEntity.ok(new ApiResponse(
+                200
+                , "Thành công"
+                , shopService.setLocation(shopId, request)
+                , LocalDateTime.now()
+        ));
+    }
 
     @GetMapping
     @Operation(summary = "Admin xem tất cả các shop")
@@ -170,4 +185,6 @@ public class ShopController {
                 , LocalDateTime.now()
         ));
     }
+
+
 }

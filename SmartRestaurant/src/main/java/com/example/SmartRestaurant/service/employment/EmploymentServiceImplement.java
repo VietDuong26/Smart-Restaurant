@@ -1,6 +1,7 @@
 package com.example.SmartRestaurant.service.employment;
 
 import com.example.SmartRestaurant.common.enums.EmploymentStatus;
+import com.example.SmartRestaurant.common.enums.RoleStatus;
 import com.example.SmartRestaurant.dto.request.EmploymentRehireRequest;
 import com.example.SmartRestaurant.dto.request.EmploymentRequest;
 import com.example.SmartRestaurant.dto.response.EmploymentResponse;
@@ -8,6 +9,7 @@ import com.example.SmartRestaurant.entity.EmploymentEntity;
 import com.example.SmartRestaurant.entity.RoleEntity;
 import com.example.SmartRestaurant.entity.ShopEntity;
 import com.example.SmartRestaurant.entity.UserEntity;
+import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.mapper.EmploymentMapper;
@@ -65,7 +67,7 @@ public class EmploymentServiceImplement implements EmploymentService {
             throw new ValidateException("Có vai trò bị trùng");
         }
         //kiểm tra có role nào mà không thuộc shop không
-        Set<RoleEntity> roles = roleRepository.findAllByIdInAndShopId(roleIds, parentId);
+        Set<RoleEntity> roles = roleRepository.findAllByIdInAndShopIdAndStatus(roleIds, parentId, RoleStatus.ACTIVE);
         if (roles.size() != roleIds.size()) {
             throw new NotFoundException("Vai trò");
         }
@@ -94,13 +96,16 @@ public class EmploymentServiceImplement implements EmploymentService {
 
         authorizationService.checkOwnerOrPermissionInShop(employment.getShop(), "PERM_EMPLOYMENT_UPDATE");
         validateUpdateRequest(employmentRequest);
+        if (employment.getStatus() == EmploymentStatus.TERMINATED) {
+            throw new InvalidStatusException("quan hệ nhân viên-cửa hàng");
+        }
         //kiểm tra có roleId nào bị trùng trong request không
         Set<Long> roleIds = new HashSet<>(employmentRequest.getRoleIds());
         if (roleIds.size() != employmentRequest.getRoleIds().size()) {
             throw new ValidateException("Có vai trò bị trùng");
         }
         //kiểm tra có role nào mà không thuộc shop không
-        Set<RoleEntity> roles = roleRepository.findAllByIdInAndShopId(roleIds, employment.getShop().getId());
+        Set<RoleEntity> roles = roleRepository.findAllByIdInAndShopIdAndStatus(roleIds, employment.getShop().getId(), RoleStatus.ACTIVE);
         if (roles.size() != roleIds.size()) {
             throw new NotFoundException("Vai trò");
         }
@@ -148,7 +153,10 @@ public class EmploymentServiceImplement implements EmploymentService {
                 .orElseThrow(() -> new NotFoundException("Quan hệ nhân viên-cửa hàng"));
 
         authorizationService.checkOwnerOrPermissionInShop(employment.getShop(), "PERM_EMPLOYMENT_VIEW");
-        return mapper.toResponse(employment);
+        EmploymentResponse employmentResponse = mapper.toResponse(employment);
+        employmentResponse.setShop(shopMapper.toResponse(employment.getShop()));
+        employmentResponse.setUser(userMapper.toResponse(employment.getUser()));
+        return employmentResponse;
     }
 
 
@@ -169,7 +177,7 @@ public class EmploymentServiceImplement implements EmploymentService {
             throw new ValidateException("Có vai trò bị trùng");
         }
         //kiểm tra có role nào mà không thuộc shop không
-        Set<RoleEntity> roles = roleRepository.findAllByIdInAndShopId(roleIds, shopId);
+        Set<RoleEntity> roles = roleRepository.findAllByIdInAndShopIdAndStatus(roleIds, shop.getId(), RoleStatus.ACTIVE);
         if (roles.size() != roleIds.size()) {
             throw new NotFoundException("Vai trò");
         }

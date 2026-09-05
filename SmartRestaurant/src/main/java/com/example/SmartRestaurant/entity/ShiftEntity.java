@@ -1,11 +1,11 @@
 package com.example.SmartRestaurant.entity;
 
-import com.example.SmartRestaurant.common.enums.EmploymentStatus;
+import com.example.SmartRestaurant.common.enums.ShiftStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -14,31 +14,30 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@Table(name = "tbl_employment")
-public class EmploymentEntity {
+@Table(name = "tbl_shift")
+public class ShiftEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long salary;
 
     @Column(nullable = false)
-    private LocalDate workFrom;
-
-    private LocalDate endedAt;
+    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EmploymentStatus status;
+    private ShiftStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @Column(nullable = false)
+    private LocalTime startTime;
+
+    @Column(nullable = false)
+    private LocalTime endTime;
 
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = false)
     private ShopEntity shop;
 
-    @OneToMany(mappedBy = "employment")
+    @OneToMany(mappedBy = "shift")
     private List<WorkScheduleEntity> workSchedules;
 
     @Column(nullable = false, updatable = false)
@@ -56,4 +55,5 @@ public class EmploymentEntity {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
 }

@@ -16,8 +16,6 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
     RoleEntity findByName(String name);
 
 
-    Set<RoleEntity> findAllByIdInAndShopId(Set<Long> roleIds, Long parentId);
-
     boolean existsByNameAndShopId(String name, Long parentId);
 
     Page<RoleEntity> findAllByShopId(Long shopId, Pageable pageable);
@@ -25,4 +23,6 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
     Page<RoleEntity> findAllByShopIdAndStatus(Long shopId, RoleStatus status, Pageable pageable);
 
     boolean existsByNameAndShopIdAndIdNot(String name, Long shopId, Long id);
+
+    Set<RoleEntity> findAllByIdInAndShopIdAndStatus(Set<Long> roleIds, Long parentId, RoleStatus active);
 }

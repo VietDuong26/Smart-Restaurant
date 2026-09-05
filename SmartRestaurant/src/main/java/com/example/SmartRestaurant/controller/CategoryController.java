@@ -74,7 +74,7 @@ public class CategoryController {
 
     @PutMapping("/{categoryId}")
     @Operation(summary = "Sửa thông tin danh mục")
-    @PreAuthorize("hasAuthority('PERM_CATEGORY_VIEW')")
+    @PreAuthorize("hasAuthority('PERM_CATEGORY_UPDATE')")
     public ResponseEntity<ApiResponse<CategoryResponse>> update(
             @PathVariable Long categoryId,
             @RequestBody CategoryRequest request
