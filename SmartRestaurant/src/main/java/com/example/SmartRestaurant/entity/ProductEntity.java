@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -40,6 +41,9 @@ public class ProductEntity {
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private RecipeEntity recipe;
+
+    @OneToMany(mappedBy = "product")
+    private List<OrderItemEntity> orderItems;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

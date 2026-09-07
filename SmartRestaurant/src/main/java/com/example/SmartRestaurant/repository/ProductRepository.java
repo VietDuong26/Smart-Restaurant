@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Set;
+
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     boolean existsByNameAndCategoryId(String name, Long categoryId);
@@ -17,4 +20,5 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
     Page<ProductEntity> findAllByCategoryIdAndStatus(Long categoryId, ProductStatus status, Pageable pageable);
 
+    List<ProductEntity> findAllByIdInAndAndStatus(Set<Long> productIds, ProductStatus active);
 }

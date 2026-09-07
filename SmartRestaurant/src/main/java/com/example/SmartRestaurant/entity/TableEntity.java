@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -31,6 +32,9 @@ public class TableEntity {
     @ManyToOne
     @JoinColumn(name = "area_id", nullable = false)
     private AreaEntity area;
+
+    @OneToMany(mappedBy = "table")
+    private List<OrderEntity> orders;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
