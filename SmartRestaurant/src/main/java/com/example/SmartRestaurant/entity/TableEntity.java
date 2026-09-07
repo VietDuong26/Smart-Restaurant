@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.enums.TableOrderStatus;
 import com.example.SmartRestaurant.common.enums.TableStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,9 @@ public class TableEntity {
     private String qrImageUrl;
 
     private boolean qrEnabled;
+
+    @Enumerated(EnumType.STRING)
+    private TableOrderStatus orderStatus;
 
     @ManyToOne
     @JoinColumn(name = "area_id", nullable = false)

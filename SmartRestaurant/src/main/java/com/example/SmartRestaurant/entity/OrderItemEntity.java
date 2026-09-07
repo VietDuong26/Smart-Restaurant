@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.entity;
 
+import com.example.SmartRestaurant.common.enums.OrderItemStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,10 +18,18 @@ public class OrderItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Enumerated(EnumType.STRING)
+    private OrderItemStatus status;
+    private LocalDateTime deletedAt;
+    @ManyToOne
+    @JoinColumn(name = "delete_user_id")
+    private UserEntity deletedBy;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private OrderEntity order;//order nào
+
+    @Column(length = 100, updatable = false)
+    private String note;//snapshot
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -40,7 +49,7 @@ public class OrderItemEntity {
     private Integer quantity;//snapshot
 
     @Column(nullable = false, updatable = false)
-    private BigDecimal totalPrice;//snapshot
+    private BigDecimal totalPrice;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

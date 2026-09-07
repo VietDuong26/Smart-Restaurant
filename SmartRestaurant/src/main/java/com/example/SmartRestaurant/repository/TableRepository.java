@@ -16,4 +16,6 @@ public interface TableRepository extends JpaRepository<TableEntity, Long> {
     Page<TableEntity> findAllByAreaId(Long shopId, Pageable pageable);
 
     Page<TableEntity> findAllByAreaIdAndStatus(Long shopId, TableStatus status, Pageable pageable);
+
+
 }

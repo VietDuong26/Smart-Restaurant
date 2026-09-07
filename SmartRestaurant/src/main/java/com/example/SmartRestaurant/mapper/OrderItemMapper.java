@@ -13,6 +13,7 @@ public class OrderItemMapper {
     public OrderItemEntity toEntity(StaffOrderItemRequest request) {
         return OrderItemEntity.builder()
                 .quantity(request.getQuantity())
+                .note(request.getNote())
                 .build();
     }
 

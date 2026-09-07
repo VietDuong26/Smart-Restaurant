@@ -1,9 +1,7 @@
 package com.example.SmartRestaurant.service.order;
 
-import com.example.SmartRestaurant.common.enums.AreaStatus;
-import com.example.SmartRestaurant.common.enums.OrderStatus;
-import com.example.SmartRestaurant.common.enums.PaymentStatus;
-import com.example.SmartRestaurant.common.enums.TableStatus;
+import com.example.SmartRestaurant.common.enums.*;
+import com.example.SmartRestaurant.dto.request.OrderItemDeleteRequest;
 import com.example.SmartRestaurant.dto.request.StaffOrderRequest;
 import com.example.SmartRestaurant.dto.response.OrderItemResponse;
 import com.example.SmartRestaurant.dto.response.OrderResponse;
@@ -25,7 +23,10 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,21 +62,108 @@ public class OrderServiceImplement implements OrderService {
             throw new InvalidStatusException("bàn");
         }
         //kiểm tra xem có order nào thuộc bàn này tại điểm tạo không
-        List<OrderEntity> orderIsPendingInTableNowList = repository.findAllByTableIdAndOrderStatus(
+        List<OrderEntity> orderIsPendingInTable = repository.findAllByTableIdAndOrderStatus(
                 request.getTableId(),
                 OrderStatus.PENDING);
-        if (!orderIsPendingInTableNowList.isEmpty()) {
-            throw new InvalidStatusException("bàn");
+        OrderEntity order;
+        if (orderIsPendingInTable.isEmpty()) {
+            order = new OrderEntity();
+            order.setTable(table);
+            order.setOrderStatus(OrderStatus.PENDING);
+            order.setPaymentStatus(PaymentStatus.PENDING);
+            order = repository.save(order);
+
+        } else if (orderIsPendingInTable.size() == 1) {
+            order = orderIsPendingInTable.get(0);
+        } else {
+            throw new ValidateException("Bàn có nhiều đơn hàng cùng lúc");
         }
-        OrderEntity order = new OrderEntity();
-        order.setTable(table);
-        order.setOrderStatus(OrderStatus.PENDING);
-        order.setPaymentStatus(PaymentStatus.PENDING);
-        OrderEntity savedOrder = repository.save(order);
-        //set orderid cho các item và lưu các item
-        List<OrderItemResponse> itemResponses = orderItemService.createAll(savedOrder.getId(), request.getItemRequests());
-        OrderResponse orderResponse = mapper.toResponse(savedOrder);
+        //set orderId cho các item và lưu các item
+        List<OrderItemResponse> itemResponses = orderItemService.createAll(order, request.getItemRequests());
+        OrderResponse orderResponse = mapper.toResponse(order);
         orderResponse.setItemResponses(itemResponses);
+        table.setOrderStatus(TableOrderStatus.OCCUPIED);
+        tableRepository.save(table);
         return orderResponse;
     }
+
+    @Override
+    public void deleteAll(Long shopId, OrderItemDeleteRequest request) {
+        ShopEntity shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException("Cửa hàng"));
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_ORDER_CREATE");
+        TableEntity table = tableRepository.findById(request.getTableId())
+                .orElseThrow(() -> new NotFoundException("Bàn"));
+        if (!table.getArea().getShop().getId().equals(shopId)) {
+            throw new ValidateException("Bàn không thuộc cửa hàng");
+        }
+        if (table.getArea().getStatus().equals(AreaStatus.INACTIVE)) {
+            throw new InvalidStatusException("khu vực");
+        }
+        if (table.getStatus().equals(TableStatus.INACTIVE)) {
+            throw new InvalidStatusException("bàn");
+        }
+        //kiểm tra xem có order nào thuộc bàn này tại điểm tạo không
+        List<OrderEntity> orderIsPendingInTable = repository.findAllByTableIdAndOrderStatus(
+                request.getTableId(),
+                OrderStatus.PENDING);
+        OrderEntity order;
+        if (orderIsPendingInTable.isEmpty()) {
+            throw new ValidateException("Hiện tại không có đơn hàng nào trong bàn");
+        }
+        if (orderIsPendingInTable.size() > 1) {
+            throw new ValidateException("Bàn có nhiều đơn hàng cùng lúc");
+        }
+        order = orderIsPendingInTable.get(0);
+        orderItemService.deleteAll(order, request.getOrderItemIds());
+    }
+
+    @Override
+    public OrderResponse createByQR(StaffOrderRequest request) {
+        TableEntity table = tableRepository.findById(request.getTableId())
+                .orElseThrow(() -> new NotFoundException("Bàn"));
+        if (table.getArea().getStatus().equals(AreaStatus.INACTIVE)) {
+            throw new InvalidStatusException("khu vực");
+        }
+        if (table.getStatus().equals(TableStatus.INACTIVE)) {
+            throw new InvalidStatusException("bàn");
+        }
+        //kiểm tra xem có order nào thuộc bàn này tại điểm tạo không
+        List<OrderEntity> orderIsPendingInTable = repository.findAllByTableIdAndOrderStatus(
+                request.getTableId(),
+                OrderStatus.PENDING);
+        OrderEntity order;
+        if (orderIsPendingInTable.isEmpty()) {
+            order = new OrderEntity();
+            order.setTable(table);
+            order.setOrderStatus(OrderStatus.PENDING);
+            order.setPaymentStatus(PaymentStatus.PENDING);
+            order = repository.save(order);
+
+        } else if (orderIsPendingInTable.size() == 1) {
+            order = orderIsPendingInTable.get(0);
+        } else {
+            throw new ValidateException("Bàn có nhiều đơn hàng cùng lúc");
+        }
+        //set orderId cho các item và lưu các item
+        List<OrderItemResponse> itemResponses = orderItemService.createAll(order, request.getItemRequests());
+        OrderResponse orderResponse = mapper.toResponse(order);
+        orderResponse.setItemResponses(itemResponses);
+        table.setOrderStatus(TableOrderStatus.OCCUPIED);
+        tableRepository.save(table);
+        return orderResponse;
+    }
+
+    @Override
+    public List<OrderResponse> getAllByShopIdAndDate(Long shopId, LocalDate date) {
+        ShopEntity shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException("Cửa hàng"));
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_ORDER_VIEW");
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.plusDays(1).atStartOfDay();
+        List<OrderEntity> orders = repository.findAllByTable_Area_Shop_IdAndCreatedAtGreaterThanEqualAndCreatedAtBefore(
+                shopId, start, end);
+        return orders.stream().map(x -> mapper.toResponse(x)).collect(Collectors.toList());
+    }
+
 }

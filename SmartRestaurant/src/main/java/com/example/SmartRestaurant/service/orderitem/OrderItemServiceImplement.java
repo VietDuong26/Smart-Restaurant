@@ -1,16 +1,17 @@
 package com.example.SmartRestaurant.service.orderitem;
 
+import com.example.SmartRestaurant.common.enums.OrderItemStatus;
 import com.example.SmartRestaurant.common.enums.ProductStatus;
 import com.example.SmartRestaurant.dto.request.StaffOrderItemRequest;
 import com.example.SmartRestaurant.dto.response.OrderItemResponse;
 import com.example.SmartRestaurant.entity.OrderEntity;
 import com.example.SmartRestaurant.entity.OrderItemEntity;
 import com.example.SmartRestaurant.entity.ProductEntity;
+import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.mapper.OrderItemMapper;
 import com.example.SmartRestaurant.repository.OrderItemRepository;
-import com.example.SmartRestaurant.repository.OrderRepository;
 import com.example.SmartRestaurant.repository.ProductRepository;
 import com.example.SmartRestaurant.security.CurrentUserProvider;
 import lombok.AccessLevel;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,15 +33,11 @@ public class OrderItemServiceImplement implements OrderItemService {
     OrderItemRepository repository;
     ProductRepository productRepository;
 
-    OrderRepository orderRepository;
-
     OrderItemMapper mapper;
     CurrentUserProvider currentUserProvider;
 
     @Override
-    public List<OrderItemResponse> createAll(Long orderId, List<StaffOrderItemRequest> itemRequests) {
-        OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new NotFoundException("Đơn hàng"));
+    public List<OrderItemResponse> createAll(OrderEntity order, List<StaffOrderItemRequest> itemRequests) {
         Set<Long> productIds = itemRequests
                 .stream()
                 .map(x -> x.getProductId())
@@ -71,5 +69,26 @@ public class OrderItemServiceImplement implements OrderItemService {
                 .stream()
                 .map(x -> mapper.toResponse(x))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteAll(OrderEntity order, List<Long> orderItemIds) {
+        Set<Long> itemIds = new HashSet<>(orderItemIds);
+        if (itemIds.size() != orderItemIds.size()) {
+            throw new ValidateException("Có món bị trùng");
+        }
+        List<OrderItemEntity> orderItems = repository.findAllByIdInAndOrderId(itemIds, order.getId());
+        if (orderItems.size() != itemIds.size()) {
+            throw new NotFoundException("Món trong đơn hàng");
+        }
+        orderItems.forEach(x -> {
+            if (x.getStatus().equals(OrderItemStatus.INACTIVE)) {
+                throw new InvalidStatusException("món trong dơn hàng");
+            }
+            x.setStatus(OrderItemStatus.INACTIVE);
+            x.setDeletedAt(LocalDateTime.now());
+            x.setDeletedBy(currentUserProvider.getCurrentUser().getUser());
+        });
+        repository.saveAll(orderItems);
     }
 }

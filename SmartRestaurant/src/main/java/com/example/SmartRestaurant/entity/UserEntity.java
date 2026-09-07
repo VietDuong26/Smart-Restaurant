@@ -51,9 +51,6 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<ShopEntity> shops;
 
-    @OneToMany(mappedBy = "user")
-    private List<OrderItemEntity> orderItems;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_role",

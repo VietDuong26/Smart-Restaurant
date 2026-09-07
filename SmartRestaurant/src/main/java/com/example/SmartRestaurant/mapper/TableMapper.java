@@ -20,6 +20,8 @@ public class TableMapper {
                 .id(table.getId())
                 .name(table.getName())
                 .qrEnabled(table.isQrEnabled())
+                .orderStatus(table.getOrderStatus())
+                .status(table.getStatus())
                 .build();
     }
 }
