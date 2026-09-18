@@ -1,16 +1,18 @@
 package com.example.SmartRestaurant.mapper;
 
-import com.example.SmartRestaurant.dto.request.StaffOrderItemRequest;
+import com.example.SmartRestaurant.dto.request.OrderItemRequest;
 import com.example.SmartRestaurant.dto.response.OrderItemResponse;
 import com.example.SmartRestaurant.entity.OrderItemEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class OrderItemMapper {
     ProductMapper productMapper;
     EmploymentMapper employmentMapper;
 
-    public OrderItemEntity toEntity(StaffOrderItemRequest request) {
+    public OrderItemEntity toEntity(OrderItemRequest request) {
         return OrderItemEntity.builder()
                 .quantity(request.getQuantity())
                 .note(request.getNote())

@@ -32,8 +32,7 @@ public class OrderEntity {
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
-
-    @Column(updatable = false)
+    
     private LocalDateTime paidAt;//thanh toán lúc nào
 
     @Column(nullable = false, updatable = false)

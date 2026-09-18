@@ -1,7 +1,7 @@
 package com.example.SmartRestaurant.controller;
 
 import com.example.SmartRestaurant.dto.request.OrderItemDeleteRequest;
-import com.example.SmartRestaurant.dto.request.StaffOrderRequest;
+import com.example.SmartRestaurant.dto.request.OrderRequest;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import com.example.SmartRestaurant.dto.response.OrderResponse;
 import com.example.SmartRestaurant.service.order.OrderService;
@@ -32,7 +32,7 @@ public class OrderController {
     @PreAuthorize("hasAuthority('PERM_ORDER_CREATE')")
     public ResponseEntity<ApiResponse<OrderResponse>> create(
             @PathVariable Long shopId,
-            @RequestBody StaffOrderRequest request
+            @RequestBody OrderRequest request
     ) {
 
         return ResponseEntity.status(201).body(new ApiResponse<>(
@@ -52,8 +52,8 @@ public class OrderController {
             @RequestBody OrderItemDeleteRequest request
     ) {
         orderService.deleteAll(shopId, request);
-        return ResponseEntity.status(201).body(new ApiResponse<>(
-                201
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200
                 , "Thành công"
                 , null
                 , LocalDateTime.now()
@@ -64,7 +64,7 @@ public class OrderController {
     @Operation(summary = "Tạo dơn hàng hoặc thêm món bằng id bàn")
     //khách hay bất kỳ ai có mã qr đều có thể gọi món
     public ResponseEntity<ApiResponse<OrderResponse>> createByQR(
-            @RequestBody StaffOrderRequest request
+            @RequestBody OrderRequest request
     ) {
         return ResponseEntity.status(201).body(new ApiResponse<>(
                 201
@@ -80,13 +80,63 @@ public class OrderController {
     @PreAuthorize("hasAuthority('PERM_ORDER_VIEW')")
     public ResponseEntity<ApiResponse<List<OrderResponse>>> getAllByDateAndShopId(
             @PathVariable Long shopId,
-            @RequestBody LocalDate date
+            @RequestParam LocalDate date
     ) {
 
-        return ResponseEntity.status(201).body(new ApiResponse<>(
-                201
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200
                 , "Thành công"
                 , orderService.getAllByShopIdAndDate(shopId, date)
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PostMapping("/{shopId}/merge-table")
+    @Operation(summary = "Gộp bàn")
+    @PreAuthorize("hasAuthority('PERM_ORDER_TABLE_MERGE')")
+    public ResponseEntity<ApiResponse<Void>> mergeOrderTable(
+            @PathVariable Long shopId,
+            @RequestParam Long fromId,
+            @RequestParam Long toId
+    ) {
+        orderService.mergeOrderTable(shopId, fromId, toId);
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200
+                , "Thành công"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PostMapping("/{shopId}/move-table")
+    @Operation(summary = "Chuyển bàn")
+    @PreAuthorize("hasAuthority('PERM_ORDER_TABLE_MOVE')")
+    public ResponseEntity<ApiResponse<Void>> moveOrderTable(
+            @PathVariable Long shopId,
+            @RequestParam Long fromId,
+            @RequestParam Long toId
+    ) {
+        orderService.moveOrderTable(shopId, fromId, toId);
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200
+                , "Thành công"
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
+    @PostMapping("/{shopId}/payment/{orderId}")
+    @Operation(summary = "Thanh toán")
+    @PreAuthorize("hasAuthority('PERM_ORDER_PAYMENT')")
+    public ResponseEntity<ApiResponse<OrderResponse>> payOrder(
+            @PathVariable Long shopId,
+            @PathVariable Long orderId
+    ) {
+
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200
+                , "Thành công"
+                , orderService.pay(shopId, orderId)
                 , LocalDateTime.now()
         ));
     }

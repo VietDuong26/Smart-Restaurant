@@ -2,11 +2,12 @@ package com.example.SmartRestaurant.service.orderitem;
 
 import com.example.SmartRestaurant.common.enums.OrderItemStatus;
 import com.example.SmartRestaurant.common.enums.ProductStatus;
-import com.example.SmartRestaurant.dto.request.StaffOrderItemRequest;
+import com.example.SmartRestaurant.dto.request.OrderItemRequest;
 import com.example.SmartRestaurant.dto.response.OrderItemResponse;
 import com.example.SmartRestaurant.entity.OrderEntity;
 import com.example.SmartRestaurant.entity.OrderItemEntity;
 import com.example.SmartRestaurant.entity.ProductEntity;
+import com.example.SmartRestaurant.entity.UserEntity;
 import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.ValidateException;
@@ -37,7 +38,9 @@ public class OrderItemServiceImplement implements OrderItemService {
     CurrentUserProvider currentUserProvider;
 
     @Override
-    public List<OrderItemResponse> createAll(OrderEntity order, List<StaffOrderItemRequest> itemRequests) {
+    public List<OrderItemResponse> createAll(OrderEntity order,
+                                             List<OrderItemRequest> itemRequests,
+                                             UserEntity createdBy) {
         Set<Long> productIds = itemRequests
                 .stream()
                 .map(x -> x.getProductId())
@@ -62,7 +65,8 @@ public class OrderItemServiceImplement implements OrderItemService {
             orderItem.setProductName(product.getName());
             orderItem.setPrice(product.getPrice());
             orderItem.setTotalPrice(product.getPrice().multiply(new BigDecimal(x.getQuantity())));
-            orderItem.setUser(currentUserProvider.getCurrentUser().getUser());
+            orderItem.setUser(createdBy);
+            orderItem.setStatus(OrderItemStatus.ACTIVE);
             preSaveOrderItemList.add(orderItem);
         });
         return repository.saveAll(preSaveOrderItemList)
@@ -90,5 +94,25 @@ public class OrderItemServiceImplement implements OrderItemService {
             x.setDeletedBy(currentUserProvider.getCurrentUser().getUser());
         });
         repository.saveAll(orderItems);
+    }
+
+    @Override
+    public void mergeOrder(OrderEntity fromOrder, OrderEntity toOrder) {
+        List<OrderItemEntity> itemsOfFromOrder = repository.findAllByOrderId(fromOrder.getId());
+        itemsOfFromOrder.forEach(x -> x.setOrder(toOrder));
+        repository.saveAll(itemsOfFromOrder);
+    }
+
+    @Override
+    public BigDecimal getTotalPriceByOrderId(Long orderId) {
+        List<OrderItemEntity> items = repository.findAllByOrderIdAndStatus(orderId, OrderItemStatus.ACTIVE);
+        if (items.size() == 0) {
+            throw new ValidateException("Đơn hàng không có sản phẩm nào");
+        }
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        for (OrderItemEntity item : items) {
+            totalPrice = totalPrice.add(item.getTotalPrice());
+        }
+        return totalPrice;
     }
 }

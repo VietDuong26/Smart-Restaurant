@@ -21,6 +21,6 @@ public class OrderResponse {
     private PaymentMethod paymentMethod;
     private PaymentStatus paymentStatus;
     private LocalDateTime paidAt;
-    private BigDecimal totalAmount;
+    private BigDecimal totalPrice;
     private List<OrderItemResponse> itemResponses;
 }

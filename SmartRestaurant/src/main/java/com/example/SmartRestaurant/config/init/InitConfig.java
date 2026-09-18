@@ -103,7 +103,15 @@ public class InitConfig {
             "PERM_WORK_SCHEDULE_CREATE",
             "PERM_WORK_SCHEDULE_UPDATE",
             "PERM_WORK_SCHEDULE_DELETE",
-            "PERM_WORK_SCHEDULE_VIEW"
+            "PERM_WORK_SCHEDULE_VIEW",
+
+            //ORDER
+            "PERM_ORDER_CREATE",
+            "PERM_ORDER_ITEM_DELETE",
+            "PERM_ORDER_VIEW",
+            "PERM_ORDER_TABLE_MERGE",
+            "PERM_ORDER_TABLE_MOVE",
+            "PERM_ORDER_PAYMENT"
     );
     List<String> roles = List.of(
             "ROLE_ADMIN"

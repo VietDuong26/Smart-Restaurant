@@ -2,9 +2,11 @@ package com.example.SmartRestaurant.mapper;
 
 import com.example.SmartRestaurant.dto.response.OrderResponse;
 import com.example.SmartRestaurant.entity.OrderEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class OrderMapper {
     TableMapper tableMapper;
 

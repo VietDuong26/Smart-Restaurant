@@ -5,12 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class StaffOrderItemRequest {
-    private Long productId;
-    private Integer quantity;
-    private String note;
+public class OrderRequest {
+    private Long tableId;
+    private List<OrderItemRequest> itemRequests;
 }
