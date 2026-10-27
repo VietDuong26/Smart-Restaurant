@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.config.jwt;
 
+import com.example.SmartRestaurant.common.enums.HostDeviceStatus;
 import com.example.SmartRestaurant.config.userdetails.CustomUserDetails;
 import com.example.SmartRestaurant.exception.ExpiredJwtTokenException;
 import io.jsonwebtoken.Claims;
@@ -29,6 +30,10 @@ public class JwtService {
     String refreshSecretToken;
 
 
+    @Value("${host-device-token.secret}")
+    String hostDeviceTokenSecret;
+
+
     //access token
     public String generateAccessToken(UserDetails userDetails) {
         Date now = new Date();
@@ -56,10 +61,10 @@ public class JwtService {
         return extractAccessAllClaims(token).getSubject();
     }
 
-    public boolean validateAccessToken(String token, UserDetails userDetails) {
-        final String username = extractAccessUsername(token);
-        return username.equals(userDetails.getUsername());
-    }
+//    public boolean validateAccessToken(String token, UserDetails userDetails) {
+//        final String username = extractAccessUsername(token);
+//        return username.equals(userDetails.getUsername());
+//    }
 
     private Claims extractAccessAllClaims(String token) {
         try {
@@ -92,10 +97,10 @@ public class JwtService {
         return extractRefreshAllClaims(token).getSubject();
     }
 
-    public boolean validateRefreshToken(String token, UserDetails userDetails) {
-        final String username = extractRefreshUsername(token);
-        return username.equals(userDetails.getUsername());
-    }
+//    public boolean validateRefreshToken(String token, UserDetails userDetails) {
+//        final String username = extractRefreshUsername(token);
+//        return username.equals(userDetails.getUsername());
+//    }
 
     private Claims extractRefreshAllClaims(String token) {
         try {
@@ -114,4 +119,33 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    //host-device
+    public String generateHostDeviceRefreshToken(Long hostId,
+                                                 String name,
+                                                 Long shopId,
+                                                 HostDeviceStatus status) {
+        return Jwts.builder()
+                .setSubject(String.valueOf(hostId))
+                .setIssuedAt(new Date())
+                .signWith(getHostDeviceSigningKey(), SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    private Key getHostDeviceSigningKey() {
+        byte[] keyBytes = Base64.getDecoder().decode(hostDeviceTokenSecret);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private Claims extractHostDeviceAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getHostDeviceSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public Long extractHostDeviceId(String token) {
+        Claims claims = extractHostDeviceAllClaims(token);
+        return Long.valueOf(claims.getSubject());
+    }
 }

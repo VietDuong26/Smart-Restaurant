@@ -17,29 +17,6 @@ import java.util.Map;
 public class CloudinaryServiceImplement implements CloudinaryService {
     Cloudinary cloudinary;
 
-    public String uploadQRImage(MultipartFile file, Long tableId) {
-        try {
-            String publicId =
-                    "smart-restaurant/qrs/qr_" + tableId;
-
-            Map<?, ?> result = cloudinary.uploader().upload(
-                    file.getBytes(),
-                    ObjectUtils.asMap(
-                            "public_id", publicId,
-                            "overwrite", true,
-                            "invalidate", true,
-                            "resource_type", "image"
-                    )
-            );
-            return result.get("secure_url").toString();
-        } catch (IOException e) {
-            throw new RuntimeException(
-                    "Không thể tải ảnh mã QR lên Cloudinary",
-                    e
-            );
-        }
-    }
-
     @Override
     public String uploadProductImage(MultipartFile file, Long productId) {
         try {

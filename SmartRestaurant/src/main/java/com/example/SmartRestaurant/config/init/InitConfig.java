@@ -35,6 +35,7 @@ public class InitConfig {
     PasswordEncoder passwordEncoder;
 
     UserRepository userRepository;
+
     List<String> permissions = List.of(
             //SHOP
             "PERM_SHOP_SET_LOCATION",
@@ -111,7 +112,10 @@ public class InitConfig {
             "PERM_ORDER_VIEW",
             "PERM_ORDER_TABLE_MERGE",
             "PERM_ORDER_TABLE_MOVE",
-            "PERM_ORDER_PAYMENT"
+            "PERM_ORDER_PAYMENT",
+
+            //HOST-DEVICE
+            "PERM_HOST_DEVICE_REGISTER"
     );
     List<String> roles = List.of(
             "ROLE_ADMIN"
@@ -172,4 +176,5 @@ public class InitConfig {
             userRepository.save(admin);
         }
     }
+
 }

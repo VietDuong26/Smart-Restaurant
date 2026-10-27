@@ -1,7 +1,6 @@
 package com.example.SmartRestaurant.config.jwt;
 
 import com.example.SmartRestaurant.config.userdetails.CustomUserDetails;
-import com.example.SmartRestaurant.exception.InvalidJWTException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,18 +42,15 @@ public class JwtFilter extends OncePerRequestFilter {
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     CustomUserDetails userDetails =
                             (CustomUserDetails) userDetailService.loadUserByUsername(username);
-                    if (jwtService.validateAccessToken(token, userDetails)) {
-                        UsernamePasswordAuthenticationToken authToken =
-                                new UsernamePasswordAuthenticationToken(
-                                        userDetails, null, userDetails.getAuthorities());
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-                    } else {
-                        throw new InvalidJWTException();
-                    }
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {
+            e.printStackTrace();
             SecurityContextHolder.clearContext();
             handlerExceptionResolver.resolveException(
                     request,

@@ -21,6 +21,7 @@ import com.example.SmartRestaurant.service.orderitem.OrderItemService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +52,8 @@ public class OrderServiceImplement implements OrderService {
     OrderMapper mapper;
 
     CurrentUserProvider currentUserProvider;
+
+    SimpMessagingTemplate messagingTemplate;
 
     @Override
     public OrderResponse create(OrderRequest request, Long shopId) {
@@ -94,6 +97,7 @@ public class OrderServiceImplement implements OrderService {
         orderResponse.setItemResponses(itemResponses);
         table.setOrderStatus(TableOrderStatus.OCCUPIED);
         tableRepository.save(table);
+
         return orderResponse;
     }
 
@@ -312,6 +316,7 @@ public class OrderServiceImplement implements OrderService {
         order.setPaymentMethod(PaymentMethod.CASH);
         OrderResponse orderResponse = mapper.toResponse(order);
         orderResponse.setTotalPrice(totalPrice);
+        messagingTemplate.convertAndSend("/host/" + shopId, orderResponse);
         return orderResponse;
     }
 
