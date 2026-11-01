@@ -96,11 +96,11 @@ public class InitConfig {
             //SHIFT
             "PERM_SHIFT_VIEW",
             "PERM_SHIFT_CREATE",
-            "PERM_SHIFT_APPROVE",
-            "PERM_SHIFT_REJECT",
+            "PERM_SHIFT_UPDATE",
+            "PERM_SHIFT_DELETE",
             "PERM_SHIFT_ACTIVATE",
 
-            //WORKSCHEDULE
+            //WORK_SCHEDULE
             "PERM_WORK_SCHEDULE_CREATE",
             "PERM_WORK_SCHEDULE_UPDATE",
             "PERM_WORK_SCHEDULE_DELETE",

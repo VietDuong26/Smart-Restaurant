@@ -32,7 +32,7 @@ public class WorkScheduleEntity {
     @JoinColumn(name = "shift_id", nullable = false)
     private ShiftEntity shift;//ca làm nào
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private WorkScheduleAttendanceStatus attendanceStatus;//duyệt công bằng cái này
 
@@ -51,7 +51,7 @@ public class WorkScheduleEntity {
     @OneToMany(mappedBy = "workSchedule")
     private List<AttendanceEntity> attendances;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private WorkScheduleStatus status;
 

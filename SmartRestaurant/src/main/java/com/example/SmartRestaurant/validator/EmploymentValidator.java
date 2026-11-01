@@ -2,6 +2,7 @@ package com.example.SmartRestaurant.validator;
 
 import com.example.SmartRestaurant.dto.request.EmploymentRehireRequest;
 import com.example.SmartRestaurant.dto.request.EmploymentRequest;
+import com.example.SmartRestaurant.dto.request.EmploymentUpdateRequest;
 import com.example.SmartRestaurant.exception.ValidateException;
 
 import static com.example.SmartRestaurant.validator.AuthValidator.validateRegister;
@@ -44,7 +45,7 @@ public final class EmploymentValidator {
         }
     }
 
-    public static void validateUpdateRequest(EmploymentRequest request) {
+    public static void validateUpdateRequest(EmploymentUpdateRequest request) {
         if (request == null) {
             throw new ValidateException("Thông tin quan hệ nhân viên-shop không hợp lệ");
         }

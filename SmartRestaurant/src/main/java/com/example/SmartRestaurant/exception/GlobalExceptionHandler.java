@@ -22,6 +22,16 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse<?>> handleUnauthorizedException(UnauthorizedException e) {
+        return ResponseEntity.status(401).body(new ApiResponse<>(
+                401
+                , e.getMessage()
+                , null
+                , LocalDateTime.now()
+        ));
+    }
+
     @ExceptionHandler(EmailSendException.class)
     public ResponseEntity<ApiResponse<?>> handleEmailSendException(EmailSendException e) {
         return ResponseEntity.status(500).body(new ApiResponse<>(

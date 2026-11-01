@@ -87,7 +87,7 @@ public class ShiftServiceImplement implements ShiftService {
     public void activate(Long shiftId) {
         ShiftEntity shift = repository.findById(shiftId)
                 .orElseThrow(() -> new NotFoundException("Ca làm"));
-        authorizationService.checkOwnerOrPermissionInShop(shift.getShop(), "PERM_SHIFT_VIEW");
+        authorizationService.checkOwnerOrPermissionInShop(shift.getShop(), "PERM_SHIFT_ACTIVATE");
         if (shift.getStatus() != ShiftStatus.INACTIVE) {
             throw new InvalidStatusException("ca làm");
         }

@@ -6,15 +6,10 @@ import com.example.SmartRestaurant.dto.request.WorkScheduleRequest;
 import com.example.SmartRestaurant.dto.request.WorkScheduleUpdateRequest;
 import com.example.SmartRestaurant.exception.ValidateException;
 
-import java.time.LocalDate;
-
 public final class WorkScheduleValidator {
     public static void validateRequest(WorkScheduleRequest request) {
         if (request == null) {
             throw new ValidateException("Thông tin phân công không hợp lệ");
-        }
-        if (request.getDate().isBefore(LocalDate.now())) {
-            throw new ValidateException("Không thể phân công cho ngày cũ");
         }
         if (request.getShiftId() == null) {
             throw new ValidateException("Ca làm không được bỏ trống");

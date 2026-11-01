@@ -20,7 +20,7 @@ public class HostDeviceEntity {
 
     private String name;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "shop_id", nullable = false)
     private ShopEntity shop;
 

@@ -60,6 +60,9 @@ public class WorkScheduleServiceImplement implements WorkScheduleService {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Cửa hàng"));
         authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_WORK_SCHEDULE_CREATE");
+        if (date.isBefore(LocalDate.now())) {
+            throw new ValidateException("Không thể phân công cho ngày cũ");
+        }
         requests.forEach(x -> validateRequest(x));
         Set<Long> employmentIds = requests
                 .stream()
@@ -171,10 +174,12 @@ public class WorkScheduleServiceImplement implements WorkScheduleService {
         //thỏa mãn hết thì mới lưu db
         List<WorkScheduleEntity> onSaveWorkScheduleEntity = new ArrayList<>();
         for (WorkScheduleRequest request : requests) {
-            WorkScheduleEntity workSchedule = mapper.toEntity(request);
+            WorkScheduleEntity workSchedule = new WorkScheduleEntity();
+            workSchedule.setDate(date);
             workSchedule.setEmployment(employmentMap.get(request.getEmploymentId()));
             workSchedule.setShift(shiftMap.get(request.getShiftId()));
             workSchedule.setStatus(WorkScheduleStatus.SCHEDULED);
+            workSchedule.setAttendanceStatus(WorkScheduleAttendanceStatus.PENDING);
             onSaveWorkScheduleEntity.add(workSchedule);
         }
         return repository.saveAll(onSaveWorkScheduleEntity)

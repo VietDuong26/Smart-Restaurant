@@ -2,6 +2,7 @@ package com.example.SmartRestaurant.controller;
 
 import com.example.SmartRestaurant.dto.request.EmploymentRehireRequest;
 import com.example.SmartRestaurant.dto.request.EmploymentRequest;
+import com.example.SmartRestaurant.dto.request.EmploymentUpdateRequest;
 import com.example.SmartRestaurant.dto.response.ApiResponse;
 import com.example.SmartRestaurant.dto.response.EmploymentResponse;
 import com.example.SmartRestaurant.service.employment.EmploymentService;
@@ -44,7 +45,7 @@ public class EmploymentController {
     @PreAuthorize("hasAuthority('PERM_EMPLOYMENT_UPDATE')")
     ResponseEntity<ApiResponse<EmploymentResponse>> update(
             @PathVariable Long employmentId,
-            @RequestBody EmploymentRequest request
+            @RequestBody EmploymentUpdateRequest request
     ) {
         return ResponseEntity.status(200).body(new ApiResponse<>(
                 200,

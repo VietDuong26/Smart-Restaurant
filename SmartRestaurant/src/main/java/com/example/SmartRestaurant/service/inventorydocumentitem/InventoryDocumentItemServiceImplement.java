@@ -10,6 +10,9 @@ import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.repository.IngredientRepository;
 import com.example.SmartRestaurant.repository.InventoryDocumentItemRepository;
 import com.example.SmartRestaurant.validator.InventoryDocumentItemValidator;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,6 +22,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InventoryDocumentItemServiceImplement implements InventoryDocumentItemService {
     InventoryDocumentItemRepository repository;
     IngredientRepository ingredientRepository;

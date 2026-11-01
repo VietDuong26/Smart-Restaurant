@@ -17,6 +17,7 @@ public class ShiftMapper {
 
     public ShiftResponse toResponse(ShiftEntity shift) {
         return ShiftResponse.builder()
+                .id(shift.getId())
                 .name(shift.getName())
                 .startTime(shift.getStartTime())
                 .endTime(shift.getEndTime())

@@ -1,9 +1,12 @@
 package com.example.SmartRestaurant.service.employment;
 
+import com.example.SmartRestaurant.common.enums.AccountType;
 import com.example.SmartRestaurant.common.enums.EmploymentStatus;
 import com.example.SmartRestaurant.common.enums.RoleStatus;
+import com.example.SmartRestaurant.common.enums.UserStatus;
 import com.example.SmartRestaurant.dto.request.EmploymentRehireRequest;
 import com.example.SmartRestaurant.dto.request.EmploymentRequest;
+import com.example.SmartRestaurant.dto.request.EmploymentUpdateRequest;
 import com.example.SmartRestaurant.dto.response.EmploymentResponse;
 import com.example.SmartRestaurant.entity.EmploymentEntity;
 import com.example.SmartRestaurant.entity.RoleEntity;
@@ -77,8 +80,10 @@ public class EmploymentServiceImplement implements EmploymentService {
         }
         EmploymentEntity employment = mapper.toEntity(employmentRequest);
         UserEntity user = userMapper.toEntity(employmentRequest.getRegisterRequest());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(employmentRequest.getRegisterRequest().getPassword()));
         user.setRoles(roles);
+        user.setStatus(UserStatus.ACTIVE);
+        user.setType(AccountType.STAFF);
         UserEntity savedUser = userRepository.save(user);
         employment.setStatus(EmploymentStatus.ACTIVE);
         employment.setShop(shop);
@@ -90,7 +95,7 @@ public class EmploymentServiceImplement implements EmploymentService {
     }
 
     @Override
-    public EmploymentResponse update(Long id, EmploymentRequest employmentRequest) {
+    public EmploymentResponse update(Long id, EmploymentUpdateRequest employmentRequest) {
         EmploymentEntity employment = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Quan hệ nhân viên-cửa hàng"));
 

@@ -17,11 +17,15 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     WebSocketFilter webSocketFilter;
 
+    CustomStompErrorHandler customStompErrorHandler;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*");//sau này cần thay bằng miền của fe
         ;//cửa vào ws
+        registry.setErrorHandler(customStompErrorHandler);
+        //đăng ký bộ xử lý error stomp thay cho mặc định là bộ StompSubProtocolErrorHandler
     }
 
     @Override
@@ -36,4 +40,5 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(webSocketFilter);
         //đăng ký filter cho các message nhận vào
     }
+
 }

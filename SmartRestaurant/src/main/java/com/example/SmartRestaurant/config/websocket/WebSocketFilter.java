@@ -3,6 +3,7 @@ package com.example.SmartRestaurant.config.websocket;
 import com.example.SmartRestaurant.common.enums.HostDeviceStatus;
 import com.example.SmartRestaurant.config.jwt.JwtService;
 import com.example.SmartRestaurant.entity.HostDeviceEntity;
+import com.example.SmartRestaurant.exception.InvalidJWTException;
 import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.ValidateException;
@@ -43,13 +44,16 @@ public class WebSocketFilter implements ChannelInterceptor {
                     String auth = accessor.getFirstNativeHeader("Authorization");
                     //lấy jwt
                     if (auth == null || !auth.startsWith("Bearer ")) {
-                        throw new IllegalArgumentException("Missing JWT");
+                        throw new InvalidJWTException();
                     }
                     String token = auth.substring(7);
                     // Xác thực JWT bằng JwtService hiện có
                     Long hostDeviceId = jwtService.extractHostDeviceId(token);
                     HostDeviceEntity hostDevice = hostDeviceRepository.findById(hostDeviceId)
-                            .orElseThrow(() -> new NotFoundException("Máy chủ"));
+                            .orElse(null);
+                    if (hostDevice == null) {
+                        throw new NotFoundException("Máy chủ");
+                    }
                     // Sau đó kiểm tra HostDevice ACTIVE
                     if (!hostDevice.getStatus().equals(HostDeviceStatus.ACTIVE)) {
                         throw new InvalidStatusException("máy chủ");
@@ -65,12 +69,12 @@ public class WebSocketFilter implements ChannelInterceptor {
                     break;
                 case SUBSCRIBE:
                     if (accessor.getUser() == null) {
-                        throw new ValidateException("Chưa xác thực máy chủ");
+                        throw new NotFoundException("Máy chủ");
                     }
                     String hostId = accessor.getUser().getName();
                     String destination = accessor.getDestination();
                     if (destination.isBlank() || !destination.equals("/host/" + hostId)) {
-                        throw new ValidateException("Không được subcribe tới channel này");
+                        throw new ValidateException("Không được phép lắng nghe");
                     }
                     break;
             }
@@ -79,4 +83,6 @@ public class WebSocketFilter implements ChannelInterceptor {
 
         return message;
     }
+
+
 }

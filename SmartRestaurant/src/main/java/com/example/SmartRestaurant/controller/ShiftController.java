@@ -103,7 +103,7 @@ public class ShiftController {
     }
 
     @PatchMapping("/{shiftId}/activate")
-    @Operation(summary = "Bật lại khu vực")
+    @Operation(summary = "Bật lại ca làm")
     @PreAuthorize("hasAuthority('PERM_SHIFT_ACTIVATE')")
     public ResponseEntity<ApiResponse<Void>> activate(
             @PathVariable Long shiftId

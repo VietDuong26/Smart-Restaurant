@@ -35,7 +35,7 @@ public class InventoryDocumentController {
             @PathVariable Long shopId,
             @RequestBody InventoryDocumentRequest request
     ) {
-        return ResponseEntity.status(201).body(new ApiResponse<InventoryDocumentResponse>(
+        return ResponseEntity.status(201).body(new ApiResponse<>(
                 201,
                 "Thành công",
                 inventoryDocumentService.create(shopId, request),

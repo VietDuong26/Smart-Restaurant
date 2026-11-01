@@ -18,6 +18,7 @@ import com.example.SmartRestaurant.repository.TableRepository;
 import com.example.SmartRestaurant.security.CurrentUserProvider;
 import com.example.SmartRestaurant.service.authorization.AuthorizationService;
 import com.example.SmartRestaurant.service.orderitem.OrderItemService;
+import com.example.SmartRestaurant.service.printjob.PrintJobService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -54,6 +55,8 @@ public class OrderServiceImplement implements OrderService {
     CurrentUserProvider currentUserProvider;
 
     SimpMessagingTemplate messagingTemplate;
+
+    PrintJobService printJobService;
 
     @Override
     public OrderResponse create(OrderRequest request, Long shopId) {
@@ -97,7 +100,6 @@ public class OrderServiceImplement implements OrderService {
         orderResponse.setItemResponses(itemResponses);
         table.setOrderStatus(TableOrderStatus.OCCUPIED);
         tableRepository.save(table);
-
         return orderResponse;
     }
 
