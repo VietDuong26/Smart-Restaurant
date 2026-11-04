@@ -16,7 +16,6 @@ import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.mapper.EmploymentMapper;
-import com.example.SmartRestaurant.mapper.ShopMapper;
 import com.example.SmartRestaurant.mapper.UserMapper;
 import com.example.SmartRestaurant.repository.EmploymentRepository;
 import com.example.SmartRestaurant.repository.RoleRepository;
@@ -26,6 +25,8 @@ import com.example.SmartRestaurant.service.authorization.AuthorizationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +54,6 @@ public class EmploymentServiceImplement implements EmploymentService {
 
     UserMapper userMapper;
 
-    ShopMapper shopMapper;
 
     AuthorizationService authorizationService;
 
@@ -88,10 +88,7 @@ public class EmploymentServiceImplement implements EmploymentService {
         employment.setStatus(EmploymentStatus.ACTIVE);
         employment.setShop(shop);
         employment.setUser(savedUser);
-        EmploymentResponse employmentResponse = mapper.toResponse(repository.save(employment));
-        employmentResponse.setUser(userMapper.toResponse(savedUser));
-        employmentResponse.setShop(shopMapper.toResponse(shop));
-        return employmentResponse;
+        return mapper.toResponse(repository.save(employment));
     }
 
     @Override
@@ -122,10 +119,7 @@ public class EmploymentServiceImplement implements EmploymentService {
         );
         //thêm role mới
         employment.getUser().getRoles().addAll(roles);
-        EmploymentResponse employmentResponse = mapper.toResponse(repository.save(employment));
-        employmentResponse.setUser(userMapper.toResponse(employment.getUser()));
-        employmentResponse.setShop(shopMapper.toResponse(employment.getShop()));
-        return employmentResponse;
+        return mapper.toResponse(repository.save(employment));
     }
 
     @Override
@@ -158,10 +152,7 @@ public class EmploymentServiceImplement implements EmploymentService {
                 .orElseThrow(() -> new NotFoundException("Quan hệ nhân viên-cửa hàng"));
 
         authorizationService.checkOwnerOrPermissionInShop(employment.getShop(), "PERM_EMPLOYMENT_VIEW");
-        EmploymentResponse employmentResponse = mapper.toResponse(employment);
-        employmentResponse.setShop(shopMapper.toResponse(employment.getShop()));
-        employmentResponse.setUser(userMapper.toResponse(employment.getUser()));
-        return employmentResponse;
+        return mapper.toResponse(employment);
     }
 
 
@@ -200,9 +191,15 @@ public class EmploymentServiceImplement implements EmploymentService {
         employment.setShop(shop);
         employment.setUser(user);
         employment.setStatus(EmploymentStatus.ACTIVE);
-        EmploymentResponse employmentResponse = mapper.toResponse(repository.save(employment));
-        employmentResponse.setUser(userMapper.toResponse(user));
-        employmentResponse.setShop(shopMapper.toResponse(shop));
-        return employmentResponse;
+        return mapper.toResponse(repository.save(employment));
+    }
+
+    @Override
+    public Page<EmploymentResponse> getAllByShopIdAndStatus(Long shopId, EmploymentStatus status, Pageable pageable) {
+        ShopEntity shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException("Cửa hàng"));
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_EMPLOYMENT_VIEW");
+        return repository.findAllByShop_IdAndStatus(shopId, status, pageable)
+                .map(x -> mapper.toResponse(x));
     }
 }

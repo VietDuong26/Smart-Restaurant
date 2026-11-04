@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.controller;
 
+import com.example.SmartRestaurant.common.enums.EmploymentStatus;
 import com.example.SmartRestaurant.dto.request.EmploymentRehireRequest;
 import com.example.SmartRestaurant.dto.request.EmploymentRequest;
 import com.example.SmartRestaurant.dto.request.EmploymentUpdateRequest;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -83,6 +86,38 @@ public class EmploymentController {
                 200
                 , "Thành công"
                 , employmentService.createFromExistingUser(shopId, userId, request)
+                , LocalDateTime.now()
+        ));
+    }
+
+    @GetMapping("/shop/{shopId}")
+    @Operation(summary = "Tìm tất cả nhân viên theo shop")
+    @PreAuthorize("hasAuthority('PERM_EMPLOYMENT_VIEW')")
+    public ResponseEntity<ApiResponse<Page<EmploymentResponse>>> getAllByShopAndStatus(
+            @PathVariable("shopId") Long shopId,
+            @RequestParam(required = false) EmploymentStatus status,
+            Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(new ApiResponse<>(
+                200
+                , "Thành công"
+                , employmentService.getAllByShopIdAndStatus(shopId, status, pageable)
+                , LocalDateTime.now()
+        ));
+    }
+
+    @GetMapping("/{employmentId}")
+    @Operation(summary = "Tìm nhân viên theo id")
+    @PreAuthorize("hasAuthority('PERM_EMPLOYMENT_VIEW')")
+    public ResponseEntity<ApiResponse<EmploymentResponse>> getById(
+            @PathVariable Long employmentId
+    ) {
+
+        return ResponseEntity.ok(new ApiResponse<>(
+                200
+                , "Thành công"
+                , employmentService.getById(employmentId)
                 , LocalDateTime.now()
         ));
     }

@@ -5,6 +5,7 @@ import com.example.SmartRestaurant.common.enums.UserStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,4 +20,5 @@ public class UserResponse {
     private UserStatus status;
     private AccountType type;
     private LocalDateTime createdAt;
+    private List<RoleResponse> roleResponses;
 }

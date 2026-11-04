@@ -2,6 +2,8 @@ package com.example.SmartRestaurant.repository;
 
 import com.example.SmartRestaurant.common.enums.EmploymentStatus;
 import com.example.SmartRestaurant.entity.EmploymentEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +17,7 @@ public interface EmploymentRepository extends JpaRepository<EmploymentEntity, Lo
     Set<EmploymentEntity> findAllByIdInAndStatusAndShopId(Set<Long> employmentIds, EmploymentStatus active, Long shopId);
 
     Optional<EmploymentEntity> findByIdAndShopId(Long employmentId, Long shopId);
+
+    Page<EmploymentEntity> findAllByShop_IdAndStatus(Long shopId, EmploymentStatus status, Pageable pageable);
 
 }
