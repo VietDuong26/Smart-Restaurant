@@ -3,14 +3,16 @@ package com.example.SmartRestaurant.mapper;
 import com.example.SmartRestaurant.dto.request.OrderItemRequest;
 import com.example.SmartRestaurant.dto.response.OrderItemResponse;
 import com.example.SmartRestaurant.entity.OrderItemEntity;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class OrderItemMapper {
     ProductMapper productMapper;
-    EmploymentMapper employmentMapper;
 
     public OrderItemEntity toEntity(OrderItemRequest request) {
         return OrderItemEntity.builder()
@@ -31,6 +33,7 @@ public class OrderItemMapper {
                 .quantity(orderItem.getQuantity())
                 .totalPrice(orderItem.getTotalPrice())
                 .createdAt(orderItem.getCreatedAt())
+                .note(orderItem.getNote())
                 .build();
     }
 }

@@ -36,7 +36,12 @@ public class HostDeviceServiceImplement implements HostDeviceService {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Cửa hàng"));
         authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_HOST_DEVICE_REGISTER");
-        HostDeviceEntity hostDevice = mapper.toEntity(request);
+        HostDeviceEntity hostDevice = repository.findByShop_Id(shopId);
+        if (hostDevice != null) {
+            hostDevice.setStatus(HostDeviceStatus.INACTIVE);
+            repository.save(hostDevice);
+        }
+        HostDeviceEntity newHostDevice = mapper.toEntity(request);
         hostDevice.setShop(shop);
         hostDevice.setStatus(HostDeviceStatus.ACTIVE);
         HostDeviceEntity savedHostDevice = repository.save(hostDevice);
@@ -45,7 +50,6 @@ public class HostDeviceServiceImplement implements HostDeviceService {
                 shopId,
                 savedHostDevice.getStatus());
         savedHostDevice.setToken(token);
-
         return mapper.toResponse(repository.save(savedHostDevice));
     }
 }

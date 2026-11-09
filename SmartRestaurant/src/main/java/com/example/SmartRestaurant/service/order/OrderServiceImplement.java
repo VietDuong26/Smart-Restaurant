@@ -3,8 +3,10 @@ package com.example.SmartRestaurant.service.order;
 import com.example.SmartRestaurant.common.enums.*;
 import com.example.SmartRestaurant.dto.request.OrderItemDeleteRequest;
 import com.example.SmartRestaurant.dto.request.OrderRequest;
+import com.example.SmartRestaurant.dto.request.PrintJobRequest;
 import com.example.SmartRestaurant.dto.response.OrderItemResponse;
 import com.example.SmartRestaurant.dto.response.OrderResponse;
+import com.example.SmartRestaurant.entity.HostDeviceEntity;
 import com.example.SmartRestaurant.entity.OrderEntity;
 import com.example.SmartRestaurant.entity.ShopEntity;
 import com.example.SmartRestaurant.entity.TableEntity;
@@ -12,6 +14,7 @@ import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.mapper.OrderMapper;
+import com.example.SmartRestaurant.repository.HostDeviceRepository;
 import com.example.SmartRestaurant.repository.OrderRepository;
 import com.example.SmartRestaurant.repository.ShopRepository;
 import com.example.SmartRestaurant.repository.TableRepository;
@@ -19,6 +22,7 @@ import com.example.SmartRestaurant.security.CurrentUserProvider;
 import com.example.SmartRestaurant.service.authorization.AuthorizationService;
 import com.example.SmartRestaurant.service.orderitem.OrderItemService;
 import com.example.SmartRestaurant.service.printjob.PrintJobService;
+import com.example.SmartRestaurant.util.PrintJobUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -57,6 +61,8 @@ public class OrderServiceImplement implements OrderService {
     SimpMessagingTemplate messagingTemplate;
 
     PrintJobService printJobService;
+
+    HostDeviceRepository hostDeviceRepository;
 
     @Override
     public OrderResponse create(OrderRequest request, Long shopId) {
@@ -100,6 +106,23 @@ public class OrderServiceImplement implements OrderService {
         orderResponse.setItemResponses(itemResponses);
         table.setOrderStatus(TableOrderStatus.OCCUPIED);
         tableRepository.save(table);
+        PrintJobRequest printJobRequest = new PrintJobRequest();
+        HostDeviceEntity hostDevice = hostDeviceRepository.findByShop_Id(shopId);
+        if (hostDevice == null) {
+            throw new ValidateException("Shop chưa đăng ký máy chủ");
+        }
+        printJobRequest.setHostDevice(hostDevice);
+        printJobRequest.setType(PrintRuleType.KITCHEN_ORDER);
+        printJobRequest.setContentData(PrintJobUtil.generateKitchenOrderContentData(
+                String.valueOf(PrintRuleType.KITCHEN_ORDER),
+                table.getName(),
+                table.getArea().getName(),
+                currentUserProvider.getCurrentUsername(),
+                String.valueOf(order.getCreatedAt()),
+                itemResponses,
+                itemResponses.stream().mapToInt(OrderItemResponse::getQuantity).sum()
+        ));
+        printJobService.create(printJobRequest);
         return orderResponse;
     }
 
@@ -132,7 +155,24 @@ public class OrderServiceImplement implements OrderService {
             throw new ValidateException("Bàn có nhiều đơn hàng cùng lúc");
         }
         order = orderIsPendingInTable.get(0);
-        orderItemService.deleteAll(order, request.getOrderItemIds());
+        List<OrderItemResponse> itemResponses = orderItemService.deleteAll(order, request.getOrderItemIds());
+        PrintJobRequest printJobRequest = new PrintJobRequest();
+        HostDeviceEntity hostDevice = hostDeviceRepository.findByShop_Id(shopId);
+        if (hostDevice == null) {
+            throw new ValidateException("Shop chưa đăng ký máy chủ");
+        }
+        printJobRequest.setHostDevice(hostDevice);
+        printJobRequest.setType(PrintRuleType.VOID_ITEM);
+        printJobRequest.setContentData(PrintJobUtil.generateKitchenOrderContentData(
+                String.valueOf(PrintRuleType.VOID_ITEM),
+                table.getName(),
+                table.getArea().getName(),
+                currentUserProvider.getCurrentUsername(),
+                String.valueOf(order.getCreatedAt()),
+                itemResponses,
+                itemResponses.stream().mapToInt(OrderItemResponse::getQuantity).sum()
+        ));
+        printJobService.create(printJobRequest);
     }
 
     @Override
@@ -171,6 +211,23 @@ public class OrderServiceImplement implements OrderService {
         orderResponse.setItemResponses(itemResponses);
         table.setOrderStatus(TableOrderStatus.OCCUPIED);
         tableRepository.save(table);
+        PrintJobRequest printJobRequest = new PrintJobRequest();
+        HostDeviceEntity hostDevice = hostDeviceRepository.findByShop_Id(table.getArea().getShop().getId());
+        if (hostDevice == null) {
+            throw new ValidateException("Shop chưa đăng ký máy chủ");
+        }
+        printJobRequest.setHostDevice(hostDevice);
+        printJobRequest.setType(PrintRuleType.KITCHEN_ORDER);
+        printJobRequest.setContentData(PrintJobUtil.generateKitchenOrderContentData(
+                String.valueOf(PrintRuleType.KITCHEN_ORDER),
+                table.getName(),
+                table.getArea().getName(),
+                "Unknown_" + table.getName(),
+                String.valueOf(order.getCreatedAt()),
+                itemResponses,
+                itemResponses.stream().mapToInt(OrderItemResponse::getQuantity).sum()
+        ));
+        printJobService.create(printJobRequest);
         return orderResponse;
     }
 
@@ -320,6 +377,28 @@ public class OrderServiceImplement implements OrderService {
         orderResponse.setTotalPrice(totalPrice);
         messagingTemplate.convertAndSend("/host/" + shopId, orderResponse);
         return orderResponse;
+    }
+
+    @Override
+    public OrderResponse getByTableId(Long tableId) {
+        TableEntity table = tableRepository.findById(tableId)
+                .orElseThrow(() -> new NotFoundException("Bàn"));
+        authorizationService.checkOwnerOrPermissionInShop(table.getArea().getShop(), "PERM_ORDER_VIEW");
+        if (table.getArea().getStatus().equals(AreaStatus.INACTIVE)) {
+            throw new InvalidStatusException("khu vực");
+        }
+        if (table.getStatus().equals(TableStatus.INACTIVE)) {
+            throw new InvalidStatusException("bàn");
+        }
+        List<OrderEntity> orderIsPendingInTable = repository.findAllByTableIdAndOrderStatus(tableId,
+                OrderStatus.PENDING);
+        if (orderIsPendingInTable.size() > 1) {
+            throw new ValidateException("Bàn có nhiều đơn hàng cùng lúc");
+        }
+        OrderEntity order = orderIsPendingInTable.get(0);
+        OrderResponse response = mapper.toResponse(order);
+        response.setItemResponses(orderItemService.getAllByOrderId(order.getId()));
+        return response;
     }
 
 }

@@ -2,13 +2,17 @@ package com.example.SmartRestaurant.mapper;
 
 import com.example.SmartRestaurant.dto.response.OrderResponse;
 import com.example.SmartRestaurant.entity.OrderEntity;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class OrderMapper {
     TableMapper tableMapper;
+    OrderItemMapper orderItemMapper;
 
     public OrderResponse toResponse(OrderEntity order) {
         return OrderResponse.builder()

@@ -8,21 +8,24 @@ import java.util.List;
 
 
 public final class PrintJobUtil {
-    public static String generateReceiptContentData(String shopName,
-                                                    String phoneNumber,
-                                                    String shopAddress,
-                                                    Long orderId,
-                                                    String tableName,
-                                                    String areaName,
-                                                    String userName,
-                                                    LocalDateTime createdAt,
-                                                    BigDecimal subTotal,
-                                                    BigDecimal discount,
-                                                    BigDecimal totalAmount,
-                                                    String paymentMethod,
-                                                    BigDecimal change,
-                                                    List<OrderItemResponse> items) {
+    public static String generateReceiptContentData(
+            String printRuleType,
+            String shopName,
+            String phoneNumber,
+            String shopAddress,
+            Long orderId,
+            String tableName,
+            String areaName,
+            String userName,
+            LocalDateTime createdAt,
+            BigDecimal subTotal,
+            BigDecimal discount,
+            BigDecimal totalAmount,
+            String paymentMethod,
+            BigDecimal change,
+            List<OrderItemResponse> items) {
         String data = "{" +
+                "\"printRuleType\":\"" + printRuleType + "\"," +
                 "\"shopName\":\"" + shopName + "\"," +
                 "\"phoneNumber\":\"" + phoneNumber + "\"," +
                 "\"shopAddress\":\"" + shopAddress + "\"," +
@@ -36,6 +39,44 @@ public final class PrintJobUtil {
                 "\"totalAmount\":" + totalAmount + "," +
                 "\"paymentMethod\":\"" + paymentMethod + "\"," +
                 "\"change\":" + change + "," +
+                "\"items\":[";
+
+        for (int i = 0; i < items.size(); i++) {
+            OrderItemResponse item = items.get(i);
+
+            data += "{" +
+                    "\"productName\":\"" + item.getProductName() + "\"," +
+                    "\"price\":" + item.getPrice() + "," +
+                    "\"quantity\":" + item.getQuantity() + "," +
+                    "\"totalPrice\":" + item.getTotalPrice() +
+                    "}";
+
+            if (i < items.size() - 1) {
+                data += ",";
+            }
+        }
+
+        data += "]}";
+
+        return data;
+    }
+
+    public static String generateKitchenOrderContentData(
+            String printRuleType,
+            String tableName,
+            String areaName,
+            String userName,
+            String createdAt,
+            List<OrderItemResponse> items,
+            Integer totalItems
+    ) {
+        String data = "{" +
+                "\"printRuleType\":\"" + printRuleType + "\"," +
+                "\"tableName\":\"" + tableName + "\"," +
+                "\"areaName\":\"" + areaName + "\"," +
+                "\"userName\":\"" + userName + "\"," +
+                "\"createdAt\":\"" + createdAt + "\"," +
+                "\"totalItems\":\"" + totalItems + "\"," +
                 "\"items\":[";
 
         for (int i = 0; i < items.size(); i++) {

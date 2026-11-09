@@ -14,10 +14,12 @@ public interface OrderItemService {
                                       UserEntity createdBy);
 
 
-    void deleteAll(OrderEntity order, List<Long> orderItemIds);
+    List<OrderItemResponse> deleteAll(OrderEntity order, List<Long> orderItemIds);
 
     void mergeOrder(OrderEntity fromOrder, OrderEntity toOrder);
 
 
     BigDecimal getTotalPriceByOrderId(Long orderId);
+
+    List<OrderItemResponse> getAllByOrderId(Long orderId);
 }

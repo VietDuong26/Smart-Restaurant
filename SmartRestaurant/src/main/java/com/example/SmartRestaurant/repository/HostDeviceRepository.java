@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HostDeviceRepository extends JpaRepository<HostDeviceEntity, Long> {
+    HostDeviceEntity findByShop_Id(Long shopId);
 }

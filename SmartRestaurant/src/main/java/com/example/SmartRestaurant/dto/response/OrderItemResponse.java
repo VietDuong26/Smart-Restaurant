@@ -21,4 +21,5 @@ public class OrderItemResponse {
     private Integer quantity;//snapshot
     private BigDecimal totalPrice;//snapshot
     private LocalDateTime createdAt;
+    private String note;
 }

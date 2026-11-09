@@ -61,7 +61,7 @@ public class OrderController {
     }
 
     @PostMapping
-    @Operation(summary = "Tạo dơn hàng hoặc thêm món bằng id bàn")
+    @Operation(summary = "Tạo dơn hàng hoặc thêm món bằng id bàn(QR)")
     //khách hay bất kỳ ai có mã qr đều có thể gọi món
     public ResponseEntity<ApiResponse<OrderResponse>> createByQR(
             @RequestBody OrderRequest request
@@ -137,6 +137,21 @@ public class OrderController {
                 200
                 , "Thành công"
                 , orderService.pay(shopId, orderId)
+                , LocalDateTime.now()
+        ));
+    }
+
+    @GetMapping("/table/{tableId}")
+    @Operation(summary = "Xem đơn hàng hiện tại tại bàn")
+    @PreAuthorize("hasAuthority('PERM_ORDER_VIEW')")
+    public ResponseEntity<ApiResponse<OrderResponse>> getByTableIdNow(
+            @PathVariable Long tableId
+    ) {
+
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200
+                , "Thành công"
+                , orderService.getByTableId(tableId)
                 , LocalDateTime.now()
         ));
     }

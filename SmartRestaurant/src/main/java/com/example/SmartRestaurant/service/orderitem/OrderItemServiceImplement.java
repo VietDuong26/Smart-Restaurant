@@ -76,7 +76,7 @@ public class OrderItemServiceImplement implements OrderItemService {
     }
 
     @Override
-    public void deleteAll(OrderEntity order, List<Long> orderItemIds) {
+    public List<OrderItemResponse> deleteAll(OrderEntity order, List<Long> orderItemIds) {
         Set<Long> itemIds = new HashSet<>(orderItemIds);
         if (itemIds.size() != orderItemIds.size()) {
             throw new ValidateException("Có món bị trùng");
@@ -93,7 +93,10 @@ public class OrderItemServiceImplement implements OrderItemService {
             x.setDeletedAt(LocalDateTime.now());
             x.setDeletedBy(currentUserProvider.getCurrentUser().getUser());
         });
-        repository.saveAll(orderItems);
+        return repository.saveAll(orderItems)
+                .stream()
+                .map(x -> mapper.toResponse(x))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -114,5 +117,11 @@ public class OrderItemServiceImplement implements OrderItemService {
             totalPrice = totalPrice.add(item.getTotalPrice());
         }
         return totalPrice;
+    }
+
+    @Override
+    public List<OrderItemResponse> getAllByOrderId(Long orderId) {
+        List<OrderItemEntity> items = repository.findAllByOrderIdAndStatus(orderId, OrderItemStatus.ACTIVE);
+        return items.stream().map(x -> mapper.toResponse(x)).collect(Collectors.toList());
     }
 }

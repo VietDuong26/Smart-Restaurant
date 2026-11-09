@@ -26,6 +26,6 @@ public class PrintJobServiceImplement implements PrintJobService {
     public void create(PrintJobRequest request) {
         PrintJobEntity printJob = mapper.toEntity(request);
         PrintJobEntity savedPrintJob = repository.save(printJob);
-        messagingTemplate.convertAndSend("/host/" + savedPrintJob.getHostDevice().getId(), savedPrintJob);
+        messagingTemplate.convertAndSend("/host/" + savedPrintJob.getHostDevice().getId(), mapper.toResponse(savedPrintJob));
     }
 }

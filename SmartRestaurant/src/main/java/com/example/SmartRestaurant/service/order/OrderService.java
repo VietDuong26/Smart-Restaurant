@@ -22,4 +22,6 @@ public interface OrderService {
 
     OrderResponse pay(Long shopId, Long orderId);
 
+    OrderResponse getByTableId(Long tableId);
+
 }
