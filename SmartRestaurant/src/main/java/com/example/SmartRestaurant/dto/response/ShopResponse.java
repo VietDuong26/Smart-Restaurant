@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.dto.response;
 
+import com.example.SmartRestaurant.common.enums.ShopStatus;
 import lombok.*;
 
 import java.time.LocalTime;
@@ -16,4 +17,5 @@ public class ShopResponse {
     private String phoneNumber;
     private LocalTime openTime;
     private LocalTime closeTime;
+    private ShopStatus status;
 }
