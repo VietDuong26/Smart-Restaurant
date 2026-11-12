@@ -26,6 +26,9 @@ public class ShopMapper {
                 .openTime(shop.getOpenTime())
                 .closeTime(shop.getCloseTime())
                 .status(shop.getStatus())
+                .statusReason(shop.getStatusReason() == null
+                        ? null
+                        : shop.getStatusReason())
                 .build();
     }
 }

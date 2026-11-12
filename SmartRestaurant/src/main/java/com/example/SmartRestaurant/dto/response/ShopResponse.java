@@ -18,4 +18,5 @@ public class ShopResponse {
     private LocalTime openTime;
     private LocalTime closeTime;
     private ShopStatus status;
+    private String statusReason;
 }
