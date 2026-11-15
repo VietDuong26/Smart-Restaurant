@@ -20,4 +20,6 @@ public interface InventoryDocumentService {
 
     InventoryDocumentResponse getById(Long inventoryDocumentId);
 
+    void deductStockByOrderId(Long orderId);
+
 }

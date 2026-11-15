@@ -14,5 +14,6 @@ public interface RecipeIngredientService {
     void delete(Long recipeId, List<Long> recipeIngredientIdList);
 
     List<RecipeIngredientResponse> getByRecipeId(Long recipeId);
+    
 
 }

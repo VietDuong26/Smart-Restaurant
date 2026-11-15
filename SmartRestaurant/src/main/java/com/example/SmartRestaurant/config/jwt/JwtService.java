@@ -1,6 +1,5 @@
 package com.example.SmartRestaurant.config.jwt;
 
-import com.example.SmartRestaurant.common.enums.HostDeviceStatus;
 import com.example.SmartRestaurant.config.userdetails.CustomUserDetails;
 import com.example.SmartRestaurant.exception.ExpiredJwtTokenException;
 import io.jsonwebtoken.Claims;
@@ -122,8 +121,7 @@ public class JwtService {
     //host-device
     public String generateHostDeviceRefreshToken(Long hostId,
                                                  String name,
-                                                 Long shopId,
-                                                 HostDeviceStatus status) {
+                                                 Long shopId) {
         return Jwts.builder()
                 .setSubject(String.valueOf(hostId))
                 .setIssuedAt(new Date())

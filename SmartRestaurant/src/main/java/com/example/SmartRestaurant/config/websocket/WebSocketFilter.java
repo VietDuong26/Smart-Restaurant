@@ -1,10 +1,8 @@
 package com.example.SmartRestaurant.config.websocket;
 
-import com.example.SmartRestaurant.common.enums.HostDeviceStatus;
 import com.example.SmartRestaurant.config.jwt.JwtService;
 import com.example.SmartRestaurant.entity.HostDeviceEntity;
 import com.example.SmartRestaurant.exception.InvalidJWTException;
-import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
 import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.repository.HostDeviceRepository;
@@ -53,10 +51,6 @@ public class WebSocketFilter implements ChannelInterceptor {
                             .orElse(null);
                     if (hostDevice == null) {
                         throw new NotFoundException("Máy chủ");
-                    }
-                    // Sau đó kiểm tra HostDevice ACTIVE
-                    if (!hostDevice.getStatus().equals(HostDeviceStatus.ACTIVE)) {
-                        throw new InvalidStatusException("máy chủ");
                     }
                     // Gắn Principal vào accessor
                     accessor.setUser(

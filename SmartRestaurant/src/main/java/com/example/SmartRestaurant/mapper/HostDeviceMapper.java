@@ -22,7 +22,6 @@ public class HostDeviceMapper {
                 .id(hostDevice.getId())
                 .name(hostDevice.getName())
                 .token(hostDevice.getToken())
-                .status(hostDevice.getStatus())
                 .build();
     }
 }

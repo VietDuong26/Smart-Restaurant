@@ -20,6 +20,7 @@ import com.example.SmartRestaurant.repository.ShopRepository;
 import com.example.SmartRestaurant.repository.TableRepository;
 import com.example.SmartRestaurant.security.CurrentUserProvider;
 import com.example.SmartRestaurant.service.authorization.AuthorizationService;
+import com.example.SmartRestaurant.service.inventorydocument.InventoryDocumentService;
 import com.example.SmartRestaurant.service.orderitem.OrderItemService;
 import com.example.SmartRestaurant.service.printjob.PrintJobService;
 import com.example.SmartRestaurant.util.PrintJobUtil;
@@ -63,6 +64,8 @@ public class OrderServiceImplement implements OrderService {
     PrintJobService printJobService;
 
     HostDeviceRepository hostDeviceRepository;
+    private final InventoryDocumentService inventoryDocumentService;
+
 
     @Override
     public OrderResponse create(OrderRequest request, Long shopId) {
@@ -373,6 +376,8 @@ public class OrderServiceImplement implements OrderService {
         order.setPaidAt(LocalDateTime.now());
         order.getTable().setOrderStatus(TableOrderStatus.EMPTY);
         order.setPaymentMethod(PaymentMethod.CASH);
+        //thực hiện trừ kho
+        inventoryDocumentService.deductStockByOrderId(orderId);
         OrderResponse orderResponse = mapper.toResponse(order);
         orderResponse.setTotalPrice(totalPrice);
         messagingTemplate.convertAndSend("/host/" + shopId, orderResponse);
@@ -392,6 +397,9 @@ public class OrderServiceImplement implements OrderService {
         }
         List<OrderEntity> orderIsPendingInTable = repository.findAllByTableIdAndOrderStatus(tableId,
                 OrderStatus.PENDING);
+        if (orderIsPendingInTable.isEmpty()) {
+            throw new ValidateException("Bàn đang trống");
+        }
         if (orderIsPendingInTable.size() > 1) {
             throw new ValidateException("Bàn có nhiều đơn hàng cùng lúc");
         }

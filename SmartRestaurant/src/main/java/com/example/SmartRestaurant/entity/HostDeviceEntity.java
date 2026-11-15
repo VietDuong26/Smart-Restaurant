@@ -24,8 +24,6 @@ public class HostDeviceEntity {
     @JoinColumn(name = "shop_id", nullable = false)
     private ShopEntity shop;
 
-    @Enumerated(EnumType.STRING)
-    private HostDeviceStatus status;
 
     @Column
     private String token;

@@ -1,6 +1,5 @@
 package com.example.SmartRestaurant.service.hostdevice;
 
-import com.example.SmartRestaurant.common.enums.HostDeviceStatus;
 import com.example.SmartRestaurant.config.jwt.JwtService;
 import com.example.SmartRestaurant.dto.request.HostDeviceRequest;
 import com.example.SmartRestaurant.dto.response.HostDeviceResponse;
@@ -30,7 +29,6 @@ public class HostDeviceServiceImplement implements HostDeviceService {
 
     JwtService jwtService;
 
-    @Transactional
     @Override
     public HostDeviceResponse create(Long shopId, HostDeviceRequest request) {
         ShopEntity shop = shopRepository.findById(shopId)
@@ -38,17 +36,15 @@ public class HostDeviceServiceImplement implements HostDeviceService {
         authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_HOST_DEVICE_REGISTER");
         HostDeviceEntity hostDevice = repository.findByShop_Id(shopId);
         if (hostDevice != null) {
-            hostDevice.setStatus(HostDeviceStatus.INACTIVE);
-            repository.save(hostDevice);
+            repository.delete(hostDevice);
+            repository.flush();
         }
         HostDeviceEntity newHostDevice = mapper.toEntity(request);
-        hostDevice.setShop(shop);
-        hostDevice.setStatus(HostDeviceStatus.ACTIVE);
-        HostDeviceEntity savedHostDevice = repository.save(hostDevice);
+        newHostDevice.setShop(shop);
+        HostDeviceEntity savedHostDevice = repository.save(newHostDevice);
         String token = jwtService.generateHostDeviceRefreshToken(savedHostDevice.getId(),
                 savedHostDevice.getName(),
-                shopId,
-                savedHostDevice.getStatus());
+                shopId);
         savedHostDevice.setToken(token);
         return mapper.toResponse(repository.save(savedHostDevice));
     }

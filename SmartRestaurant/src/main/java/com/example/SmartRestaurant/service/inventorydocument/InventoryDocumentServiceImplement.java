@@ -5,15 +5,13 @@ import com.example.SmartRestaurant.dto.request.InventoryDocumentApproveRequest;
 import com.example.SmartRestaurant.dto.request.InventoryDocumentRejectRequest;
 import com.example.SmartRestaurant.dto.request.InventoryDocumentRequest;
 import com.example.SmartRestaurant.dto.response.InventoryDocumentResponse;
-import com.example.SmartRestaurant.entity.IngredientEntity;
-import com.example.SmartRestaurant.entity.InventoryDocumentEntity;
-import com.example.SmartRestaurant.entity.ShopEntity;
+import com.example.SmartRestaurant.entity.*;
 import com.example.SmartRestaurant.exception.InsufficientStockException;
 import com.example.SmartRestaurant.exception.InvalidStatusException;
 import com.example.SmartRestaurant.exception.NotFoundException;
+import com.example.SmartRestaurant.exception.ValidateException;
 import com.example.SmartRestaurant.mapper.InventoryDocumentMapper;
-import com.example.SmartRestaurant.repository.InventoryDocumentRepository;
-import com.example.SmartRestaurant.repository.ShopRepository;
+import com.example.SmartRestaurant.repository.*;
 import com.example.SmartRestaurant.security.CurrentUserProvider;
 import com.example.SmartRestaurant.service.authorization.AuthorizationService;
 import com.example.SmartRestaurant.service.inventorydocumentitem.InventoryDocumentItemService;
@@ -25,7 +23,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.example.SmartRestaurant.validator.InventoryDocumentValidator.*;
 
@@ -41,6 +43,11 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
     InventoryDocumentMapper mapper;
     ShopRepository shopRepository;
     InventoryDocumentItemService documentItemService;
+
+    RecipeRepository recipeRepository;
+
+    OrderItemRepository orderItemRepository;
+    private final IngredientRepository ingredientRepository;
 
     @Override
     public InventoryDocumentResponse create(Long shopId, InventoryDocumentRequest request) {
@@ -138,6 +145,30 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
 
         authorizationService.checkOwnerOrPermissionInShop(inventoryDocument.getShop(), "PERM_INVENTORY_VIEW");
         return mapper.toResponse(inventoryDocument);
+    }
+
+    @Override
+    public void deductStockByOrderId(Long orderId) {
+        List<OrderItemEntity> orderItems = orderItemRepository.findAllByOrderId(orderId);
+        Map<Long, BigDecimal> ingredientAmountMap = new HashMap<>();//lượng nguyên liệu cần dùng từ order
+        orderItems.forEach(x -> {
+            List<RecipeIngredientEntity> recipeIngredientEntities = recipeRepository.findByProduct_Id(
+                    x.getProduct().getId()).getRecipeIngredientEntities();
+            recipeIngredientEntities.forEach(y -> {
+                ingredientAmountMap.merge(y.getIngredient().getId(),
+                        y.getQuantity().multiply(BigDecimal.valueOf(x.getQuantity())),
+                        BigDecimal::add
+                );
+            });
+        });
+        List<IngredientEntity> ingredientsForUpdate = ingredientRepository.findAllByIdsForUpdate(
+                ingredientAmountMap.keySet());
+        ingredientsForUpdate.forEach(x -> {
+            if (x.getCurrentStock().compareTo(ingredientAmountMap.get(x.getId())) < 0) {
+                throw new ValidateException("Lượng tồn kho không đủ để thực hiện");
+            }
+            x.setCurrentStock(x.getCurrentStock().subtract(ingredientAmountMap.get(x.getId())));
+        });
     }
 
 }
