@@ -7,5 +7,6 @@ import com.example.SmartRestaurant.entity.InventoryDocumentItemEntity;
 import java.util.List;
 
 public interface InventoryDocumentItemService {
-    List<InventoryDocumentItemEntity> createAll(InventoryDocumentEntity documentEntity, List<InventoryDocumentItemRequest> itemRequests);
+    List<InventoryDocumentItemEntity> createAll(InventoryDocumentEntity documentEntity,
+                                                List<InventoryDocumentItemRequest> itemRequests);
 }

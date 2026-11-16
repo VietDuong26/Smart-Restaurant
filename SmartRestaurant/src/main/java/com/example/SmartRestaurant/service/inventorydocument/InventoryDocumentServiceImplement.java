@@ -88,7 +88,16 @@ public class InventoryDocumentServiceImplement implements InventoryDocumentServi
             case IMPORT:
                 documentEntity.getItems().forEach(x -> {
                     IngredientEntity ingredient = x.getIngredient();
-                    ingredient.setCurrentStock(ingredient.getCurrentStock().add(x.getQuantity()));
+                    switch (ingredient.getType()) {
+                        case DRY -> {
+                            ingredient.setCurrentStock(ingredient.getCurrentStock().add(x.getQuantity()));
+                        }
+                        case FRESH -> {
+                            ingredient.setCurrentStock(ingredient.getCurrentStock()
+                                    .add(x.getQuantity().multiply(ingredient.getYieldRate())));
+                        }
+                    }
+
                 });
                 break;
             case EXPORT, WASTE:

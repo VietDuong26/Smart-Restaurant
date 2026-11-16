@@ -105,6 +105,9 @@ public class InitConfig {
             "PERM_WORK_SCHEDULE_UPDATE",
             "PERM_WORK_SCHEDULE_DELETE",
             "PERM_WORK_SCHEDULE_VIEW",
+            "PERM_WORK_SCHEDULE_UPDATE_STATUS",
+            "PERM_WORK_SCHEDULE_EXPLAIN",
+            "PERM_WORK_SCHEDULE_ATTENDANCE_VIEW",
 
             //ORDER
             "PERM_ORDER_CREATE",
@@ -115,7 +118,9 @@ public class InitConfig {
             "PERM_ORDER_PAYMENT",
 
             //HOST-DEVICE
-            "PERM_HOST_DEVICE_REGISTER"
+            "PERM_HOST_DEVICE_REGISTER",
+            //ATTENDANCE
+            "PERM_CHECK_ATTENDANCE"
     );
     List<String> roles = List.of(
             "ROLE_ADMIN"

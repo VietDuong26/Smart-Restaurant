@@ -52,7 +52,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                         .anyMatch(x -> x.getStatus() == RoleStatus.ACTIVE
                                 && x.getShop() != null
                                 && x.getShop().getId().equals(shop.getId())
-                                && x.getPermissions().contains(permission));
+                                && x.getPermissions().stream()
+                                .anyMatch(p -> p.getId().equals(permission.getId()))
+                        );
         if (!allowed) {
             throw new AccessDeniedException("Không có quyền thực hiện");
         }

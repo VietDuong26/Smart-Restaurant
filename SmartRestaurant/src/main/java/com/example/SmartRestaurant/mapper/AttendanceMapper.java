@@ -3,14 +3,16 @@ package com.example.SmartRestaurant.mapper;
 import com.example.SmartRestaurant.dto.request.AttendanceRequest;
 import com.example.SmartRestaurant.dto.response.AttendanceResponse;
 import com.example.SmartRestaurant.entity.AttendanceEntity;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AttendanceMapper {
     UserMapper userMapper;
-    WorkScheduleMapper workScheduleMapper;
 
     public AttendanceEntity toEntity(AttendanceRequest request) {
         return AttendanceEntity.builder()
@@ -24,7 +26,6 @@ public class AttendanceMapper {
                 .id(attendance.getId())
                 .createdAt(attendance.getCreatedAt())
                 .user(userMapper.toResponse(attendance.getWorkSchedule().getEmployment().getUser()))
-                .workSchedule(workScheduleMapper.toResponse(attendance.getWorkSchedule()))
                 .type(attendance.getType())
                 .build();
     }

@@ -58,9 +58,10 @@ public class InventoryDocumentItemServiceImplement implements InventoryDocumentI
         List<InventoryDocumentItemEntity> items = itemRequests
                 .stream()
                 .map(x -> {
+                    IngredientEntity ingredient = ingredientMap.get(x.getIngredientId());
                     InventoryDocumentItemEntity entity = InventoryDocumentItemEntity.builder()
                             .inventoryDocument(documentEntity)
-                            .ingredient(ingredientMap.get(x.getIngredientId()))
+                            .ingredient(ingredient)
                             .quantity(x.getQuantity())
                             .build();
                     return entity;

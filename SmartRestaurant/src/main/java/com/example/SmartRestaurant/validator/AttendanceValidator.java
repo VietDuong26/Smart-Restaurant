@@ -23,8 +23,5 @@ public final class AttendanceValidator {
         if (request.getLatitude() == null || request.getLatitude() < -90 || request.getLatitude() > 90) {
             throw new ValidateException("Vĩ độ không hợp lệ");
         }
-        if (request.getQrExpiredAt() == null) {
-            throw new ValidateException("Thời điểm qr hết hạn không được bỏ trống");
-        }
     }
 }

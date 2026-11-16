@@ -406,4 +406,21 @@ public class WorkScheduleServiceImplement implements WorkScheduleService {
         workSchedule.setAttendanceStatus(WorkScheduleAttendanceStatus.PENDING);
         repository.save(workSchedule);
     }
+
+    @Override
+    public Long calculateSalaryByShopIdAndEmploymentIdFromDateToDate(Long shopId, Long employmentId, LocalDate startDate, LocalDate endDate) {
+        ShopEntity shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new NotFoundException("Cửa hàng"));
+        authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_WORK_SCHEDULE_ATTENDANCE_VIEW");
+        EmploymentEntity employment = employmentRepository.findByIdAndShopId(employmentId, shopId)
+                .orElseThrow((() -> new NotFoundException("Nhân viên không tìm thấy trong cửa hàng")));
+        List<WorkScheduleEntity> getAllByEmploymentIdAndAttendanceStatusApproved = repository
+                .findAllByEmploymentIdAndAttendanceStatusAndDateBetween(
+                        employmentId,
+                        WorkScheduleAttendanceStatus.APPROVED,
+                        startDate,
+                        endDate
+                );
+        return employment.getSalary() * getAllByEmploymentIdAndAttendanceStatusApproved.size() / 30;
+    }
 }

@@ -30,4 +30,9 @@ public interface WorkScheduleService {
                                                                 List<WorkScheduleActionRequest> requests);
 
     void explain(Long shopId, Long workScheduleId, WorkScheduleExplainRequest explainRequest);
+
+    Long calculateSalaryByShopIdAndEmploymentIdFromDateToDate(Long shopId,
+                                                              Long employmentId,
+                                                              LocalDate startDate,
+                                                              LocalDate endDate);
 }

@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -14,7 +12,6 @@ import java.time.LocalDateTime;
 public class AttendanceRequest {
     private Long shopId;
     private Long workScheduleId;
-    private LocalDateTime qrExpiredAt;
     private Double longitude;
     private Double latitude;
 }

@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.repository;
 
+import com.example.SmartRestaurant.common.enums.WorkScheduleAttendanceStatus;
 import com.example.SmartRestaurant.common.enums.WorkScheduleStatus;
 import com.example.SmartRestaurant.entity.WorkScheduleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +29,10 @@ public interface WorkScheduleRepository extends JpaRepository<WorkScheduleEntity
 
     List<WorkScheduleEntity> findAllByIdInAndEmploymentId(Set<Long> workScheduleRequestIds, Long employmentId);
 
+    List<WorkScheduleEntity> findAllByEmploymentIdAndAttendanceStatusAndDateBetween(
+            Long employmentId,
+            WorkScheduleAttendanceStatus attendanceStatus,
+            LocalDate fromDate,
+            LocalDate toDate
+    );
 }

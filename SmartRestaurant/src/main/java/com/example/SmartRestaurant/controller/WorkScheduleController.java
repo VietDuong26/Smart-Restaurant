@@ -97,7 +97,7 @@ public class WorkScheduleController {
 
     @GetMapping("/{shopId}/attendance/{employmentId}")
     @Operation(summary = "Tìm tất cả các công làm việc của nhân viên trong cửa hàng trong khoảng thời gian")
-    @PreAuthorize("hasAuthority('')")
+    @PreAuthorize("hasAuthority('PERM_WORK_SCHEDULE_ATTENDANCE_VIEW')")
     ResponseEntity<ApiResponse<List<WorkScheduleAttendanceResponse>>> getAllByShopIdAndEmploymentIdFromDateToDate(
             @PathVariable Long shopId,
             @PathVariable Long employmentId,
@@ -115,9 +115,29 @@ public class WorkScheduleController {
         ));
     }
 
+    @PostMapping("/{shopId}/attendance/{employmentId}/salaray")
+    @Operation(summary = "Tính lương nhân viên trong cửa hàng trong khoảng thời gian")
+    @PreAuthorize("hasAuthority('PERM_WORK_SCHEDULE_ATTENDANCE_VIEW')")
+    ResponseEntity<ApiResponse<Long>> calculateSalaryFromDateToDate(
+            @PathVariable Long shopId,
+            @PathVariable Long employmentId,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+        return ResponseEntity.status(200).body(new ApiResponse<>(
+                200,
+                "Thành công",
+                workScheduleService.calculateSalaryByShopIdAndEmploymentIdFromDateToDate(shopId,
+                        employmentId,
+                        startDate,
+                        endDate),
+                LocalDateTime.now()
+        ));
+    }
+
     @PostMapping("/{shopId}/update-attendance-status/{employmentId}")
     @Operation(summary = "Duyệt hoặc từ chối công theo danh sách công của nhân viên")
-    @PreAuthorize("hasAuthority('')")
+    @PreAuthorize("hasAuthority('PERM_WORK_SCHEDULE_UPDATE_STATUS')")
     ResponseEntity<ApiResponse<List<WorkScheduleAttendanceResponse>>> updateAttendanceStatus(
             @PathVariable Long shopId,
             @RequestBody List<WorkScheduleActionRequest> requests,
@@ -133,7 +153,7 @@ public class WorkScheduleController {
 
     @PostMapping("/{shopId}/explain/{workScheduleId}")
     @Operation(summary = "Giải trình công")
-    @PreAuthorize("hasAuthority('')")
+    @PreAuthorize("hasAuthority('PERM_WORK_SCHEDULE_EXPLAIN')")
     ResponseEntity<ApiResponse<Void>> explain(
             @PathVariable Long shopId,
             @RequestBody WorkScheduleExplainRequest explainRequest,

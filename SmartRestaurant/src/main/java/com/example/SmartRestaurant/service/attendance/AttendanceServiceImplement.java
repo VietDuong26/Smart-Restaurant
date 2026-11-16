@@ -101,10 +101,6 @@ public class AttendanceServiceImplement implements AttendanceService {
         else {
             throw new ValidateException("Hành động không khả dụng, đã chấm công ra về");
         }
-        //kiểm tra qr còn hạn không
-        if (LocalDateTime.now().isAfter(request.getQrExpiredAt())) {
-            throw new ValidateException("Qr đã hết hạn sử dụng");
-        }
         attendance.setWorkSchedule(workSchedule);
 
         return mapper.toResponse(repository.save(attendance));
