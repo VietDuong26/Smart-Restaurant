@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 import static com.example.SmartRestaurant.common.Constant.URL;
 
@@ -81,7 +80,7 @@ public class WorkScheduleController {
     @GetMapping("/{shopId}")
     @Operation(summary = "Xem lịch làm việc theo ngày của shop")
     @PreAuthorize("hasAuthority('PERM_WORK_SCHEDULE_VIEW')")
-    ResponseEntity<ApiResponse<Set<WorkScheduleResponse>>> getByShopIdAndDate(
+    ResponseEntity<ApiResponse<WorkScheduleAttendanceResponse>> getByShopIdAndDate(
             @PathVariable Long shopId,
             @RequestParam LocalDate date
     ) {
