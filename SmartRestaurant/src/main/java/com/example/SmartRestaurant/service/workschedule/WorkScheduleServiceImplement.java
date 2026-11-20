@@ -291,7 +291,7 @@ public class WorkScheduleServiceImplement implements WorkScheduleService {
     }
 
     @Override
-    public WorkScheduleAttendanceResponse getByShopIdAndDate(Long shopId, LocalDate date) {
+    public List<WorkScheduleAttendanceResponse> getByShopIdAndDate(Long shopId, LocalDate date) {
         ShopEntity shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new NotFoundException("Cửa hàng"));
         authorizationService.checkOwnerOrPermissionInShop(shop, "PERM_WORK_SCHEDULE_VIEW");
@@ -303,7 +303,7 @@ public class WorkScheduleServiceImplement implements WorkScheduleService {
                 ? null
                 : workSchedules.stream()
                 .map(x -> mapper.toAttendancResponse(x))
-                .collect(Collectors.toList()).get(0);
+                .collect(Collectors.toList());
     }
 
     @Override

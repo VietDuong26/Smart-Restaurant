@@ -29,4 +29,5 @@ public interface ShopService extends BaseService<ShopRequest, ShopResponse, Long
 
     ShopResponse setLocation(Long shopId, ShopLocationRequest request);
 
+
 }

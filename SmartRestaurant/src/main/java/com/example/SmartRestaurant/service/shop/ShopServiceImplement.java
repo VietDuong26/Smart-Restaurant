@@ -82,7 +82,6 @@ public class ShopServiceImplement implements ShopService {
     public ShopResponse getShopByIdOfCurrentUser(Long id) {
         ShopEntity shop = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cửa hàng"));
-
         return mapper.toResponse(shop);
     }
 

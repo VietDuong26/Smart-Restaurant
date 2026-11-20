@@ -39,6 +39,7 @@ public class InitConfig {
     List<String> permissions = List.of(
             //SHOP
             "PERM_SHOP_SET_LOCATION",
+            "PERM_SHOP_VIEW",
 
             //AREA
             "PERM_AREA_VIEW",

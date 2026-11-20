@@ -6,4 +6,6 @@ public interface AuthorizationService {
 
 
     void checkOwnerOrPermissionInShop(ShopEntity shop, String permisisonName);
+
+
 }

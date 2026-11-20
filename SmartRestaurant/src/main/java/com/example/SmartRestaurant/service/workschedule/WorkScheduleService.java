@@ -17,7 +17,7 @@ public interface WorkScheduleService {
 
     void delete(Long workScheduleId);
 
-    WorkScheduleAttendanceResponse getByShopIdAndDate(Long shopId, LocalDate date);
+    List<WorkScheduleAttendanceResponse> getByShopIdAndDate(Long shopId, LocalDate date);
 
     List<WorkScheduleAttendanceResponse> getAllByShopIdAndEmploymentIdFromDateToDate(Long shopId,
                                                                                      Long employmentId,

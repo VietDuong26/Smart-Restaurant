@@ -80,7 +80,7 @@ public class WorkScheduleController {
     @GetMapping("/{shopId}")
     @Operation(summary = "Xem lịch làm việc theo ngày của shop")
     @PreAuthorize("hasAuthority('PERM_WORK_SCHEDULE_VIEW')")
-    ResponseEntity<ApiResponse<WorkScheduleAttendanceResponse>> getByShopIdAndDate(
+    ResponseEntity<ApiResponse<List<WorkScheduleAttendanceResponse>>> getByShopIdAndDate(
             @PathVariable Long shopId,
             @RequestParam LocalDate date
     ) {
