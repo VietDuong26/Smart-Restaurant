@@ -243,7 +243,12 @@ public class OrderServiceImplement implements OrderService {
         LocalDateTime end = date.plusDays(1).atStartOfDay();
         List<OrderEntity> orders = repository.findAllByTable_Area_Shop_IdAndCreatedAtGreaterThanEqualAndCreatedAtBefore(
                 shopId, start, end);
-        return orders.stream().map(x -> mapper.toResponse(x)).collect(Collectors.toList());
+        return orders.stream().map(x -> {
+            OrderResponse response = mapper.toResponse(x);
+            response.setTotalPrice(orderItemService.getTotalPriceByOrderId(x.getId()));
+            response.setItemResponses(orderItemService.getAllByOrderId(x.getId()));
+            return response;
+        }).collect(Collectors.toList());
     }
 
     @Override
