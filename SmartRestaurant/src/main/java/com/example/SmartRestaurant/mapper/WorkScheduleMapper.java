@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 public class WorkScheduleMapper {
     ShiftMapper shiftMapper;
     EmploymentMapper employmentMapper;
-
     AttendanceMapper attendanceMapper;
 
 
@@ -39,6 +38,7 @@ public class WorkScheduleMapper {
                         .stream()
                         .map(x -> attendanceMapper.toResponse(x))
                         .collect(Collectors.toList()))
+                .attendanceStatus(workSchedule.getAttendanceStatus())
                 .build();
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class OrderMapper {
     TableMapper tableMapper;
-    OrderItemMapper orderItemMapper;
 
     public OrderResponse toResponse(OrderEntity order) {
         return OrderResponse.builder()

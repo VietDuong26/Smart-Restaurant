@@ -110,7 +110,7 @@ public class OrderItemServiceImplement implements OrderItemService {
     public BigDecimal getTotalPriceByOrderId(Long orderId) {
         List<OrderItemEntity> items = repository.findAllByOrderIdAndStatus(orderId, OrderItemStatus.ACTIVE);
         if (items.size() == 0) {
-            throw new ValidateException("Đơn hàng không có sản phẩm nào");
+            return BigDecimal.ZERO;
         }
         BigDecimal totalPrice = BigDecimal.ZERO;
         for (OrderItemEntity item : items) {
@@ -121,7 +121,7 @@ public class OrderItemServiceImplement implements OrderItemService {
 
     @Override
     public List<OrderItemResponse> getAllByOrderId(Long orderId) {
-        List<OrderItemEntity> items = repository.findAllByOrderIdAndStatus(orderId, OrderItemStatus.ACTIVE);
+        List<OrderItemEntity> items = repository.findAllByOrderId(orderId);
         return items.stream().map(x -> mapper.toResponse(x)).collect(Collectors.toList());
     }
 }

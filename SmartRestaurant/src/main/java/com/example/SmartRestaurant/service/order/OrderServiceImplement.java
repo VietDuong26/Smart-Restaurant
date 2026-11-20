@@ -405,6 +405,7 @@ public class OrderServiceImplement implements OrderService {
         }
         OrderEntity order = orderIsPendingInTable.get(0);
         OrderResponse response = mapper.toResponse(order);
+        response.setTotalPrice(orderItemService.getTotalPriceByOrderId(order.getId()));
         response.setItemResponses(orderItemService.getAllByOrderId(order.getId()));
         return response;
     }

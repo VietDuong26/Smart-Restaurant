@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.dto.response;
 
+import com.example.SmartRestaurant.common.enums.OrderItemStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -22,4 +23,8 @@ public class OrderItemResponse {
     private BigDecimal totalPrice;//snapshot
     private LocalDateTime createdAt;
     private String note;
+    private OrderItemStatus itemStatus;
+    private LocalDateTime deletedAt;
+    private Long deletedByUserId;
+    private String deletedByUserName;
 }

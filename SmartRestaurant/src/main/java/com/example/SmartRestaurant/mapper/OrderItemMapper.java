@@ -1,5 +1,6 @@
 package com.example.SmartRestaurant.mapper;
 
+import com.example.SmartRestaurant.common.enums.OrderItemStatus;
 import com.example.SmartRestaurant.dto.request.OrderItemRequest;
 import com.example.SmartRestaurant.dto.response.OrderItemResponse;
 import com.example.SmartRestaurant.entity.OrderItemEntity;
@@ -22,7 +23,7 @@ public class OrderItemMapper {
     }
 
     public OrderItemResponse toResponse(OrderItemEntity orderItem) {
-        return OrderItemResponse.builder()
+        OrderItemResponse response = OrderItemResponse.builder()
                 .id(orderItem.getId())
                 .productResponse(productMapper.toResponse(orderItem.getProduct()))
                 .orderId(orderItem.getOrder().getId())
@@ -34,6 +35,13 @@ public class OrderItemMapper {
                 .totalPrice(orderItem.getTotalPrice())
                 .createdAt(orderItem.getCreatedAt())
                 .note(orderItem.getNote())
+                .itemStatus(orderItem.getStatus())
                 .build();
+        if (orderItem.getStatus().equals(OrderItemStatus.INACTIVE)) {
+            response.setDeletedAt(orderItem.getDeletedAt());
+            response.setDeletedByUserId(orderItem.getDeletedBy().getId());
+            response.setDeletedByUserName(orderItem.getDeletedBy().getName());
+        }
+        return response;
     }
 }
