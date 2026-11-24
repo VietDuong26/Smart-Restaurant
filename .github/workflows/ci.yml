@@ -25,4 +25,5 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: mvn clean verify
+        run: ./mvnw clean verify
+        working-directory: ./SmartRestaurant
